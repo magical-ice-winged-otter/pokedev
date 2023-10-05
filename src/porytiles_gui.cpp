@@ -12,12 +12,12 @@ namespace PorytilesGui
 
     void init()
     {
-        s_projectPath = Serializer::readPath("projectPath");
+        s_projectPath = Serializer::load<filesystem::path>("projectPath", filesystem::path{});
     }
 
     void shutdown()
     {
-        Serializer::writePath("projectPath", s_projectPath);
+        Serializer::store<filesystem::path>("projectPath", s_projectPath);
     }
 
     void render()

@@ -1,3 +1,6 @@
+#ifndef PORYTILES_GUI_SDL_IMGUI_WRAPPER_HPP
+#define PORYTILES_GUI_SDL_IMGUI_WRAPPER_HPP
+
 #include <SDL.h>
 
 namespace SDLImGui
@@ -8,3 +11,5 @@ namespace SDLImGui
     void preRender();
     void postRender();
 }
+
+#endif // PORYTILES_GUI_SDL_IMGUI_WRAPPER_HPP
