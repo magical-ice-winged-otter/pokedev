@@ -6,10 +6,10 @@
 
 namespace Serializer
 {
-    void init();
+    void init(char** argv);
     void shutdown();
 
-    std::filesystem::path readPath(std::string id);
+    std::filesystem::path readPath(std::string id, std::filesystem::path defaultValue = {});
     void writePath(std::string id, std::filesystem::path path);
 }
 

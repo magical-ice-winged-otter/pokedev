@@ -42,7 +42,7 @@ int main(int argc, char *argv[])
     ImGui_ImplSDL2_InitForSDLRenderer(window, renderer);
     ImGui_ImplSDLRenderer2_Init(renderer);
 
-    Serializer::init();
+    Serializer::init(argv);
     PorytilesGui::init();
 
     bool done = false;

@@ -12,6 +12,7 @@ set(CMAKE_CXX_STANDARD 20)
 find_package(SDL2 CONFIG REQUIRED COMPONENTS SDL2 SDL2main)
 find_package(imgui CONFIG REQUIRED)
 find_package(unofficial-nativefiledialog CONFIG REQUIRED)
+find_package(nlohmann_json CONFIG REQUIRED)
 
 set(SOURCE_FILES 
         "src/main.cpp"
@@ -39,4 +40,5 @@ target_link_libraries(porytiles_gui
                 SDL2::SDL2main
                 imgui::imgui
                 unofficial::nativefiledialog::nfd
+                nlohmann_json::nlohmann_json
 )
