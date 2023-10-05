@@ -1,28 +1,38 @@
 #include <cstdio>
 #include <imgui.h>
-#include <nfd.h>
+
+#include "serializer.hpp"
+#include "file_dialog.hpp"
+
+using namespace std;
 
 namespace PorytilesGui
 {
+    static filesystem::path s_projectPath {};
+
+    void init()
+    {
+        s_projectPath = Serializer::readPath("projectPath");
+    }
+
+    void shutdown()
+    {
+        Serializer::writePath("projectPath", s_projectPath);
+    }
+
     void render()
     {
         ImGui::ShowDemoWindow();
 
-        if (ImGui::Button("Open file dialog"))
+        if (ImGui::Button("Change Path"))
         {
-            printf("opening file dialog\n");
-            nfdchar_t *outPath = nullptr;
-            nfdresult_t result = NFD_OpenDialog(nullptr, nullptr, &outPath);
-
-            if (result == NFD_OKAY)
+            if (FileDialog::tryPickFolder(s_projectPath))
             {
-                printf("selected %s", outPath);
-                delete outPath;
-            }
-            else if (result == NFD_CANCEL)
-            {
-                printf("cancelled operation\n");
+                printf("changed folder to %s\n", s_projectPath.string().c_str());
             }
         }
+
+        ImGui::SameLine();
+        ImGui::Text("Project path: %s", s_projectPath.string().c_str()); 
     }
 }

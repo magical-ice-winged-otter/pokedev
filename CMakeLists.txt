@@ -7,6 +7,8 @@ project(PORYTILES-GUI
         LANGUAGES CXX
 )
 
+set(CMAKE_CXX_STANDARD 20)
+
 find_package(SDL2 CONFIG REQUIRED COMPONENTS SDL2 SDL2main)
 find_package(imgui CONFIG REQUIRED)
 find_package(unofficial-nativefiledialog CONFIG REQUIRED)
@@ -14,9 +16,22 @@ find_package(unofficial-nativefiledialog CONFIG REQUIRED)
 set(SOURCE_FILES 
         "src/main.cpp"
         "src/porytiles_gui.cpp"
+        "src/file_dialog.cpp"
+        "src/serializer.cpp"
 )
 
-add_executable(porytiles_gui ${SOURCE_FILES})
+set(INCLUDE_FILES
+        "include/file_dialog.hpp"
+        "include/serializer.hpp"
+)
+
+
+add_executable(porytiles_gui ${SOURCE_FILES} ${INCLUDE_FILES})
+
+target_include_directories(porytiles_gui
+        PRIVATE
+                include
+)
 
 target_link_libraries(porytiles_gui
         PRIVATE

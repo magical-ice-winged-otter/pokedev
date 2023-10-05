@@ -3,16 +3,17 @@
 #include <imgui_impl_sdl2.h>
 #include <imgui_impl_sdlrenderer2.h>
 #include <SDL.h>
+#include "serializer.hpp"
 
 namespace PorytilesGui
 {
+    extern void init();
+    extern void shutdown();
     extern void render();
 }
 
 int main(int argc, char *argv[])
 {
-    printf("Hello, world!\n");
-
     if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER) != 0)
     {
         printf("Error starting SDL: %s\n", SDL_GetError());
@@ -41,6 +42,9 @@ int main(int argc, char *argv[])
     ImGui_ImplSDL2_InitForSDLRenderer(window, renderer);
     ImGui_ImplSDLRenderer2_Init(renderer);
 
+    Serializer::init();
+    PorytilesGui::init();
+
     bool done = false;
 
     while (!done)
@@ -65,6 +69,9 @@ int main(int argc, char *argv[])
         ImGui_ImplSDLRenderer2_RenderDrawData(ImGui::GetDrawData());
         SDL_RenderPresent(renderer);
     }
+
+    PorytilesGui::shutdown();
+    Serializer::shutdown();
 
     ImGui_ImplSDLRenderer2_Shutdown();
     ImGui_ImplSDL2_Shutdown();
