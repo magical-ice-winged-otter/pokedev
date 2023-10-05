@@ -10,7 +10,7 @@ using namespace std;
 namespace Serializer
 {
     nlohmann::json g_config {};
-    std::vector<SerializeValueCallback> g_serializeCallbacks {};
+    std::vector<std::function<void()>> g_serializeCallbacks {};
 
     static filesystem::path s_configPath;
 
@@ -33,7 +33,7 @@ namespace Serializer
     {
         printf("writing serializer data to disk\n");
 
-        for (SerializeValueCallback callback : g_serializeCallbacks)
+        for (const std::function<void()>& callback : g_serializeCallbacks)
             callback();
 
         ofstream fileStream {};
@@ -42,15 +42,13 @@ namespace Serializer
         fileStream.close();
     }
 
-    template<>
-    std::filesystem::path load<std::filesystem::path>(std::string id, std::filesystem::path defaultValue)
+    template<> void registerValue(const string& id, filesystem::path& value)
     {
-        return std::filesystem::path {load<std::string>(id, defaultValue.string())};
-    }
+        if (g_config.contains(id))
+            value = filesystem::path {static_cast<string>(g_config[id])};
 
-    template<>
-    void store<std::filesystem::path>(std::string id, std::filesystem::path value)
-    {
-        return store<std::string>(id, value.string());
+        g_serializeCallbacks.emplace_back([id, &value]() {
+            g_config[id] = value.string();
+        });
     }
 }

@@ -18,24 +18,18 @@ namespace PorytilesGui
 
     void init()
     {
-        s_projectPath = Serializer::load("projectPath", filesystem::path{});
-        s_behaviorsHeaderPath = Serializer::load("behaviorsHeaderPath", filesystem::path{});
-        s_currentMode = Serializer::load("currentMode", 0);
-        s_showPrimaryCompilerTool = Serializer::load("showPrimaryCompiler", false);
-        s_showPrimaryDecompilerTool = Serializer::load("showPrimaryDecompiler", false);
-        s_showSecondaryCompilerTool = Serializer::load("showSecondaryCompiler", false);
-        s_showSecondaryDecompilerTool = Serializer::load("showSecondaryDecompiler", false);
+        Serializer::registerValue("projectPath", s_projectPath);
+        Serializer::registerValue("behaviorsHeaderPath", s_behaviorsHeaderPath);
+        Serializer::registerValue("currentMode", s_currentMode);
+        Serializer::registerValue("showPrimaryCompiler", s_showPrimaryCompilerTool);
+        Serializer::registerValue("showPrimaryDecompiler", s_showPrimaryDecompilerTool);
+        Serializer::registerValue("showSecondaryCompiler", s_showSecondaryCompilerTool);
+        Serializer::registerValue("showSecondaryDecompiler", s_showSecondaryDecompilerTool);
     }
 
     void shutdown()
     {
-        Serializer::store("projectPath", s_projectPath);
-        Serializer::store("behaviorsHeaderPath", s_behaviorsHeaderPath);
-        Serializer::store("currentMode", s_currentMode);
-        Serializer::store("showPrimaryCompiler", s_showPrimaryCompilerTool);
-        Serializer::store("showPrimaryDecompiler", s_showPrimaryDecompilerTool);
-        Serializer::store("showSecondaryCompiler", s_showSecondaryCompilerTool);
-        Serializer::store("showSecondaryDecompiler", s_showSecondaryDecompilerTool);
+        // No shutdown logic needed for now.
     }
 
     void render()
