@@ -19,11 +19,14 @@ set(SOURCE_FILES
         "src/porytiles_gui.cpp"
         "src/file_dialog.cpp"
         "src/serializer.cpp"
+        "src/sdl_imgui_wrapper.cpp"
 )
 
 set(INCLUDE_FILES
         "include/file_dialog.hpp"
         "include/serializer.hpp"
+        "include/sdl_imgui_wrapper.hpp"
+        "include/porytiles_gui.hpp"
 )
 
 

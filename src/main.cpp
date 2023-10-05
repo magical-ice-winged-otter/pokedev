@@ -4,13 +4,8 @@
 #include <imgui_impl_sdlrenderer2.h>
 #include <SDL.h>
 #include "serializer.hpp"
-
-namespace PorytilesGui
-{
-    extern void init();
-    extern void shutdown();
-    extern void render();
-}
+#include "sdl_imgui_wrapper.hpp"
+#include "porytiles_gui.hpp"
 
 int main(int argc, char *argv[])
 {
@@ -36,12 +31,7 @@ int main(int argc, char *argv[])
         return -1;
     }
 
-    IMGUI_CHECKVERSION();
-    ImGui::CreateContext();
-    ImGui::StyleColorsDark();
-    ImGui_ImplSDL2_InitForSDLRenderer(window, renderer);
-    ImGui_ImplSDLRenderer2_Init(renderer);
-
+    SDLImGui::init(window, renderer);
     Serializer::init(argv);
     PorytilesGui::init();
 
@@ -53,29 +43,22 @@ int main(int argc, char *argv[])
 
         while (SDL_PollEvent(&event))
         {
-            ImGui_ImplSDL2_ProcessEvent(&event);
+            SDLImGui::processEvent(&event);
 
             if (event.type == SDL_QUIT)
                 done = true;
         }
 
-        ImGui_ImplSDLRenderer2_NewFrame();
-        ImGui_ImplSDL2_NewFrame();
-        ImGui::NewFrame();
-
-        PorytilesGui::render();
-        ImGui::Render();
         SDL_RenderClear(renderer);
-        ImGui_ImplSDLRenderer2_RenderDrawData(ImGui::GetDrawData());
+        SDLImGui::preRender();
+        PorytilesGui::render();        
+        SDLImGui::postRender();
         SDL_RenderPresent(renderer);
     }
 
+    SDLImGui::shutdown();
     PorytilesGui::shutdown();
     Serializer::shutdown();
-
-    ImGui_ImplSDLRenderer2_Shutdown();
-    ImGui_ImplSDL2_Shutdown();
-    ImGui::DestroyContext();
 
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
