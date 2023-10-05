@@ -4,6 +4,11 @@
 #include <imgui_impl_sdlrenderer2.h>
 #include <SDL.h>
 
+namespace PorytilesGui
+{
+    extern void render();
+}
+
 int main(int argc, char *argv[])
 {
     printf("Hello, world!\n");
@@ -54,9 +59,7 @@ int main(int argc, char *argv[])
         ImGui_ImplSDL2_NewFrame();
         ImGui::NewFrame();
 
-        // render
-        ImGui::ShowDemoWindow();
-
+        PorytilesGui::render();
         ImGui::Render();
         SDL_RenderClear(renderer);
         ImGui_ImplSDLRenderer2_RenderDrawData(ImGui::GetDrawData());

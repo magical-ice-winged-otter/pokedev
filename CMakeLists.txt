@@ -9,9 +9,11 @@ project(PORYTILES-GUI
 
 find_package(SDL2 CONFIG REQUIRED COMPONENTS SDL2 SDL2main)
 find_package(imgui CONFIG REQUIRED)
+find_package(unofficial-nativefiledialog CONFIG REQUIRED)
 
 set(SOURCE_FILES 
         "src/main.cpp"
+        "src/porytiles_gui.cpp"
 )
 
 add_executable(porytiles_gui ${SOURCE_FILES})
@@ -21,4 +23,5 @@ target_link_libraries(porytiles_gui
                 SDL2::SDL2
                 SDL2::SDL2main
                 imgui::imgui
+                unofficial::nativefiledialog::nfd
 )
