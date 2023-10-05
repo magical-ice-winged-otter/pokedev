@@ -14,7 +14,7 @@ find_package(imgui CONFIG REQUIRED)
 find_package(unofficial-nativefiledialog CONFIG REQUIRED)
 find_package(nlohmann_json CONFIG REQUIRED)
 
-set(SOURCE_FILES 
+set(SOURCE_FILES
         "src/main.cpp"
         "src/porytiles_gui.cpp"
         "src/file_dialog.cpp"
@@ -34,14 +34,14 @@ add_executable(porytiles_gui ${SOURCE_FILES} ${INCLUDE_FILES})
 
 target_include_directories(porytiles_gui
         PRIVATE
-                include
+        include
 )
 
 target_link_libraries(porytiles_gui
         PRIVATE
-                SDL2::SDL2
-                SDL2::SDL2main
-                imgui::imgui
-                unofficial::nativefiledialog::nfd
-                nlohmann_json::nlohmann_json
+        SDL2::SDL2
+        SDL2::SDL2main
+        imgui::imgui
+        unofficial::nativefiledialog::nfd
+        nlohmann_json::nlohmann_json
 )

@@ -9,8 +9,10 @@ using namespace std;
 
 namespace Serializer
 {
-    static filesystem::path s_configPath;
     nlohmann::json g_config {};
+    std::vector<SerializeValueCallback> g_serializeCallbacks {};
+
+    static filesystem::path s_configPath;
 
     void init(char** argv)
     {
@@ -30,6 +32,9 @@ namespace Serializer
     void shutdown()
     {
         printf("writing serializer data to disk\n");
+
+        for (SerializeValueCallback callback : g_serializeCallbacks)
+            callback();
 
         ofstream fileStream {};
         fileStream.open(s_configPath);
