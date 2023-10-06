@@ -27,7 +27,7 @@ struct PorytilesContext
 
     int assignExploreCutoff {2};
     string assignAlgorithm {"dfs"};
-    string bestBranches {"smart"};
+    string bestBranches {"4"};
 
     // Compile Primary
     filesystem::path primaryCompileOutputPath {};
@@ -39,7 +39,7 @@ struct PorytilesContext
     filesystem::path sourcePartnerPrimaryPath {};
     int primaryAssignExploreCutoff {2};
     string primaryAssignAlgorithm {"dfs"};
-    string primaryBestBranches {"smart"};
+    string primaryBestBranches {"4"};
 
     // Decompile Primary
     filesystem::path primaryDecompileOutputPath {};
@@ -65,28 +65,24 @@ namespace PorytilesCommandGenerator
             replace(relativeString.begin(), relativeString.end(), '\\', '/');
             return relativeString;
         }
-        else
-        {
-            string pathString {path.string()};
-            return pathString;
-        }
+        else return path.string();
     }
 
     static string getOptions(PorytilesContext& context, const filesystem::path& outputPath)
     {
         string result {};
-        result.append(fmt::format(" -output={} ", getPathString(outputPath)));
-        result.append(fmt::format(" -tiles-output-pal={} ", context.paletteMode));
-        result.append(fmt::format(" -target-base-game={} ", context.baseGame));
+        result += fmt::format(" -output={} ", getPathString(outputPath));
+        result += fmt::format(" -tiles-output-pal={} ", context.paletteMode);
+        result += fmt::format(" -target-base-game={} ", context.baseGame);
 
         if (context.useDualLayer)
-            result.append(" -dual-layer ");
+            result+= " -dual-layer ";
 
-        result.append(fmt::format(" -transparency-color={},{},{} ", context.transparency[0] * 255, context.transparency[1] * 255, context.transparency[2] * 255));
-        result.append(fmt::format(" -default-behavior={} ", context.defaultBehavior));
-        result.append(fmt::format(" -assign-explore-cutoff={} ", context.assignExploreCutoff));
-        result.append(fmt::format(" -assign-algorithm={} ", context.assignAlgorithm));
-        result.append(fmt::format(" -best-branches={} ", context.bestBranches));
+        result += fmt::format(" -transparency-color={},{},{} ", context.transparency[0] * 255, context.transparency[1] * 255, context.transparency[2] * 255);
+        result += fmt::format(" -default-behavior={} ", context.defaultBehavior);
+        result += fmt::format(" -assign-explore-cutoff={} ", context.assignExploreCutoff);
+        result += fmt::format(" -assign-algorithm={} ", context.assignAlgorithm);
+        result += fmt::format(" -best-branches={} ", context.bestBranches);
 
         // todo: fieldmap options
         // todo: warning options
@@ -98,16 +94,23 @@ namespace PorytilesCommandGenerator
     {
         string options {getOptions(context, context.primaryCompileOutputPath)};
         string porytiles {getPathString(context.porytilesExecutableFile)};
-        string srcPrimaryPath {getPathString(context.sourcePrimaryPath)};
         string behaviorsHeader {getPathString(context.behaviorsHeaderPath)};
-        string result {fmt::format("{} compile-primary {} {} {}", porytiles, options, srcPrimaryPath, behaviorsHeader)};
-        return result;
+
+        string srcPrimaryPath {getPathString(context.sourcePrimaryPath)};
+        return fmt::format("{} compile-primary {} {} {}", porytiles, options, srcPrimaryPath, behaviorsHeader);
     }
 
     string generateCompileSecondaryCommand(PorytilesContext& context)
     {
-        return "hello secondary compile";
+        string options {getOptions(context, context.secondaryCompileOutputPath)};
+        string porytiles {getPathString(context.porytilesExecutableFile)};
+        string behaviorsHeader {getPathString(context.behaviorsHeaderPath)};
+
+        string srcSecondaryPath {getPathString(context.sourceSecondaryPath)};
+        string srcPartnerPrimaryPath {getPathString(context.sourcePartnerPrimaryPath)};
+        return fmt::format("{} compile-secondary {} {} {} {}", porytiles, options, srcSecondaryPath, srcPartnerPrimaryPath, behaviorsHeader);
     }
+
     string generateDecompilePrimaryCommand(PorytilesContext& context)
     {
         return "hello primary decompile";
@@ -306,7 +309,8 @@ namespace PorytilesGui
                 }
 
                 ImGuiFolderPicker("Output Path", s_ctx.secondaryCompileOutputPath);
-                ImGuiFolderPicker("Compiled Primary Path", s_ctx.compiledPrimaryPath);
+                ImGuiFolderPicker("Source Secondary Path", s_ctx.sourceSecondaryPath);
+                ImGuiFolderPicker("Source Partner Primary Path", s_ctx.sourcePartnerPrimaryPath);
 
                 ImGui::SeparatorText("Paired Primary Color Assignment Config");
                 ImGui::SetNextItemWidth(100);
