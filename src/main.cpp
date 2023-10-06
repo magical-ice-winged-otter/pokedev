@@ -33,7 +33,7 @@ int main(int argc, char *argv[])
 
     SDLImGui::init(window, renderer);
     Serializer::init(argv);
-    PorytilesGui::init();
+    PorytilesGui::init(renderer);
 
     bool done = false;
 

@@ -3,7 +3,7 @@
 
 namespace PorytilesGui
 {
-    void init();
+    void init(SDL_Renderer* renderer);
     void shutdown();
     void render();
 }

@@ -13,6 +13,8 @@ find_package(SDL2 CONFIG REQUIRED COMPONENTS SDL2 SDL2main)
 find_package(imgui CONFIG REQUIRED)
 find_package(unofficial-nativefiledialog CONFIG REQUIRED)
 find_package(nlohmann_json CONFIG REQUIRED)
+find_package(fmt CONFIG REQUIRED)
+find_package(SDL2_image CONFIG REQUIRED)
 
 set(SOURCE_FILES
         "src/main.cpp"
@@ -44,4 +46,6 @@ target_link_libraries(porytiles_gui
         imgui::imgui
         unofficial::nativefiledialog::nfd
         nlohmann_json::nlohmann_json
+        fmt::fmt
+        SDL2_image::SDL2_image
 )

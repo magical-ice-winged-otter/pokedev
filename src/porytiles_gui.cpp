@@ -1,5 +1,8 @@
 #include <imgui.h>
 #include <SDL.h>
+#include <SDL_image.h>
+#include <fmt/format.h>
+#include <imgui_stdlib.h>
 #include "file_dialog.hpp"
 #include "porytiles_gui.hpp"
 #include "serializer.hpp"
@@ -13,6 +16,7 @@ struct PorytilesContext
 {
     // General Options
     filesystem::path projectPath {};
+    filesystem::path porytilesExecutableFile {};
     filesystem::path behaviorsHeaderPath {};
     string paletteMode {"greyscale"};
 
@@ -47,12 +51,59 @@ struct PorytilesContext
     filesystem::path compiledPartnerPrimaryPath {};
 };
 
+static bool s_shouldUseWslRelativePaths {};
+static filesystem::path s_wslRootPath {};
+
 namespace PorytilesCommandGenerator
 {
+    static string getPathString(const filesystem::path& path)
+    {
+        if (s_shouldUseWslRelativePaths)
+        {
+            filesystem::path relativePath {filesystem::path{"/"} / filesystem::relative(path, s_wslRootPath)};
+            string relativeString = relativePath.string();
+            replace(relativeString.begin(), relativeString.end(), '\\', '/');
+            return relativeString;
+        }
+        else
+        {
+            string pathString {path.string()};
+            return pathString;
+        }
+    }
+
+    static string getOptions(PorytilesContext& context, const filesystem::path& outputPath)
+    {
+        string result {};
+        result.append(fmt::format(" -output={} ", getPathString(outputPath)));
+        result.append(fmt::format(" -tiles-output-pal={} ", context.paletteMode));
+        result.append(fmt::format(" -target-base-game={} ", context.baseGame));
+
+        if (context.useDualLayer)
+            result.append(" -dual-layer ");
+
+        result.append(fmt::format(" -transparency-color={},{},{} ", context.transparency[0] * 255, context.transparency[1] * 255, context.transparency[2] * 255));
+        result.append(fmt::format(" -default-behavior={} ", context.defaultBehavior));
+        result.append(fmt::format(" -assign-explore-cutoff={} ", context.assignExploreCutoff));
+        result.append(fmt::format(" -assign-algorithm={} ", context.assignAlgorithm));
+        result.append(fmt::format(" -best-branches={} ", context.bestBranches));
+
+        // todo: fieldmap options
+        // todo: warning options
+
+        return result;
+    }
+
     string generateCompilePrimaryCommand(PorytilesContext& context)
     {
-        return "hello primary compile";
+        string options {getOptions(context, context.primaryCompileOutputPath)};
+        string porytiles {getPathString(context.porytilesExecutableFile)};
+        string srcPrimaryPath {getPathString(context.sourcePrimaryPath)};
+        string behaviorsHeader {getPathString(context.behaviorsHeaderPath)};
+        string result {fmt::format("{} compile-primary {} {} {}", porytiles, options, srcPrimaryPath, behaviorsHeader)};
+        return result;
     }
+
     string generateCompileSecondaryCommand(PorytilesContext& context)
     {
         return "hello secondary compile";
@@ -79,24 +130,18 @@ namespace PorytilesGui
     static bool s_showSecondaryCompilerTool {};
 
     // GUI Settings
-    static ImVec4 s_subTextColor {0.6, 0.6, 0.6, 1};
     static ImVec4 s_errorTextColor {1.0, 0.3, 0.3, 1};
-    static int s_defaultBehaviorBufferSize {100};
-    static int s_bestBranchesBufferSize {100};
-    static int s_primaryBestBranchesBufferSize {100};
+    static SDL_Texture* s_previewTexture {};
+    static SDL_Renderer* s_renderer {};
 
-    void init()
+    void init(SDL_Renderer* renderer)
     {
-        s_ctx.defaultBehavior.resize(s_defaultBehaviorBufferSize);
-        s_ctx.bestBranches.resize(s_bestBranchesBufferSize);
-        s_ctx.primaryBestBranches.resize(s_primaryBestBranchesBufferSize);
+        s_renderer = renderer;
 
+        // Options
         Serializer::registerValue("assignExploreCutoff", s_ctx.assignExploreCutoff);
         Serializer::registerValue("assignAlgorithm", s_ctx.assignAlgorithm);
         Serializer::registerValue("bestBranches", s_ctx.bestBranches);
-        Serializer::registerValue("primaryAssignExploreCutoff", s_ctx.primaryAssignExploreCutoff);
-        Serializer::registerValue("primaryAssignAlgorithm", s_ctx.primaryAssignAlgorithm);
-        Serializer::registerValue("primaryBestBranches", s_ctx.primaryBestBranches);
 
         Serializer::registerValue("transparencyColor_R", s_ctx.transparency[0]);
         Serializer::registerValue("transparencyColor_G", s_ctx.transparency[1]);
@@ -106,38 +151,59 @@ namespace PorytilesGui
         Serializer::registerValue("baseGame", s_ctx.baseGame);
 
         Serializer::registerValue("projectPath", s_ctx.projectPath);
+        Serializer::registerValue("porytilesExecutableFile", s_ctx.porytilesExecutableFile);
         Serializer::registerValue("behaviorsHeaderPath", s_ctx.behaviorsHeaderPath);
         Serializer::registerValue("paletteMode", s_ctx.paletteMode);
 
+        // Primary compiler
+        Serializer::registerValue("primaryCompileOutputPath", s_ctx.primaryCompileOutputPath);
+        Serializer::registerValue("sourcePrimaryPath", s_ctx.sourcePrimaryPath);
+
+        // Secondary compiler
+        Serializer::registerValue("secondaryCompileOutputPath", s_ctx.secondaryCompileOutputPath);
+        Serializer::registerValue("sourceSecondaryPath", s_ctx.sourceSecondaryPath);
+        Serializer::registerValue("sourcePartnerPrimaryPath", s_ctx.sourcePartnerPrimaryPath);
+        Serializer::registerValue("primaryAssignExploreCutoff", s_ctx.primaryAssignExploreCutoff);
+        Serializer::registerValue("primaryAssignAlgorithm", s_ctx.primaryAssignAlgorithm);
+        Serializer::registerValue("primaryBestBranches", s_ctx.primaryBestBranches);
+
+        // Primary decompiler
+        Serializer::registerValue("primaryDecompileOutputPath", s_ctx.primaryDecompileOutputPath);
+        Serializer::registerValue("compiledPrimaryPath", s_ctx.compiledPrimaryPath);
+
+        // Secondary decompiler
+        Serializer::registerValue("secondaryDecompileOutputPath", s_ctx.secondaryDecompileOutputPath);
+        Serializer::registerValue("compiledSecondaryPath", s_ctx.compiledSecondaryPath);
+        Serializer::registerValue("compiledPartnerPrimaryPath", s_ctx.compiledPartnerPrimaryPath);
+
+        // Gui settings
+        Serializer::registerValue("shouldUseWslRelativePaths", s_shouldUseWslRelativePaths);
+        Serializer::registerValue("wslRootPath", s_wslRootPath);
         Serializer::registerValue("showPrimaryCompiler", s_showPrimaryCompilerTool);
         Serializer::registerValue("showPrimaryDecompiler", s_showPrimaryDecompilerTool);
         Serializer::registerValue("showSecondaryCompiler", s_showSecondaryCompilerTool);
         Serializer::registerValue("showSecondaryDecompiler", s_showSecondaryDecompilerTool);
-
-        Serializer::registerValue("primaryCompileOutputPath", s_ctx.primaryCompileOutputPath);
-        Serializer::registerValue("primaryDecompileOutputPath", s_ctx.primaryDecompileOutputPath);
-        Serializer::registerValue("secondaryCompileOutputPath", s_ctx.secondaryCompileOutputPath);
-        Serializer::registerValue("secondaryDecompileOutputPath", s_ctx.secondaryDecompileOutputPath);
     }
 
     void shutdown()
     {
-        // No shutdown logic needed for now.
+        SDL_DestroyTexture(s_previewTexture);
     }
 
     // todo: move this into custom ImGui utils file?
     static void ImGuiFolderPicker(const char* label, filesystem::path& path)
     {
-        if (ImGui::Button("Edit"))
+        ImGui::Text("%s", label);
+
+        if (ImGui::Button(fmt::format("Edit##{}", label).c_str()))
             FileDialog::tryPickFolder(path);
 
         ImGui::SameLine();
-        ImGui::Text("%s", label);
+        string pathString {path.string()};
+        ImGui::SetNextItemWidth(500);
 
-        if (path.string().empty())
-            ImGui::TextColored(s_errorTextColor, "No folder selected");
-
-        else ImGui::TextColored(s_subTextColor, "%s", path.string().c_str());
+        if (ImGui::InputTextWithHint(fmt::format("##{}", label).c_str(), "No folder selected", &pathString))
+            path = filesystem::path {pathString};
 
         ImGui::Spacing(); ImGui::Spacing();
     }
@@ -145,16 +211,17 @@ namespace PorytilesGui
     // todo: move this into custom ImGui utils file?
     static void ImGuiFilePicker(const char* label, filesystem::path& path, const char* filter = nullptr)
     {
-        if (ImGui::Button("Edit"))
+        ImGui::Text("%s", label);
+
+        if (ImGui::Button(fmt::format("Edit##{}", label).c_str()))
             FileDialog::tryPickFile(path, filter);
 
         ImGui::SameLine();
-        ImGui::Text("%s", label);
+        string pathString {path.string()};
+        ImGui::SetNextItemWidth(500);
 
-        if (path.string().empty())
-            ImGui::TextColored(s_errorTextColor, "No file selected");
-
-        else ImGui::TextColored(s_subTextColor, "%s", path.string().c_str());
+        if (ImGui::InputTextWithHint(fmt::format("##{}", label).c_str(), "No file selected", &pathString))
+            path = filesystem::path {pathString};
 
         ImGui::Spacing(); ImGui::Spacing();
     }
@@ -194,7 +261,7 @@ namespace PorytilesGui
 
         // Windows
         {
-            ImGui::ShowDemoWindow();
+//            ImGui::ShowDemoWindow();
             if (s_showPrimaryCompilerTool && ImGui::Begin("Primary Compiler", &s_showPrimaryCompilerTool))
             {
                 if (ImGui::Button("Copy Command to Clipboard"))
@@ -206,6 +273,28 @@ namespace PorytilesGui
                 ImGuiFolderPicker("Output Path", s_ctx.primaryCompileOutputPath);
                 ImGuiFolderPicker("Source Primary Path", s_ctx.sourcePrimaryPath);
                 ImGui::SetItemTooltip("Path to a directory containing the source data for a primary set.");
+
+                filesystem::path tilesImagePath {s_ctx.primaryCompileOutputPath / "tiles.png"};
+
+                if (filesystem::exists(tilesImagePath))
+                {
+                    if (s_previewTexture == nullptr)
+                    {
+                        s_previewTexture = IMG_LoadTexture(s_renderer, tilesImagePath.string().c_str());
+                    }
+
+                    if (ImGui::Button("Reload Preview"))
+                    {
+                        SDL_DestroyTexture(s_previewTexture);
+                        s_previewTexture = nullptr;
+                    }
+
+                    Uint32 format;
+                    int access, width, height;
+                    SDL_QueryTexture(s_previewTexture, &format, &access, &width, &height);
+                    ImGui::Image(s_previewTexture, ImVec2{static_cast<float>(width * 2), static_cast<float>(height * 2)});
+                }
+
                 ImGui::End();
             }
             if (s_showSecondaryCompilerTool && ImGui::Begin("Secondary Compiler", &s_showSecondaryCompilerTool))
@@ -227,7 +316,7 @@ namespace PorytilesGui
                 if (ImGui::RadioButton("Breadth-First Search", s_ctx.primaryAssignAlgorithm == "bfs")) s_ctx.primaryAssignAlgorithm = "bfs";
 
                 ImGui::SetNextItemWidth(150);
-                ImGui::InputText("Best Branches", s_ctx.primaryBestBranches.data(), s_primaryBestBranchesBufferSize);
+                ImGui::InputText("Best Branches", &s_ctx.primaryBestBranches);
 
                 ImGui::End();
             }
@@ -276,12 +365,32 @@ namespace PorytilesGui
         {
             ImGui::SeparatorText("Settings");
 
+            ImGui::Checkbox("Should Use WSL Relative Paths", &s_shouldUseWslRelativePaths);
+
+            if (s_shouldUseWslRelativePaths)
+            {
+                ImGui::Text("%s", "Relative Path Base");
+
+                if (ImGui::Button("Edit"))
+                    FileDialog::tryPickFolder(s_wslRootPath);
+
+                ImGui::SameLine();
+                string pathString {s_wslRootPath.string()};
+                ImGui::SetNextItemWidth(500);
+
+                if (ImGui::InputTextWithHint("##wslBasePath", "No file selected", &pathString))
+                    s_wslRootPath = filesystem::path {pathString};
+
+                ImGui::Spacing(); ImGui::Spacing();
+            }
+
             if (ImGui::CollapsingHeader("Driver"))
             {
                 ImGui::Spacing(); ImGui::Spacing();
                 ImGui::Indent();
 
                 ImGuiFolderPicker("Project Path", s_ctx.projectPath);
+                ImGuiFilePicker("Porytiles Executable File", s_ctx.porytilesExecutableFile);
                 ImGuiFilePicker("Behaviors Header File", s_ctx.behaviorsHeaderPath, "h,hpp");
 
                 ImGui::Text("Palette Mode");
@@ -307,7 +416,7 @@ namespace PorytilesGui
                 ImGui::ColorEdit3("Transparency Color", s_ctx.transparency);
 
                 ImGui::SetNextItemWidth(150);
-                ImGui::InputText("Default Behavior", s_ctx.defaultBehavior.data(), s_defaultBehaviorBufferSize);
+                ImGui::InputText("Default Behavior", &s_ctx.defaultBehavior);
 
                 ImGui::Unindent();
                 ImGui::Spacing(); ImGui::Spacing();
@@ -324,7 +433,7 @@ namespace PorytilesGui
                 if (ImGui::RadioButton("Breadth-First Search", s_ctx.assignAlgorithm == "bfs")) s_ctx.assignAlgorithm = "bfs";
 
                 ImGui::SetNextItemWidth(150);
-                ImGui::InputText("Best Branches", s_ctx.bestBranches.data(), s_bestBranchesBufferSize);
+                ImGui::InputText("Best Branches", &s_ctx.bestBranches);
 
                 ImGui::Unindent();
                 ImGui::Spacing(); ImGui::Spacing();
