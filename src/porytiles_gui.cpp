@@ -17,6 +17,14 @@ namespace PorytilesGui
     static bool s_useDualLayer {false};
     static string s_baseGame {"pokeemerald"};
 
+    static int s_assignExploreCutoff {2};
+    static string s_assignAlgorithm {"dfs"};
+    static string s_bestBranches {"smart"};
+
+    static int s_primaryAssignExploreCutoff {2};
+    static string s_primaryAssignAlgorithm {"dfs"};
+    static string s_primaryBestBranches {"smart"};
+
     // Tools
     static bool s_showPrimaryCompilerTool {};
     static bool s_showPrimaryDecompilerTool {};
@@ -34,10 +42,14 @@ namespace PorytilesGui
     static ImVec4 s_subTextColor {0.6, 0.6, 0.6, 1};
     static ImVec4 s_errorTextColor {1.0, 0.3, 0.3, 1};
     static int s_defaultBehaviorBufferSize {100};
+    static int s_bestBranchesBufferSize {100};
+    static int s_primaryBestBranchesBufferSize {100};
 
     void init()
     {
         s_defaultBehavior.resize(s_defaultBehaviorBufferSize);
+        s_bestBranches.resize(s_bestBranchesBufferSize);
+        s_primaryBestBranches.resize(s_primaryBestBranchesBufferSize);
 
         Serializer::registerValue("transparencyColor_R", s_transparency[0]);
         Serializer::registerValue("transparencyColor_G", s_transparency[1]);
@@ -134,6 +146,17 @@ namespace PorytilesGui
             if (s_showSecondaryCompilerTool && ImGui::Begin("Secondary Compiler", &s_showSecondaryCompilerTool))
             {
                 ImGuiFolderPicker("Compiled Primary Path", s_compiledPrimaryPath);
+
+                ImGui::SeparatorText("Paired Primary Color Assignment Config");
+                ImGui::SetNextItemWidth(100);
+                ImGui::InputInt("Explore Cutoff", &s_primaryAssignExploreCutoff);
+
+                if (ImGui::RadioButton("Depth-First Search", s_primaryAssignAlgorithm == "dfs")) s_primaryAssignAlgorithm = "dfs"; ImGui::SameLine();
+                if (ImGui::RadioButton("Breadth-First Search", s_primaryAssignAlgorithm == "bfs")) s_primaryAssignAlgorithm = "bfs";
+
+                ImGui::SetNextItemWidth(150);
+                ImGui::InputText("Best Branches", s_primaryBestBranches.data(), s_primaryBestBranchesBufferSize);
+
                 ImGui::End();
             }
             if (s_showSecondaryDecompilerTool && ImGui::Begin("Secondary Decompiler", &s_showSecondaryDecompilerTool))
@@ -190,6 +213,15 @@ namespace PorytilesGui
             {
                 ImGui::Spacing(); ImGui::Spacing();
                 ImGui::Indent();
+
+                ImGui::SetNextItemWidth(100);
+                ImGui::InputInt("Assign Explore Cutoff", &s_assignExploreCutoff);
+
+                if (ImGui::RadioButton("Depth-First Search", s_assignAlgorithm == "dfs")) s_assignAlgorithm = "dfs"; ImGui::SameLine();
+                if (ImGui::RadioButton("Breadth-First Search", s_assignAlgorithm == "bfs")) s_assignAlgorithm = "bfs";
+
+                ImGui::SetNextItemWidth(150);
+                ImGui::InputText("Best Branches", s_bestBranches.data(), s_bestBranchesBufferSize);
 
                 ImGui::Unindent();
                 ImGui::Spacing(); ImGui::Spacing();
