@@ -123,7 +123,13 @@ namespace PorytilesCommandGenerator
 
     string generateDecompileSecondaryCommand(PorytilesContext& context)
     {
-        return "hello secondary decompile";
+        string options {getOptions(context, context.secondaryDecompileOutputPath)};
+        string porytiles {getPathString(context.porytilesExecutableFile)};
+        string behaviorsHeader {getPathString(context.behaviorsHeaderPath)};
+
+        string compiledSecondaryPath {getPathString(context.compiledSecondaryPath)};
+        string compiledPartnerPrimaryPath {getPathString(context.compiledPartnerPrimaryPath)};
+        return fmt::format("{} decompile-secondary {} {} {} {}", porytiles, options, compiledSecondaryPath, compiledPartnerPrimaryPath, behaviorsHeader);
     }
 }
 
@@ -344,6 +350,8 @@ namespace PorytilesGui
             }
             if (s_showSecondaryDecompilerTool && ImGui::Begin("Secondary Decompiler", &s_showSecondaryDecompilerTool))
             {
+                ImGui::TextColored(s_errorTextColor, "This feature is not yet supported by Porytiles! Running this command will currently do nothing.");
+
                 if (ImGui::Button("Copy Command to Clipboard"))
                 {
                     string result = PorytilesCommandGenerator::generateDecompileSecondaryCommand(s_ctx);
