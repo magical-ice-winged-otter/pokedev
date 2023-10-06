@@ -7,17 +7,15 @@ using namespace std;
 
 namespace PorytilesGui
 {
-    // non-serialized
-    static string s_paletteMode; // options: 'true-color' or 'greyscale'
-    // base game - enum
-    // dual layer - bool
-    // transparency color R, G, and B - color
-    // default behavior - string
-
     // General Settings
     static filesystem::path s_projectPath {};
     static filesystem::path s_behaviorsHeaderPath {};
     static filesystem::path s_outputPath {};
+
+    static float s_transparency[3] {1, 0, 1};
+    static string s_defaultBehavior {"MB_NORMAL"};
+    static bool s_useDualLayer {false};
+    static string s_baseGame {"pokeemerald"};
 
     // Tools
     static bool s_showPrimaryCompilerTool {};
@@ -32,8 +30,21 @@ namespace PorytilesGui
     static filesystem::path s_compiledSecondaryPath {};
     static filesystem::path s_compiledPartnerPrimaryPath {};
 
+    // GUI Settings
+    static ImVec4 s_subTextColor {0.6, 0.6, 0.6, 1};
+    static ImVec4 s_errorTextColor {1.0, 0.3, 0.3, 1};
+    static int s_defaultBehaviorBufferSize {100};
+
     void init()
     {
+        s_defaultBehavior.resize(s_defaultBehaviorBufferSize);
+
+        Serializer::registerValue("transparencyColor_R", s_transparency[0]);
+        Serializer::registerValue("transparencyColor_G", s_transparency[1]);
+        Serializer::registerValue("transparencyColor_B", s_transparency[2]);
+        Serializer::registerValue("defaultBehavior", s_defaultBehavior);
+        Serializer::registerValue("useDualLayer", s_useDualLayer);
+        Serializer::registerValue("baseGame", s_baseGame);
         Serializer::registerValue("projectPath", s_projectPath);
         Serializer::registerValue("behaviorsHeaderPath", s_behaviorsHeaderPath);
         Serializer::registerValue("showPrimaryCompiler", s_showPrimaryCompilerTool);
@@ -48,8 +59,6 @@ namespace PorytilesGui
         // No shutdown logic needed for now.
     }
 
-    static ImVec4 s_subTextColor {0.6, 0.6, 0.6, 1};
-    static ImVec4 s_errorTextColor {1.0, 0.3, 0.3, 1};
 
     static void ImGuiFolderPicker(const char* label, filesystem::path& path)
     {
@@ -143,17 +152,39 @@ namespace PorytilesGui
             {
                 ImGui::Spacing(); ImGui::Spacing();
                 ImGui::Indent();
+
                 ImGuiFolderPicker("Project Path", s_projectPath);
                 ImGuiFolderPicker("Output Path", s_outputPath);
                 ImGuiFilePicker("Behaviors Header File", s_behaviorsHeaderPath, "h,hpp");
+
+                ImGui::Text("Palette Mode");
+                static string s_paletteMode {"greyscale"};
+                if (ImGui::RadioButton("True Color", s_paletteMode == "true-color")) s_paletteMode = "true-color"; ImGui::SameLine();
+                if (ImGui::RadioButton("Greyscale", s_paletteMode == "greyscale")) s_paletteMode = "greyscale";
+
                 ImGui::Unindent();
+                ImGui::Spacing(); ImGui::Spacing();
             }
             if (ImGui::CollapsingHeader("Tileset (De)compilation"))
             {
                 ImGui::Spacing(); ImGui::Spacing();
                 ImGui::Indent();
 
+                if (ImGui::RadioButton("Emerald", s_baseGame == "pokeemerald")) s_baseGame = "pokeemerald"; ImGui::SameLine();
+                if (ImGui::RadioButton("Fire Red", s_baseGame == "pokefirered")) s_baseGame = "pokefirered"; ImGui::SameLine();
+                if (ImGui::RadioButton("Ruby", s_baseGame == "pokeruby")) s_baseGame = "pokeruby";
+
+                if (ImGui::RadioButton("Dual", s_useDualLayer)) s_useDualLayer = true; ImGui::SameLine();
+                if (ImGui::RadioButton("Triple", !s_useDualLayer)) s_useDualLayer = false;
+
+                ImGui::SetNextItemWidth(300);
+                ImGui::ColorEdit3("Transparency Color", s_transparency);
+
+                ImGui::SetNextItemWidth(150);
+                ImGui::InputText("Default Behavior", s_defaultBehavior.data(), s_defaultBehaviorBufferSize);
+
                 ImGui::Unindent();
+                ImGui::Spacing(); ImGui::Spacing();
             }
             if (ImGui::CollapsingHeader("Color assignment Config"))
             {
@@ -161,6 +192,7 @@ namespace PorytilesGui
                 ImGui::Indent();
 
                 ImGui::Unindent();
+                ImGui::Spacing(); ImGui::Spacing();
             }
             if (ImGui::CollapsingHeader("Fieldmap Override"))
             {
@@ -168,6 +200,7 @@ namespace PorytilesGui
                 ImGui::Indent();
 
                 ImGui::Unindent();
+                ImGui::Spacing(); ImGui::Spacing();
             }
             if (ImGui::CollapsingHeader("Warnings"))
             {
@@ -175,6 +208,7 @@ namespace PorytilesGui
                 ImGui::Indent();
 
                 ImGui::Unindent();
+                ImGui::Spacing(); ImGui::Spacing();
             }
         }
 
