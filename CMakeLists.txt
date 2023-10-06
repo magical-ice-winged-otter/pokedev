@@ -22,6 +22,8 @@ set(SOURCE_FILES
         "src/file_dialog.cpp"
         "src/serializer.cpp"
         "src/sdl_imgui_wrapper.cpp"
+        "src/porytiles_command_generator.cpp"
+        "src/imgui_utils.cpp"
 )
 
 set(INCLUDE_FILES
@@ -29,8 +31,10 @@ set(INCLUDE_FILES
         "include/serializer.hpp"
         "include/sdl_imgui_wrapper.hpp"
         "include/porytiles_gui.hpp"
+        "include/porytiles_context.hpp"
+        "include/porytiles_command_generator.hpp"
+        "include/imgui_utils.hpp"
 )
-
 
 add_executable(porytiles_gui ${SOURCE_FILES} ${INCLUDE_FILES})
 
