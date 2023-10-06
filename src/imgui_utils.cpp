@@ -2,6 +2,7 @@
 #include <imgui_stdlib.h>
 #include <filesystem>
 #include <fmt/format.h>
+#include <SDL.h>
 #include <string>
 #include "file_dialog.hpp"
 #include "imgui_utils.hpp"
@@ -16,6 +17,11 @@ namespace ImGuiUtils
 
         if (ImGui::Button(fmt::format("Edit##{}", label).c_str()))
             FileDialog::tryPickFolder(path);
+
+        ImGui::SameLine();
+
+        if (ImGui::Button(fmt::format("Open##{}", label).c_str()))
+            system(fmt::format("explorer.exe {}", path.string()).c_str()); // todo: this only works on windows
 
         ImGui::SameLine();
         string pathString {path.string()};
@@ -33,6 +39,11 @@ namespace ImGuiUtils
 
         if (ImGui::Button(fmt::format("Edit##{}", label).c_str()))
             FileDialog::tryPickFile(path, filter);
+
+        ImGui::SameLine();
+
+        if (ImGui::Button(fmt::format("Open##{}", label).c_str()))
+            system(fmt::format("explorer.exe {}", path.string()).c_str());
 
         ImGui::SameLine();
         string pathString {path.string()};

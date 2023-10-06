@@ -35,6 +35,7 @@ namespace PorytilesGui
         s_renderer = renderer;
         PorytilesCommandGenerator::init();
 
+        // todo: this serialization code is kinda boilderplaty, not huge fan.
         Serializer::registerValue("assignExploreCutoff", s_ctx.assignExploreCutoff); // Options
         Serializer::registerValue("assignAlgorithm", s_ctx.assignAlgorithm);
         Serializer::registerValue("bestBranches", s_ctx.bestBranches);
