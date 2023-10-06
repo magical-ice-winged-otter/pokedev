@@ -5,7 +5,8 @@
 #include <string>
 #include <nlohmann/json.hpp>
 #include <vector>
-//#include <functional>
+
+// todo: allow saving + loading from specific files, not just at startup
 
 namespace Serializer
 {
