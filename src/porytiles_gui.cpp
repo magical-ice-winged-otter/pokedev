@@ -113,8 +113,14 @@ namespace PorytilesCommandGenerator
 
     string generateDecompilePrimaryCommand(PorytilesContext& context)
     {
-        return "hello primary decompile";
+        string options {getOptions(context, context.primaryDecompileOutputPath)};
+        string porytiles {getPathString(context.porytilesExecutableFile)};
+        string behaviorsHeader {getPathString(context.behaviorsHeaderPath)};
+
+        string compiledPrimaryPath {getPathString(context.compiledPrimaryPath)};
+        return fmt::format("{} decompile-primary {} {} {}", porytiles, options, compiledPrimaryPath, behaviorsHeader);
     }
+
     string generateDecompileSecondaryCommand(PorytilesContext& context)
     {
         return "hello secondary decompile";
@@ -333,8 +339,7 @@ namespace PorytilesGui
                 }
 
                 ImGuiFolderPicker("Output Path", s_ctx.primaryDecompileOutputPath);
-                ImGuiFolderPicker("Source Secondary Path", s_ctx.sourceSecondaryPath);
-                ImGuiFolderPicker("Source Partner Primary Path", s_ctx.sourceSecondaryPath);
+                ImGuiFolderPicker("Compiled Primary Path", s_ctx.compiledPrimaryPath);
                 ImGui::End();
             }
             if (s_showSecondaryDecompilerTool && ImGui::Begin("Secondary Decompiler", &s_showSecondaryDecompilerTool))
