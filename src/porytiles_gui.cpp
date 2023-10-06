@@ -5,12 +5,15 @@
 
 using namespace std;
 
+// todo: tooltips for everything would be nice...
+// todo: a way to reset config / save config / load config would be nice...
+// todo: move all the state out of static global scope and into structure? would be easier to pass around
+
 namespace PorytilesGui
 {
     // General Settings
     static filesystem::path s_projectPath {};
     static filesystem::path s_behaviorsHeaderPath {};
-    static filesystem::path s_outputPath {};
 
     static float s_transparency[3] {1, 0, 1};
     static string s_defaultBehavior {"MB_NORMAL"};
@@ -31,6 +34,10 @@ namespace PorytilesGui
     static bool s_showSecondaryDecompilerTool {};
     static bool s_showSecondaryCompilerTool {};
 
+    static filesystem::path s_primaryCompileOutputPath {};
+    static filesystem::path s_primaryDecompileOutputPath {};
+    static filesystem::path s_secondaryCompileOutputPath {};
+    static filesystem::path s_secondaryDecompileOutputPath {};
     static filesystem::path s_sourcePrimaryPath {};
     static filesystem::path s_sourceSecondaryPath {};
     static filesystem::path s_sourcePartnerPrimaryPath {};
@@ -66,13 +73,17 @@ namespace PorytilesGui
         Serializer::registerValue("baseGame", s_baseGame);
 
         Serializer::registerValue("projectPath", s_projectPath);
-        Serializer::registerValue("outputPath", s_outputPath);
         Serializer::registerValue("behaviorsHeaderPath", s_behaviorsHeaderPath);
 
         Serializer::registerValue("showPrimaryCompiler", s_showPrimaryCompilerTool);
         Serializer::registerValue("showPrimaryDecompiler", s_showPrimaryDecompilerTool);
         Serializer::registerValue("showSecondaryCompiler", s_showSecondaryCompilerTool);
         Serializer::registerValue("showSecondaryDecompiler", s_showSecondaryDecompilerTool);
+
+        Serializer::registerValue("primaryCompileOutputPath", s_primaryCompileOutputPath);
+        Serializer::registerValue("primaryDecompileOutputPath", s_primaryDecompileOutputPath);
+        Serializer::registerValue("secondaryCompileOutputPath", s_secondaryCompileOutputPath);
+        Serializer::registerValue("secondaryDecompileOutputPath", s_secondaryDecompileOutputPath);
     }
 
     void shutdown()
@@ -80,7 +91,7 @@ namespace PorytilesGui
         // No shutdown logic needed for now.
     }
 
-
+    // todo: move this into custom ImGui utils file?
     static void ImGuiFolderPicker(const char* label, filesystem::path& path)
     {
         if (ImGui::Button("Edit"))
@@ -97,6 +108,7 @@ namespace PorytilesGui
         ImGui::Spacing(); ImGui::Spacing();
     }
 
+    // todo: move this into custom ImGui utils file?
     static void ImGuiFilePicker(const char* label, filesystem::path& path, const char* filter = nullptr)
     {
         if (ImGui::Button("Edit"))
@@ -142,18 +154,36 @@ namespace PorytilesGui
             ImGui::ShowDemoWindow();
             if (s_showPrimaryCompilerTool && ImGui::Begin("Primary Compiler", &s_showPrimaryCompilerTool))
             {
+                if (ImGui::Button("Copy Command to Clipboard"))
+                {
+                    // todo: generate the compile command, copy to clipboard.
+                }
+
+                ImGuiFolderPicker("Output Path", s_primaryCompileOutputPath);
                 ImGuiFolderPicker("Source Primary Path", s_sourcePrimaryPath);
                 ImGui::SetItemTooltip("Path to a directory containing the source data for a primary set.");
                 ImGui::End();
             }
             if (s_showPrimaryDecompilerTool && ImGui::Begin("Primary Decompiler", &s_showPrimaryDecompilerTool))
             {
+                if (ImGui::Button("Copy Command to Clipboard"))
+                {
+                    // todo: generate the compile command, copy to clipboard.
+                }
+
+                ImGuiFolderPicker("Output Path", s_primaryDecompileOutputPath);
                 ImGuiFolderPicker("Source Secondary Path", s_sourceSecondaryPath);
                 ImGuiFolderPicker("Source Partner Primary Path", s_sourceSecondaryPath);
                 ImGui::End();
             }
             if (s_showSecondaryCompilerTool && ImGui::Begin("Secondary Compiler", &s_showSecondaryCompilerTool))
             {
+                if (ImGui::Button("Copy Command to Clipboard"))
+                {
+                    // todo: generate the compile command, copy to clipboard.
+                }
+
+                ImGuiFolderPicker("Output Path", s_secondaryCompileOutputPath);
                 ImGuiFolderPicker("Compiled Primary Path", s_compiledPrimaryPath);
 
                 ImGui::SeparatorText("Paired Primary Color Assignment Config");
@@ -170,10 +200,29 @@ namespace PorytilesGui
             }
             if (s_showSecondaryDecompilerTool && ImGui::Begin("Secondary Decompiler", &s_showSecondaryDecompilerTool))
             {
+                if (ImGui::Button("Copy Command to Clipboard"))
+                {
+                    // todo: generate the compile command, copy to clipboard.
+                }
+
+                ImGuiFolderPicker("Output Path", s_secondaryDecompileOutputPath);
                 ImGuiFolderPicker("Compiled Secondary Path", s_compiledSecondaryPath);
                 ImGuiFolderPicker("Compiled Partner Primary Path", s_compiledPartnerPrimaryPath);
                 ImGui::End();
             }
+        }
+
+        // Tools
+        {
+            ImGui::SeparatorText("Tools");
+
+            ImGui::Text("Primary"); ImGui::SameLine();
+            s_showPrimaryCompilerTool |= ImGui::Button("Compiler##Primary"); ImGui::SameLine();
+            s_showPrimaryDecompilerTool |= ImGui::Button("Decompiler##Primary");
+
+            ImGui::Text("Secondary"); ImGui::SameLine();
+            s_showSecondaryCompilerTool |= ImGui::Button("Compiler##Secondary"); ImGui::SameLine();
+            s_showSecondaryDecompilerTool |= ImGui::Button("Decompiler##Secondary");
         }
 
         // Settings
@@ -186,7 +235,6 @@ namespace PorytilesGui
                 ImGui::Indent();
 
                 ImGuiFolderPicker("Project Path", s_projectPath);
-                ImGuiFolderPicker("Output Path", s_outputPath);
                 ImGuiFilePicker("Behaviors Header File", s_behaviorsHeaderPath, "h,hpp");
 
                 ImGui::Text("Palette Mode");
@@ -240,6 +288,19 @@ namespace PorytilesGui
                 ImGui::Spacing(); ImGui::Spacing();
                 ImGui::Indent();
 
+                static int s_tilesPrimaryOverride {512};
+                static int s_tilesTotalOverride {1024};
+                static int s_metatilesPrimaryOverride {512};
+                static int s_metatilesTotalOverride {1024};
+                static int s_palsPrimaryOverride {6};
+                static int s_palsTotalOverride {13};
+
+                ImGui::TextColored(s_errorTextColor, "Work-in-progress");
+
+                // todo: this should largely be parsed directly from the game files, but maybe you want manual for testing
+                // todo: needs a path for fieldmap, button to reload settings, regex to search file for properties
+                // todo: needs an alternate option to adjust settings by hand
+
                 ImGui::Unindent();
                 ImGui::Spacing(); ImGui::Spacing();
             }
@@ -248,22 +309,13 @@ namespace PorytilesGui
                 ImGui::Spacing(); ImGui::Spacing();
                 ImGui::Indent();
 
+                ImGui::TextColored(s_errorTextColor, "Work-in-progress");
+                // todo: full warning support. https://github.com/grunt-lucas/porytiles/wiki/Warnings-and-Errors
+                // todo: probably implement this as a multi-selection toggle list, with a treat-as-error flag for each option
+
                 ImGui::Unindent();
                 ImGui::Spacing(); ImGui::Spacing();
             }
-        }
-
-        // Tools
-        {
-            ImGui::SeparatorText("Tools");
-
-            ImGui::Text("Primary"); ImGui::SameLine();
-            s_showPrimaryCompilerTool |= ImGui::Button("Compiler"); ImGui::SameLine();
-            s_showPrimaryDecompilerTool |= ImGui::Button("Decompiler");
-
-            ImGui::Text("Secondary"); ImGui::SameLine();
-            s_showSecondaryCompilerTool |= ImGui::Button("Compiler"); ImGui::SameLine();
-            s_showSecondaryDecompilerTool |= ImGui::Button("Decompiler");
         }
 
         ImGui::End();
