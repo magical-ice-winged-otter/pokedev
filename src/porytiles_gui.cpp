@@ -51,19 +51,28 @@ namespace PorytilesGui
         s_bestBranches.resize(s_bestBranchesBufferSize);
         s_primaryBestBranches.resize(s_primaryBestBranchesBufferSize);
 
+        Serializer::registerValue("assignExploreCutoff", s_assignExploreCutoff);
+        Serializer::registerValue("assignAlgorithm", s_assignAlgorithm);
+        Serializer::registerValue("bestBranches", s_bestBranches);
+        Serializer::registerValue("primaryAssignExploreCutoff", s_primaryAssignExploreCutoff);
+        Serializer::registerValue("primaryAssignAlgorithm", s_primaryAssignAlgorithm);
+        Serializer::registerValue("primaryBestBranches", s_primaryBestBranches);
+
         Serializer::registerValue("transparencyColor_R", s_transparency[0]);
         Serializer::registerValue("transparencyColor_G", s_transparency[1]);
         Serializer::registerValue("transparencyColor_B", s_transparency[2]);
         Serializer::registerValue("defaultBehavior", s_defaultBehavior);
         Serializer::registerValue("useDualLayer", s_useDualLayer);
         Serializer::registerValue("baseGame", s_baseGame);
+
         Serializer::registerValue("projectPath", s_projectPath);
+        Serializer::registerValue("outputPath", s_outputPath);
         Serializer::registerValue("behaviorsHeaderPath", s_behaviorsHeaderPath);
+
         Serializer::registerValue("showPrimaryCompiler", s_showPrimaryCompilerTool);
         Serializer::registerValue("showPrimaryDecompiler", s_showPrimaryDecompilerTool);
         Serializer::registerValue("showSecondaryCompiler", s_showSecondaryCompilerTool);
         Serializer::registerValue("showSecondaryDecompiler", s_showSecondaryDecompilerTool);
-        Serializer::registerValue("outputPath", s_outputPath);
     }
 
     void shutdown()
