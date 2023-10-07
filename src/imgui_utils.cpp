@@ -25,7 +25,6 @@ namespace ImGuiUtils
 
         ImGui::SameLine();
         string pathString {path.string()};
-        ImGui::SetNextItemWidth(500);
 
         if (ImGui::InputTextWithHint(fmt::format("##{}", label).c_str(), "No folder selected", &pathString))
             path = filesystem::path {pathString};
@@ -47,7 +46,6 @@ namespace ImGuiUtils
 
         ImGui::SameLine();
         string pathString {path.string()};
-        ImGui::SetNextItemWidth(500);
 
         if (ImGui::InputTextWithHint(fmt::format("##{}", label).c_str(), "No file selected", &pathString))
             path = filesystem::path {pathString};

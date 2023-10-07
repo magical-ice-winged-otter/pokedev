@@ -84,6 +84,10 @@ namespace PorytilesCommandGenerator
         string porytiles {getPathString(context.porytilesExecutableFile)};
         string behaviorsHeader {getPathString(context.behaviorsHeaderPath)};
 
+        options += fmt::format(" -primary-assign-explore-cutoff={} ", context.primaryAssignExploreCutoff);
+        options += fmt::format(" -primary-assign-algorithm={} ", context.primaryAssignAlgorithm);
+        options += fmt::format(" -primary-best-branches={} ", context.primaryBestBranches);
+
         string srcSecondaryPath {getPathString(context.sourceSecondaryPath)};
         string srcPartnerPrimaryPath {getPathString(context.sourcePartnerPrimaryPath)};
         return fmt::format("{} compile-secondary {} {} {} {}", porytiles, options, srcSecondaryPath, srcPartnerPrimaryPath, behaviorsHeader);
