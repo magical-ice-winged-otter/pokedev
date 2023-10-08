@@ -11,13 +11,15 @@ using namespace std;
 
 namespace PorytilesCommandGenerator
 {
-    static bool s_shouldUseWslRelativePaths {};
-    static filesystem::path s_wslRootPath {};
+    static bool s_shouldUseRelativePaths {};
+    static bool s_shouldWslFakeAbsolute {};
+    static filesystem::path s_relativeBasePath {};
 
     void init()
     {
-        Serializer::registerValue("shouldUseWslRelativePaths", s_shouldUseWslRelativePaths);
-        Serializer::registerValue("wslRootPath", s_wslRootPath);
+        Serializer::registerValue("shouldUseRelativePaths", s_shouldUseRelativePaths);
+        Serializer::registerValue("relativeBasePath", s_relativeBasePath);
+        Serializer::registerValue("shouldWslFakeAbsolute", s_shouldWslFakeAbsolute);
     }
 
     void shutdown()
@@ -28,17 +30,24 @@ namespace PorytilesCommandGenerator
     void renderImGui()
     {
         ImGui::SeparatorText("Command Generator");
-        ImGui::Checkbox("Should Use WSL Relative Paths", &s_shouldUseWslRelativePaths);
+        ImGui::Checkbox("Should Use Relative Paths", &s_shouldUseRelativePaths);
 
-        if (s_shouldUseWslRelativePaths)
-            ImGuiUtils::FolderPicker("WSL Root Path", s_wslRootPath);
+        if (s_shouldUseRelativePaths)
+        {
+            ImGuiUtils::FolderPicker("Base Path", s_relativeBasePath);
+            ImGui::Checkbox("Should WSL Fake Absolute Path", &s_shouldWslFakeAbsolute);
+        }
     }
 
     static string getPathString(const filesystem::path& path)
     {
-        if (s_shouldUseWslRelativePaths)
+        if (s_shouldUseRelativePaths)
         {
-            filesystem::path relativePath {filesystem::path{"/"} / filesystem::relative(path, s_wslRootPath)};
+            filesystem::path relativePath {filesystem::relative(path, s_relativeBasePath)};
+
+            if (s_shouldWslFakeAbsolute)
+                relativePath = filesystem::path{"/"} / relativePath;
+
             string relativeString = relativePath.string();
             replace(relativeString.begin(), relativeString.end(), '\\', '/');
             return relativeString;
