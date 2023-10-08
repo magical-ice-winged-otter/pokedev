@@ -24,6 +24,8 @@ namespace PorytilesGui
     static bool s_showPrimaryDecompilerTool {};
     static bool s_showSecondaryDecompilerTool {};
     static bool s_showSecondaryCompilerTool {};
+    static filesystem::path s_defaultSourcePath {};
+    static filesystem::path s_defaultOutputPath {};
 
     // GUI Settings
     static ImVec4 s_errorTextColor {1.0, 0.3, 0.3, 1};
@@ -66,6 +68,8 @@ namespace PorytilesGui
         Serializer::registerValue("showPrimaryDecompiler", s_showPrimaryDecompilerTool);
         Serializer::registerValue("showSecondaryCompiler", s_showSecondaryCompilerTool);
         Serializer::registerValue("showSecondaryDecompiler", s_showSecondaryDecompilerTool);
+        Serializer::registerValue("defaultOutputPath", s_defaultOutputPath);
+        Serializer::registerValue("defaultSourcePath", s_defaultSourcePath);
     }
 
     void shutdown()
@@ -120,8 +124,8 @@ namespace PorytilesGui
                     SDL_SetClipboardText(result.c_str());
                 }
 
-                ImGuiUtils::FolderPicker("Output Path", s_ctx.primaryCompileOutputPath);
-                ImGuiUtils::FolderPicker("Source Primary Path", s_ctx.sourcePrimaryPath);
+                ImGuiUtils::FolderPicker("Output Path", s_ctx.primaryCompileOutputPath, &s_defaultOutputPath);
+                ImGuiUtils::FolderPicker("Source Primary Path", s_ctx.sourcePrimaryPath, &s_defaultSourcePath);
                 ImGui::SetItemTooltip("Path to a directory containing the source data for a primary set.");
 
                 filesystem::path tilesImagePath {s_ctx.primaryCompileOutputPath / "tiles.png"};
@@ -155,9 +159,9 @@ namespace PorytilesGui
                     SDL_SetClipboardText(result.c_str());
                 }
 
-                ImGuiUtils::FolderPicker("Output Path", s_ctx.secondaryCompileOutputPath);
-                ImGuiUtils::FolderPicker("Source Secondary Path", s_ctx.sourceSecondaryPath);
-                ImGuiUtils::FolderPicker("Source Partner Primary Path", s_ctx.sourcePartnerPrimaryPath);
+                ImGuiUtils::FolderPicker("Output Path", s_ctx.secondaryCompileOutputPath, &s_defaultOutputPath);
+                ImGuiUtils::FolderPicker("Source Secondary Path", s_ctx.sourceSecondaryPath, &s_defaultSourcePath);
+                ImGuiUtils::FolderPicker("Source Partner Primary Path", s_ctx.sourcePartnerPrimaryPath, &s_defaultSourcePath);
 
                 ImGui::SeparatorText("Paired Primary Color Assignment Config");
                 ImGui::SetNextItemWidth(100);
@@ -179,8 +183,8 @@ namespace PorytilesGui
                     SDL_SetClipboardText(result.c_str());
                 }
 
-                ImGuiUtils::FolderPicker("Output Path", s_ctx.primaryDecompileOutputPath);
-                ImGuiUtils::FolderPicker("Compiled Primary Path", s_ctx.compiledPrimaryPath);
+                ImGuiUtils::FolderPicker("Output Path", s_ctx.primaryDecompileOutputPath, &s_defaultOutputPath);
+                ImGuiUtils::FolderPicker("Compiled Primary Path", s_ctx.compiledPrimaryPath, &s_defaultOutputPath);
                 ImGui::End();
             }
             if (s_showSecondaryDecompilerTool && ImGui::Begin("Secondary Decompiler", &s_showSecondaryDecompilerTool))
@@ -193,9 +197,9 @@ namespace PorytilesGui
                     SDL_SetClipboardText(result.c_str());
                 }
 
-                ImGuiUtils::FolderPicker("Output Path", s_ctx.secondaryDecompileOutputPath);
-                ImGuiUtils::FolderPicker("Compiled Secondary Path", s_ctx.compiledSecondaryPath);
-                ImGuiUtils::FolderPicker("Compiled Partner Primary Path", s_ctx.compiledPartnerPrimaryPath);
+                ImGuiUtils::FolderPicker("Output Path", s_ctx.secondaryDecompileOutputPath, &s_defaultSourcePath);
+                ImGuiUtils::FolderPicker("Compiled Secondary Path", s_ctx.compiledSecondaryPath, &s_defaultOutputPath);
+                ImGuiUtils::FolderPicker("Compiled Partner Primary Path", s_ctx.compiledPartnerPrimaryPath, &s_defaultOutputPath);
                 ImGui::End();
             }
         }
@@ -224,7 +228,9 @@ namespace PorytilesGui
 
                 ImGuiUtils::FolderPicker("Project Path", s_ctx.projectPath);
                 ImGuiUtils::FilePicker("Porytiles Executable File", s_ctx.porytilesExecutableFile);
-                ImGuiUtils::FilePicker("Behaviors Header File", s_ctx.behaviorsHeaderPath, "h,hpp");
+                ImGuiUtils::FilePicker("Behaviors Header File", s_ctx.behaviorsHeaderPath, nullptr, "h,hpp");
+                ImGuiUtils::FolderPicker("Default Output Path", s_defaultOutputPath);
+                ImGuiUtils::FolderPicker("Default Source Path", s_defaultSourcePath);
 
                 ImGui::Text("Palette Mode");
                 if (ImGui::RadioButton("True Color", s_ctx.paletteMode == "true-color")) s_ctx.paletteMode = "true-color"; ImGui::SameLine();

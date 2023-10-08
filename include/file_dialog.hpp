@@ -5,8 +5,8 @@
 
 namespace FileDialog
 {
-    bool tryPickFile(std::filesystem::path& outFilePath, const char* filter = nullptr);
-    bool tryPickFolder(std::filesystem::path& outFolderPath);
+    bool tryPickFile(std::filesystem::path& outFilePath, const char* defaultPath = nullptr, const char* filter = nullptr);
+    bool tryPickFolder(std::filesystem::path& outFolderPath, const char* defaultPath = nullptr);
 }
 
 #endif // PORYTILES_GUI_FILE_DIALOG_HPP

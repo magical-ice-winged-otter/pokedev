@@ -11,17 +11,17 @@ using namespace std;
 
 namespace ImGuiUtils
 {
-    void FolderPicker(const char* label, filesystem::path& path)
+    void FolderPicker(const char* label, filesystem::path& path, std::filesystem::path* defaultPath)
     {
         ImGui::Text("%s", label);
 
-        if (ImGui::Button(fmt::format("Edit##{}", label).c_str()))
-            FileDialog::tryPickFolder(path);
+        if (ImGui::Button(fmt::format("View##{}", label).c_str()))
+            system(fmt::format("explorer.exe {}", path.string()).c_str()); // todo: this only works on windows
 
         ImGui::SameLine();
 
-        if (ImGui::Button(fmt::format("Open##{}", label).c_str()))
-            system(fmt::format("explorer.exe {}", path.string()).c_str()); // todo: this only works on windows
+        if (ImGui::Button(fmt::format("Edit##{}", label).c_str()))
+            FileDialog::tryPickFolder(path, defaultPath != nullptr ? defaultPath->string().c_str() : nullptr);
 
         ImGui::SameLine();
         string pathString {path.string()};
@@ -32,17 +32,17 @@ namespace ImGuiUtils
         ImGui::Spacing(); ImGui::Spacing();
     }
 
-    void FilePicker(const char* label, filesystem::path& path, const char* filter)
+    void FilePicker(const char* label, filesystem::path& path, std::filesystem::path* defaultPath, const char* filter)
     {
         ImGui::Text("%s", label);
 
-        if (ImGui::Button(fmt::format("Edit##{}", label).c_str()))
-            FileDialog::tryPickFile(path, filter);
+        if (ImGui::Button(fmt::format("View##{}", label).c_str()))
+            system(fmt::format("explorer.exe {}", path.string()).c_str());
 
         ImGui::SameLine();
 
-        if (ImGui::Button(fmt::format("Open##{}", label).c_str()))
-            system(fmt::format("explorer.exe {}", path.string()).c_str());
+        if (ImGui::Button(fmt::format("Edit##{}", label).c_str()))
+            FileDialog::tryPickFile(path, filter, defaultPath != nullptr ? defaultPath->string().c_str() : nullptr);
 
         ImGui::SameLine();
         string pathString {path.string()};

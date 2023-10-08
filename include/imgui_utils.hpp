@@ -5,8 +5,8 @@
 
 namespace ImGuiUtils
 {
-    void FolderPicker(const char* label, std::filesystem::path& path);
-    void FilePicker(const char* label, std::filesystem::path& path, const char* filter = nullptr);
+    void FolderPicker(const char* label, std::filesystem::path& path, std::filesystem::path* defaultPath = nullptr);
+    void FilePicker(const char* label, std::filesystem::path& path, std::filesystem::path* = nullptr, const char* filter = nullptr);
 
 } // namespace ImGuiUtils
 

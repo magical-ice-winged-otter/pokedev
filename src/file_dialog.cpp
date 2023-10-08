@@ -5,10 +5,10 @@ using namespace std;
 
 namespace FileDialog
 {
-    bool tryPickFile(filesystem::path& outFilePath, const char* filter)
+    bool tryPickFile(filesystem::path& outFilePath, const char* defaultPath, const char* filter)
     {
         nfdchar_t *outPath = nullptr;
-        nfdresult_t result = NFD_OpenDialog(filter, nullptr, &outPath);
+        nfdresult_t result = NFD_OpenDialog(filter, defaultPath, &outPath);
 
         if (result == NFD_OKAY)
         {
@@ -20,10 +20,10 @@ namespace FileDialog
         return false;
     }
 
-    bool tryPickFolder(filesystem::path& outFolderPath)
+    bool tryPickFolder(filesystem::path& outFolderPath, const char* defaultPath)
     {
         nfdchar_t *outPath = nullptr;
-        nfdresult_t result = NFD_PickFolder(nullptr, &outPath);
+        nfdresult_t result = NFD_PickFolder(defaultPath, &outPath);
 
         if (result == NFD_OKAY)
         {
