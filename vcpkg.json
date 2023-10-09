@@ -3,7 +3,6 @@
     "version-string": "0.1",
     "dependencies": [
         "nativefiledialog",
-        "fmt",
         "sdl2-image",
         "nlohmann-json",
         {

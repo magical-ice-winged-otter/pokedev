@@ -1,6 +1,5 @@
 #include <string>
 #include <filesystem>
-#include <fmt/format.h>
 #include <imgui.h>
 #include "porytiles_context.hpp"
 #include "porytiles_command_generator.hpp"
@@ -58,18 +57,18 @@ namespace PorytilesCommandGenerator
     static string getOptions(PorytilesContext& context, const filesystem::path& outputPath)
     {
         string result {};
-        result += fmt::format(" -output={} ", getPathString(outputPath));
-        result += fmt::format(" -tiles-output-pal={} ", context.paletteMode);
-        result += fmt::format(" -target-base-game={} ", context.baseGame);
+        result += format(" -output={} ", getPathString(outputPath));
+        result += format(" -tiles-output-pal={} ", context.paletteMode);
+        result += format(" -target-base-game={} ", context.baseGame);
 
         if (context.useDualLayer)
             result+= " -dual-layer ";
 
-        result += fmt::format(" -transparency-color={},{},{} ", context.transparency[0] * 255, context.transparency[1] * 255, context.transparency[2] * 255);
-        result += fmt::format(" -default-behavior={} ", context.defaultBehavior);
-        result += fmt::format(" -assign-explore-cutoff={} ", context.assignExploreCutoff);
-        result += fmt::format(" -assign-algorithm={} ", context.assignAlgorithm);
-        result += fmt::format(" -best-branches={} ", context.bestBranches);
+        result += format(" -transparency-color={},{},{} ", context.transparency[0] * 255, context.transparency[1] * 255, context.transparency[2] * 255);
+        result += format(" -default-behavior={} ", context.defaultBehavior);
+        result += format(" -assign-explore-cutoff={} ", context.assignExploreCutoff);
+        result += format(" -assign-algorithm={} ", context.assignAlgorithm);
+        result += format(" -best-branches={} ", context.bestBranches);
 
         // todo: fieldmap options
         // todo: warning options
@@ -84,7 +83,7 @@ namespace PorytilesCommandGenerator
         string behaviorsHeader {getPathString(context.behaviorsHeaderPath)};
 
         string srcPrimaryPath {getPathString(context.sourcePrimaryPath)};
-        return fmt::format("{} compile-primary {} {} {}", porytiles, options, srcPrimaryPath, behaviorsHeader);
+        return format("{} compile-primary {} {} {}", porytiles, options, srcPrimaryPath, behaviorsHeader);
     }
 
     string generateCompileSecondaryCommand(PorytilesContext& context)
@@ -93,13 +92,13 @@ namespace PorytilesCommandGenerator
         string porytiles {getPathString(context.porytilesExecutableFile)};
         string behaviorsHeader {getPathString(context.behaviorsHeaderPath)};
 
-        options += fmt::format(" -primary-assign-explore-cutoff={} ", context.primaryAssignExploreCutoff);
-        options += fmt::format(" -primary-assign-algorithm={} ", context.primaryAssignAlgorithm);
-        options += fmt::format(" -primary-best-branches={} ", context.primaryBestBranches);
+        options += format(" -primary-assign-explore-cutoff={} ", context.primaryAssignExploreCutoff);
+        options += format(" -primary-assign-algorithm={} ", context.primaryAssignAlgorithm);
+        options += format(" -primary-best-branches={} ", context.primaryBestBranches);
 
         string srcSecondaryPath {getPathString(context.sourceSecondaryPath)};
         string srcPartnerPrimaryPath {getPathString(context.sourcePartnerPrimaryPath)};
-        return fmt::format("{} compile-secondary {} {} {} {}", porytiles, options, srcSecondaryPath, srcPartnerPrimaryPath, behaviorsHeader);
+        return format("{} compile-secondary {} {} {} {}", porytiles, options, srcSecondaryPath, srcPartnerPrimaryPath, behaviorsHeader);
     }
 
     string generateDecompilePrimaryCommand(PorytilesContext& context)
@@ -109,7 +108,7 @@ namespace PorytilesCommandGenerator
         string behaviorsHeader {getPathString(context.behaviorsHeaderPath)};
 
         string compiledPrimaryPath {getPathString(context.compiledPrimaryPath)};
-        return fmt::format("{} decompile-primary {} {} {}", porytiles, options, compiledPrimaryPath, behaviorsHeader);
+        return format("{} decompile-primary {} {} {}", porytiles, options, compiledPrimaryPath, behaviorsHeader);
     }
 
     string generateDecompileSecondaryCommand(PorytilesContext& context)
@@ -120,7 +119,7 @@ namespace PorytilesCommandGenerator
 
         string compiledSecondaryPath {getPathString(context.compiledSecondaryPath)};
         string compiledPartnerPrimaryPath {getPathString(context.compiledPartnerPrimaryPath)};
-        return fmt::format("{} decompile-secondary {} {} {} {}", porytiles, options, compiledSecondaryPath, compiledPartnerPrimaryPath, behaviorsHeader);
+        return format("{} decompile-secondary {} {} {} {}", porytiles, options, compiledSecondaryPath, compiledPartnerPrimaryPath, behaviorsHeader);
     }
 
 } // namespace PorytilesCommandGenerator

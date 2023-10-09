@@ -1,9 +1,9 @@
 cmake_minimum_required(VERSION 3.15)
 set(CMAKE_TOOLCHAIN_FILE $ENV{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake)
 
-project(PorytilesGui
+project(pokedev
         VERSION 1.0
-        DESCRIPTION "A cross-platform GUI wrapper for porytiles."
+        DESCRIPTION "A set of tools for working with pokemon decomps."
         LANGUAGES CXX
 )
 
@@ -13,7 +13,6 @@ find_package(SDL2 CONFIG REQUIRED COMPONENTS SDL2 SDL2main)
 find_package(imgui CONFIG REQUIRED)
 find_package(unofficial-nativefiledialog CONFIG REQUIRED)
 find_package(nlohmann_json CONFIG REQUIRED)
-find_package(fmt CONFIG REQUIRED)
 find_package(SDL2_image CONFIG REQUIRED)
 
 set(SOURCE_FILES
@@ -50,6 +49,5 @@ target_link_libraries(porytiles_gui
         imgui::imgui
         unofficial::nativefiledialog::nfd
         nlohmann_json::nlohmann_json
-        fmt::fmt
         SDL2_image::SDL2_image
 )
