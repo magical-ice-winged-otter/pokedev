@@ -1,28 +1,16 @@
-#include <cstdio>
 #include <SDL.h>
-#include <cereal/archives/json.hpp>
-#include <fstream>
 #include "porytiles_gui.hpp"
 #include "platform.hpp"
 #include "serializer.hpp"
 
+using namespace Serializer;
+
 int main(int, char*[])
 {
-    PorytilesGui porytilesGui {};
-
-    // Read everything from a file
-    const char* configName = "pokedev_porytiles_gui_config.json";
-
-    if (std::filesystem::exists(configName))
-    {
-        std::ifstream configFile {configName};
-        cereal::JSONInputArchive archive {configFile};
-        archive(
-                cereal::make_nvp("porytilesGui", porytilesGui)
-        );
-    }
-
     Platform::init();
+    PorytilesGui porytilesGui {};
+    ConfigFile config("pokedev_porytiles_gui_config.json");
+    config.readData(nvp("porytilesGui", porytilesGui));
     porytilesGui.init(Platform::getRenderer());
 
     while (!Platform::wantsToQuit())
@@ -33,14 +21,7 @@ int main(int, char*[])
     }
 
     porytilesGui.shutdown();
+    config.writeData(nvp("porytilesGui", porytilesGui));
     Platform::shutdown();
-
-    // Save everything to a file.
-    std::ofstream configFile {configName};
-    cereal::JSONOutputArchive archive {configFile};
-    archive(
-            cereal::make_nvp("porytilesGui", porytilesGui)
-    );
-
     return 0;
 }

@@ -21,6 +21,7 @@ set(SOURCE_FILES
         "src/imgui_utils.cpp"
         "src/platform/platform_windows.cpp"
         "src/platform.cpp"
+        "src/serializer.cpp"
 )
 
 set(INCLUDE_FILES
