@@ -25,10 +25,6 @@ public:
         archive(
                 CUSTOM_NAME("porytilesContext", m_ctx),
                 CUSTOM_NAME("commandGenerator", m_commandGenerator),
-                CUSTOM_NAME("showPrimaryCompilerTool", m_showPrimaryCompilerTool),
-                CUSTOM_NAME("showPrimaryDecompilerTool", m_showPrimaryDecompilerTool),
-                CUSTOM_NAME("showSecondaryCompilerTool", m_showSecondaryCompilerTool),
-                CUSTOM_NAME("showSecondaryDecompilerTool", m_showSecondaryDecompilerTool),
                 CUSTOM_NAME("defaultSourcePath", m_defaultSourcePath),
                 CUSTOM_NAME("defaultOutputPath", m_defaultOutputPath)
         );
@@ -37,13 +33,9 @@ public:
 private:
     PorytilesContext m_ctx{};
     PorytilesCommandGenerator m_commandGenerator {};
-    bool m_showPrimaryCompilerTool {};
-    bool m_showPrimaryDecompilerTool {};
-    bool m_showSecondaryDecompilerTool {};
-    bool m_showSecondaryCompilerTool {};
     std::filesystem::path m_defaultSourcePath {};
     std::filesystem::path m_defaultOutputPath {};
-    ImVec4 m_errorTextColor {1.0, 0.3, 0.3, 1};
+    ImVec4 m_errorTextColor {1.0, 0.3f, 0.3f, 1};
     SDL_Texture* m_previewTexture {};
     SDL_Renderer* m_renderer {};
 };
