@@ -334,7 +334,7 @@ namespace cereal
 
           The general workflow of saving to the JSON archive is:
 
-            1. (optional) Set the name for the next node to be created, usually done by an NVP
+            1. (optional) Set the name for the next node to be created, usually done by an nvp_custom
             2. Start the node
             3. (if there is data to save) Write the name of the node (this function)
             4. (if there is data to save) Save the data (with saveValue)
@@ -406,7 +406,7 @@ namespace cereal
       specific nodes to load.
 
       The default behavior of the input archive is to read sequentially starting
-      with the first node and exploring its children.  When a given NVP does
+      with the first node and exploring its children.  When a given nvp_custom does
       not match the read in name for a node, the archive will search for that
       node at the current level and load it if it exists.  After loading an out of
       order node, the archive will then proceed back to loading sequentially from
@@ -417,10 +417,10 @@ namespace cereal
       @code{cpp}
       // imagine the input file has someData(1-9) saved in order at the top level node
       ar( someData1, someData2, someData3 );        // XML loads in the order it sees in the file
-      ar( cereal::make_nvp( "hello", someData6 ) ); // NVP given does not
-                                                    // match expected NVP name, so we search
-                                                    // for the given NVP and load that value
-      ar( someData7, someData8, someData9 );        // with no NVP given, loading resumes at its
+      ar( cereal::make_nvp( "hello", someData6 ) ); // nvp_custom given does not
+                                                    // match expected nvp_custom name, so we search
+                                                    // for the given nvp_custom and load that value
+      ar( someData7, someData8, someData9 );        // with no nvp_custom given, loading resumes at its
                                                     // current location, proceeding sequentially
       @endcode
 
@@ -552,7 +552,7 @@ namespace cereal
               }
             }
 
-            throw Exception("JSON Parsing failed - provided NVP (" + std::string(searchName) + ") not found");
+            throw Exception("JSON Parsing failed - provided nvp_custom (" + std::string(searchName) + ") not found");
           }
 
         private:
@@ -564,11 +564,11 @@ namespace cereal
 
       //! Searches for the expectedName node if it doesn't match the actualName
       /*! This needs to be called before every load or node start occurs.  This function will
-          check to see if an NVP has been provided (with setNextName) and if so, see if that name matches the actual
+          check to see if an nvp_custom has been provided (with setNextName) and if so, see if that name matches the actual
           next name given.  If the names do not match, it will search in the current level of the JSON for that name.
           If the name is not found, an exception will be thrown.
 
-          Resets the NVP name after called.
+          Resets the nvp_custom name after called.
 
           @throws Exception if an expectedName is given and not found */
       inline void search()
@@ -577,7 +577,7 @@ namespace cereal
         auto localNextName = itsNextName;
         itsNextName = nullptr;
 
-        // The name an NVP provided with setNextName()
+        // The name an nvp_custom provided with setNextName()
         if( localNextName )
         {
           // The actual name of the current node
@@ -598,7 +598,7 @@ namespace cereal
           all children in the order they show up in the document.
           We don't need to know NVPs to do this; we'll just blindly load in the order things appear in.
 
-          If we were given an NVP, we will search for it if it does not match our the name of the next node
+          If we were given an nvp_custom, we will search for it if it does not match our the name of the next node
           that would normally be loaded.  This functionality is provided by search(). */
       void startNode()
       {
@@ -751,7 +751,7 @@ namespace cereal
       //! @}
 
     private:
-      const char * itsNextName;               //!< Next name set by NVP
+      const char * itsNextName;               //!< Next name set by nvp_custom
       ReadStream itsReadStream;               //!< Rapidjson write stream
       std::vector<Iterator> itsIteratorStack; //!< 'Stack' of rapidJSON iterators
       CEREAL_RAPIDJSON_NAMESPACE::Document itsDocument; //!< Rapidjson document
@@ -840,7 +840,7 @@ namespace cereal
 
   // ######################################################################
   //! Prologue for all other types for JSON archives (except minimal types)
-  /*! Starts a new node, named either automatically or by some NVP,
+  /*! Starts a new node, named either automatically or by some nvp_custom,
       that may be given data by the type about to be archived
 
       Minimal types do not start or finish nodes */
@@ -958,7 +958,7 @@ namespace cereal
   // ######################################################################
   // Common JSONArchive serialization functions
   // ######################################################################
-  //! Serializing NVP types to JSON
+  //! Serializing nvp_custom types to JSON
   template <class T> inline
   void CEREAL_SAVE_FUNCTION_NAME( JSONOutputArchive & ar, NameValuePair<T> const & t )
   {

@@ -1,5 +1,5 @@
-#ifndef POKETOOLS_SERIALIZER_HPP
-#define POKETOOLS_SERIALIZER_HPP
+#ifndef POKEDEV_SERIALIZER_HPP
+#define POKEDEV_SERIALIZER_HPP
 
 #include <filesystem>
 #include <string>
@@ -7,43 +7,36 @@
 #include <cereal/archives/json.hpp>
 #include <fstream>
 
-namespace Serializer
+#define AUTO_NAME(var) CEREAL_NVP(var)
+#define CUSTOM_NAME(name, var) cereal::make_nvp(name, var)
+
+class ConfigFile
 {
-    template<typename T>
-    cereal::NameValuePair<T&> nvp(const char* name, T&& value)
+public:
+    explicit ConfigFile(std::string_view filePath);
+
+    template <class ... Types> inline
+    void writeData(Types&& ... args)
     {
-        return cereal::make_nvp(name, value);
+        std::ofstream configFile {m_configPath};
+        cereal::JSONOutputArchive archive {configFile};
+        archive(args...);
     }
 
-    class ConfigFile
+    template <class ... Types> inline
+    void readData(Types&& ... args)
     {
-    public:
-        explicit ConfigFile(std::string_view filePath);
-
-        template <class ... Types> inline
-        void writeData(Types&& ... args)
+        if (std::filesystem::exists(m_configPath))
         {
-            std::ofstream configFile {m_configPath};
-            cereal::JSONOutputArchive archive {configFile};
+            std::ifstream configFile {m_configPath};
+            cereal::JSONInputArchive archive {configFile};
             archive(args...);
         }
+    }
 
-        template <class ... Types> inline
-        void readData(Types&& ... args)
-        {
-            if (std::filesystem::exists(m_configPath))
-            {
-                std::ifstream configFile {m_configPath};
-                cereal::JSONInputArchive archive {configFile};
-                archive(args...);
-            }
-        }
-
-    private:
-        std::filesystem::path m_configPath {};
-    };
-
-} // namespace Serializer
+private:
+    std::filesystem::path m_configPath {};
+};
 
 // Custom Serialization Definitions
 namespace std::filesystem
@@ -61,4 +54,4 @@ namespace std::filesystem
     }
 }
 
-#endif
+#endif // POKEDEV_SERIALIZER_HPP

@@ -1,9 +1,10 @@
-#ifndef PORYTILES_GUI_IMGUI_UTILS_HPP
-#define PORYTILES_GUI_IMGUI_UTILS_HPP
+#ifndef POKEDEV_IMGUI_UTILS_HPP
+#define POKEDEV_IMGUI_UTILS_HPP
 
 #include <filesystem>
 #include "platform.hpp"
 
+/// Re-usable, custom ImGui widgets.
 namespace ImGuiUtils
 {
     void FolderPicker(const char* label, std::filesystem::path& path, const Platform::FilePickerOptions& options);
@@ -11,4 +12,4 @@ namespace ImGuiUtils
 
 } // namespace ImGuiUtils
 
-#endif // PORYTILES_GUI_IMGUI_UTILS_HPP
+#endif // POKEDEV_IMGUI_UTILS_HPP

@@ -30,7 +30,7 @@ void PorytilesGui::render()
     ImGui::SetNextWindowSize(viewport->Size);
     ImGui::Begin("Main Window", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_MenuBar);
 
-    m_commandGenerator.renderImGui();
+    m_commandGenerator.renderSettings();
 
     // Menu Bar
     {

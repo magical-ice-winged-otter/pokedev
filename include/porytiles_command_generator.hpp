@@ -1,15 +1,16 @@
-#ifndef PORYTILES_GUI_COMMAND_GENERATOR_HPP
-#define PORYTILES_GUI_COMMAND_GENERATOR_HPP
+#ifndef POKEDEV_PORYTILES_COMMAND_GENERATOR_HPP
+#define POKEDEV_PORYTILES_COMMAND_GENERATOR_HPP
 
 #include <filesystem>
 #include <string>
-#include <cereal/cereal.hpp>
 #include "porytiles_context.hpp"
+#include "serializer.hpp"
 
+/// The logic for generating commands that can be run by Porytiles.
 class PorytilesCommandGenerator
 {
 public:
-    void renderImGui();
+    void renderSettings();
 
     std::string generateCompilePrimaryCommand(PorytilesContext& context);
     std::string generateCompileSecondaryCommand(PorytilesContext& context);
@@ -20,9 +21,9 @@ public:
     void serialize(Archive& archive)
     {
         archive(
-                cereal::make_nvp("shouldUseRelativePaths", m_shouldUseRelativePaths),
-                cereal::make_nvp("shouldWslFakeAbsolute", m_shouldWslFakeAbsolute),
-                cereal::make_nvp("relativeBasePath", m_relativeBasePath)
+                CUSTOM_NAME("shouldUseRelativePaths", m_shouldUseRelativePaths),
+                CUSTOM_NAME("shouldWslFakeAbsolute", m_shouldWslFakeAbsolute),
+                CUSTOM_NAME("relativeBasePath", m_relativeBasePath)
         );
     }
 
@@ -35,4 +36,4 @@ private:
     std::string getOptions(PorytilesContext& context, const std::filesystem::path& outputPath);
 };
 
-#endif // PORYTILES_GUI_COMMAND_GENERATOR_HPP
+#endif // POKEDEV_PORYTILES_COMMAND_GENERATOR_HPP

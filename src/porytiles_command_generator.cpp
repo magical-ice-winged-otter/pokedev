@@ -7,7 +7,7 @@
 
 using namespace std;
 
-void PorytilesCommandGenerator::renderImGui()
+void PorytilesCommandGenerator::renderSettings()
 {
     ImGui::SeparatorText("Command Generator");
     ImGui::Checkbox("Should Use Relative Paths", &m_shouldUseRelativePaths);

@@ -1,12 +1,14 @@
-#ifndef POKETOOLS_PLATFORM_HPP
-#define POKETOOLS_PLATFORM_HPP
+#ifndef POKEDEV_PLATFORM_HPP
+#define POKEDEV_PLATFORM_HPP
 
 #include <filesystem>
 #include <SDL.h>
 
+/// The tools that handle platform-specific tasks, and ensures compatability on all devices.
+/// This includes windows, file systems, rendering, ect.
+/// It uses the SDL library whenever possible.
 namespace Platform
 {
-    // Lifetime
     void init();
     void shutdown();
     void startFrame();
@@ -30,4 +32,4 @@ namespace Platform
 
 } // namespace Platform
 
-#endif // POKETOOLS_PLATFORM_HPP
+#endif // POKEDEV_PLATFORM_HPP

@@ -36,15 +36,15 @@ set(INCLUDE_FILES
         "include/application.hpp"
 )
 
-add_executable(porytiles_gui ${SOURCE_FILES} ${INCLUDE_FILES})
+add_executable(pokedev ${SOURCE_FILES} ${INCLUDE_FILES})
 
-target_include_directories(porytiles_gui
+target_include_directories(pokedev
         PRIVATE
         include
         lib/include
 )
 
-target_link_libraries(porytiles_gui
+target_link_libraries(pokedev
         PRIVATE
         SDL2::SDL2
         SDL2::SDL2main

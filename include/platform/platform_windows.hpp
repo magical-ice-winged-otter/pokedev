@@ -1,6 +1,6 @@
 #ifdef _WIN32
-#ifndef POKETOOLS_PLATFORM_WINDOWS_HPP
-#define POKETOOLS_PLATFORM_WINDOWS_HPP
+#ifndef POKEDEV_PLATFORM_WINDOWS_HPP
+#define POKEDEV_PLATFORM_WINDOWS_HPP
 
 #include "platform.hpp"
 
@@ -13,5 +13,5 @@ namespace Platform::Windows
     void openPath(const std::filesystem::path& path);
 }
 
-#endif // POKETOOLS_PLATFORM_WINDOWS_HPP
+#endif // POKEDEV_PLATFORM_WINDOWS_HPP
 #endif // _WIN32

@@ -1,9 +1,9 @@
-#ifndef PORYTILES_GUI_CONTEXT
-#define PORYTILES_GUI_CONTEXT
+#ifndef POKEDEV_PORYTILES_CONTEXT
+#define POKEDEV_PORYTILES_CONTEXT
 
 #include <filesystem>
 #include <string>
-#include <cereal/cereal.hpp>
+#include "serializer.hpp"
 
 // The working state that Porytiles needs to produce valid results.
 // Every field except file paths are given reasonable defaults, closely following the
@@ -48,34 +48,34 @@ struct PorytilesContext
     void serialize(Archive& archive)
     {
         archive(
-                CEREAL_NVP(projectPath),  /*General*/
-                CEREAL_NVP(porytilesExecutableFile),
-                CEREAL_NVP(behaviorsHeaderPath),
-                CEREAL_NVP(paletteMode),
-                CEREAL_NVP(baseGame),
-                CEREAL_NVP(useDualLayer),
-                cereal::make_nvp("transparency_R", transparency[0]),
-                cereal::make_nvp("transparency_G", transparency[1]),
-                cereal::make_nvp("transparency_B", transparency[2]),
-                CEREAL_NVP(defaultBehavior),
-                CEREAL_NVP(assignExploreCutoff),
-                CEREAL_NVP(assignAlgorithm),
-                CEREAL_NVP(bestBranches),
-                CEREAL_NVP(primaryCompileOutputPath), /*Compile Primary*/
-                CEREAL_NVP(sourcePrimaryPath),
-                CEREAL_NVP(secondaryCompileOutputPath), /*Compile Secondary*/
-                CEREAL_NVP(sourceSecondaryPath),
-                CEREAL_NVP(sourcePartnerPrimaryPath),
-                CEREAL_NVP(primaryAssignExploreCutoff),
-                CEREAL_NVP(primaryAssignAlgorithm),
-                CEREAL_NVP(primaryBestBranches),
-                CEREAL_NVP(primaryDecompileOutputPath), /*Decompile Primary*/
-                CEREAL_NVP(compiledPrimaryPath),
-                CEREAL_NVP(secondaryDecompileOutputPath),  /*Decompile Secondary*/
-                CEREAL_NVP(compiledSecondaryPath),
-                CEREAL_NVP(compiledPartnerPrimaryPath)
+                AUTO_NAME(projectPath),  /*General*/
+                AUTO_NAME(porytilesExecutableFile),
+                AUTO_NAME(behaviorsHeaderPath),
+                AUTO_NAME(paletteMode),
+                AUTO_NAME(baseGame),
+                AUTO_NAME(useDualLayer),
+                CUSTOM_NAME("transparency_R", transparency[0]),
+                CUSTOM_NAME("transparency_G", transparency[1]),
+                CUSTOM_NAME("transparency_B", transparency[2]),
+                AUTO_NAME(defaultBehavior),
+                AUTO_NAME(assignExploreCutoff),
+                AUTO_NAME(assignAlgorithm),
+                AUTO_NAME(bestBranches),
+                AUTO_NAME(primaryCompileOutputPath), /*Compile Primary*/
+                AUTO_NAME(sourcePrimaryPath),
+                AUTO_NAME(secondaryCompileOutputPath), /*Compile Secondary*/
+                AUTO_NAME(sourceSecondaryPath),
+                AUTO_NAME(sourcePartnerPrimaryPath),
+                AUTO_NAME(primaryAssignExploreCutoff),
+                AUTO_NAME(primaryAssignAlgorithm),
+                AUTO_NAME(primaryBestBranches),
+                AUTO_NAME(primaryDecompileOutputPath), /*Decompile Primary*/
+                AUTO_NAME(compiledPrimaryPath),
+                AUTO_NAME(secondaryDecompileOutputPath),  /*Decompile Secondary*/
+                AUTO_NAME(compiledSecondaryPath),
+                AUTO_NAME(compiledPartnerPrimaryPath)
         );
     }
 };
 
-#endif // PORYTILES_GUI_CONTEXT
+#endif // POKEDEV_PORYTILES_CONTEXT

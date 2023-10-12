@@ -181,7 +181,7 @@ namespace cereal
     return std::forward<T>(value);
   }
 
-  //! A specialization of make_nvp<> that actually creates an nvp for non-binary archives
+  //! A specialization of make_nvp<> that actually creates an nvp_custom for non-binary archives
   /*! @relates NameValuePair
       @internal */
   template<class Archive, class T> inline
@@ -194,7 +194,7 @@ namespace cereal
     return {name, std::forward<T>(value)};
   }
 
-  //! Convenience for creating a templated NVP
+  //! Convenience for creating a templated nvp_custom
   /*! For use in internal generic typing functions which have an
       Archive type declared
       @internal */

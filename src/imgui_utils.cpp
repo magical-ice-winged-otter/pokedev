@@ -36,7 +36,7 @@ namespace ImGuiUtils
         ImGui::Text("%s", label);
 
         if (ImGui::Button(format("View##{}", label).c_str()))
-            system(format("explorer.exe {}", path.string()).c_str());
+            Platform::openPath(path);
 
         ImGui::SameLine();
 
