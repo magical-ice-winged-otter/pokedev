@@ -12,10 +12,10 @@ class PorytilesCommandGenerator
 public:
     void renderSettings();
 
-    std::string generateCompilePrimaryCommand(PorytilesContext& context);
-    std::string generateCompileSecondaryCommand(PorytilesContext& context);
-    std::string generateDecompilePrimaryCommand(PorytilesContext& context);
-    std::string generateDecompileSecondaryCommand(PorytilesContext& context);
+    std::string generateCompilePrimaryCommand(PorytilesContext& context) const;
+    std::string generateCompileSecondaryCommand(PorytilesContext& context) const;
+    std::string generateDecompilePrimaryCommand(PorytilesContext& context) const;
+    std::string generateDecompileSecondaryCommand(PorytilesContext& context) const;
 
     template<class Archive>
     void serialize(Archive& archive)
@@ -32,8 +32,8 @@ private:
     bool m_shouldWslFakeAbsolute {};
     std::filesystem::path m_relativeBasePath {};
 
-    std::string getPathString(const std::filesystem::path& path);
-    std::string getOptions(PorytilesContext& context, const std::filesystem::path& outputPath);
+    std::string getPathString(const std::filesystem::path& path) const;
+    std::string getOptions(PorytilesContext& context, const std::filesystem::path& outputPath) const;
 };
 
 #endif // POKEDEV_PORYTILES_COMMAND_GENERATOR_HPP

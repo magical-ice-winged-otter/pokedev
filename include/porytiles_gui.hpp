@@ -11,8 +11,13 @@ class PorytilesGui
 {
 public:
     void init(SDL_Renderer* renderer);
-    void render();
     void shutdown();
+
+    void renderSettings();
+    void renderPrimaryCompilerWindow(bool* isOpen);
+    void renderPrimaryDecompilerWindow(bool* isOpen);
+    void renderSecondaryCompilerWindow(bool* isOpen);
+    void renderSecondaryDecompilerWindow(bool* isOpen);
 
     template<class Archive>
     void serialize(Archive& archive)

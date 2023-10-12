@@ -26,7 +26,7 @@ public:
     template <class ... Types> inline
     void readData(Types&& ... args)
     {
-        if (std::filesystem::exists(m_configPath))
+        if (exists(m_configPath))
         {
             std::ifstream configFile {m_configPath};
             cereal::JSONInputArchive archive {configFile};
@@ -42,13 +42,13 @@ private:
 namespace std::filesystem
 {
     template<class Archive>
-    inline std::string save_minimal(const Archive&, const std::filesystem::path& path)
+    inline std::string save_minimal(const Archive&, const path& path)
     {
         return path.string();
     }
 
     template<class Archive>
-    inline void load_minimal(const Archive&, std::filesystem::path& path, const std::string& value)
+    inline void load_minimal(const Archive&, path& path, const std::string& value)
     {
         path = filesystem::path {value};
     }

@@ -20,7 +20,7 @@ namespace ImGuiUtils
         ImGui::SameLine();
 
         if (ImGui::Button(format("Edit##{}", label).c_str()))
-            Platform::tryPickFolder(path, options);
+            tryPickFolder(path, options);
 
         ImGui::SameLine();
         string pathString {path.string()};
@@ -41,7 +41,7 @@ namespace ImGuiUtils
         ImGui::SameLine();
 
         if (ImGui::Button(format("Edit##{}", label).c_str()))
-            Platform::tryPickFile(path, options);
+            tryPickFile(path, options);
 
         ImGui::SameLine();
         string pathString {path.string()};

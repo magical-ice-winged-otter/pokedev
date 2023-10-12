@@ -1,12 +1,13 @@
 #include <imgui.h>
 #include <imgui_impl_sdl2.h>
 #include <imgui_impl_sdlrenderer2.h>
+#include <SDL_image.h>
 #include "platform.hpp"
 #include "platform/platform_windows.hpp"
 
-static SDL_Window* s_window {};
-static SDL_Renderer* s_renderer {};
-static bool s_wantsToQuit {false};
+static SDL_Window* s_window{};
+static SDL_Renderer* s_renderer{};
+static bool s_wantsToQuit{false};
 
 void Platform::init()
 {
@@ -18,12 +19,20 @@ void Platform::init()
     }
 
     s_window = SDL_CreateWindow(
-            "Porytiles GUI",
-            SDL_WINDOWPOS_CENTERED,
-            SDL_WINDOWPOS_CENTERED,
-            1280,
-            720,
-            SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI);
+        "pokedev",
+        SDL_WINDOWPOS_CENTERED,
+        SDL_WINDOWPOS_CENTERED,
+        1280,
+        720,
+        SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI);
+
+    if (std::filesystem::exists("icon.png"))
+    {
+        printf("loaded icon!");
+        SDL_Surface* icon = IMG_Load("icon.png");
+        SDL_SetWindowIcon(s_window, icon);
+        SDL_FreeSurface(icon);
+    }
 
     s_renderer = SDL_CreateRenderer(s_window, -1, SDL_RENDERER_PRESENTVSYNC | SDL_RENDERER_ACCELERATED);
 
@@ -42,7 +51,7 @@ void Platform::init()
 
     // Initialize platform-dependent code
 #ifdef _WIN32
-    Platform::Windows::init();
+    Windows::init();
 #endif
 }
 
@@ -50,7 +59,7 @@ void Platform::shutdown()
 {
     // Shutdown platform-dependent code
 #ifdef _WIN32
-    Platform::Windows::shutdown();
+    Windows::shutdown();
 #endif
 
     // Shutdown ImGui
@@ -110,30 +119,30 @@ bool Platform::wantsToQuit()
     return s_wantsToQuit;
 }
 
-bool Platform::tryPickFile(std::filesystem::path &outPath, const Platform::FilePickerOptions &options)
+bool Platform::tryPickFile(std::filesystem::path& outPath, const FilePickerOptions& options)
 {
 #ifdef _WIN32
-    return Platform::Windows::tryPickFile(outPath, options);
+    return Windows::tryPickFile(outPath, options);
 #else
     printf("Platform does not support picking files!\n");
     return false;
 #endif
 }
 
-bool Platform::tryPickFolder(std::filesystem::path &outPath, const Platform::FilePickerOptions &options)
+bool Platform::tryPickFolder(std::filesystem::path& outPath, const FilePickerOptions& options)
 {
 #ifdef _WIN32
-    return Platform::Windows::tryPickFolder(outPath, options);
+    return Windows::tryPickFolder(outPath, options);
 #else
     printf("Platform does not support picking folders!\n");
     return false;
 #endif
 }
 
-void Platform::openPath(const std::filesystem::path &path)
+void Platform::openPath(const std::filesystem::path& path)
 {
 #ifdef _WIN32
-    return Platform::Windows::openPath(path);
+    return Windows::openPath(path);
 #else
     printf("Platform does not support opening paths!\n");
     return false;

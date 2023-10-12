@@ -19,23 +19,24 @@ void PorytilesCommandGenerator::renderSettings()
     }
 }
 
-string PorytilesCommandGenerator::getPathString(const filesystem::path& path)
+string PorytilesCommandGenerator::getPathString(const filesystem::path& path) const
 {
     if (m_shouldUseRelativePaths)
     {
-        filesystem::path relativePath {filesystem::relative(path, m_relativeBasePath)};
+        filesystem::path relativePath {relative(path, m_relativeBasePath)};
 
         if (m_shouldWslFakeAbsolute)
             relativePath = filesystem::path{"/"} / relativePath;
 
         string relativeString = relativePath.string();
-        replace(relativeString.begin(), relativeString.end(), '\\', '/');
+        ranges::replace(relativeString, '\\', '/');
         return relativeString;
     }
-    else return path.string();
+
+    return path.string();
 }
 
-string PorytilesCommandGenerator::getOptions(PorytilesContext& context, const filesystem::path& outputPath)
+string PorytilesCommandGenerator::getOptions(PorytilesContext& context, const filesystem::path& outputPath) const
 {
     string result {};
     result += format(" -output={} ", getPathString(outputPath));
@@ -57,7 +58,7 @@ string PorytilesCommandGenerator::getOptions(PorytilesContext& context, const fi
     return result;
 }
 
-string PorytilesCommandGenerator::generateCompilePrimaryCommand(PorytilesContext& context)
+string PorytilesCommandGenerator::generateCompilePrimaryCommand(PorytilesContext& context) const
 {
     string options {getOptions(context, context.primaryCompileOutputPath)};
     string porytiles {getPathString(context.porytilesExecutableFile)};
@@ -67,7 +68,7 @@ string PorytilesCommandGenerator::generateCompilePrimaryCommand(PorytilesContext
     return format("{} compile-primary {} {} {}", porytiles, options, srcPrimaryPath, behaviorsHeader);
 }
 
-string PorytilesCommandGenerator::generateCompileSecondaryCommand(PorytilesContext& context)
+string PorytilesCommandGenerator::generateCompileSecondaryCommand(PorytilesContext& context) const
 {
     string options {getOptions(context, context.secondaryCompileOutputPath)};
     string porytiles {getPathString(context.porytilesExecutableFile)};
@@ -82,7 +83,7 @@ string PorytilesCommandGenerator::generateCompileSecondaryCommand(PorytilesConte
     return format("{} compile-secondary {} {} {} {}", porytiles, options, srcSecondaryPath, srcPartnerPrimaryPath, behaviorsHeader);
 }
 
-string PorytilesCommandGenerator::generateDecompilePrimaryCommand(PorytilesContext& context)
+string PorytilesCommandGenerator::generateDecompilePrimaryCommand(PorytilesContext& context) const
 {
     string options {getOptions(context, context.primaryDecompileOutputPath)};
     string porytiles {getPathString(context.porytilesExecutableFile)};
@@ -92,7 +93,7 @@ string PorytilesCommandGenerator::generateDecompilePrimaryCommand(PorytilesConte
     return format("{} decompile-primary {} {} {}", porytiles, options, compiledPrimaryPath, behaviorsHeader);
 }
 
-string PorytilesCommandGenerator::generateDecompileSecondaryCommand(PorytilesContext& context)
+string PorytilesCommandGenerator::generateDecompileSecondaryCommand(PorytilesContext& context) const
 {
     string options {getOptions(context, context.secondaryDecompileOutputPath)};
     string porytiles {getPathString(context.porytilesExecutableFile)};
