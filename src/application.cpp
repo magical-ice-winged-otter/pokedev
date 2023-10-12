@@ -1,5 +1,7 @@
 #include "application.hpp"
 #include "platform.hpp"
+#include "porytiles/porytiles_gui.hpp"
+#include "serializer.hpp"
 
 static struct WindowState
 {

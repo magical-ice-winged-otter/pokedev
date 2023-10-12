@@ -1,9 +1,9 @@
 #include <imgui.h>
+#include <imgui_stdlib.h>
 #include <SDL.h>
 #include <SDL_image.h>
-#include <imgui_stdlib.h>
-#include "porytiles_gui.hpp"
 #include "imgui_utils.hpp"
+#include "porytiles/porytiles_gui.hpp"
 
 using namespace std;
 

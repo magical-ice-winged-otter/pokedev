@@ -16,24 +16,24 @@ find_package(imgui CONFIG REQUIRED)
 
 set(SOURCE_FILES
         "src/main.cpp"
-        "src/porytiles_gui.cpp"
-        "src/porytiles_command_generator.cpp"
-        "src/imgui_utils.cpp"
-        "src/platform/platform_windows.cpp"
-        "src/platform.cpp"
-        "src/serializer.cpp"
         "src/application.cpp"
+        "src/platform.cpp"
+        "src/platform/platform_windows.cpp"
+        "src/serializer.cpp"
+        "src/imgui_utils.cpp"
+        "src/porytiles/porytiles_gui.cpp"
+        "src/porytiles/porytiles_command_generator.cpp"
 )
 
 set(INCLUDE_FILES
-        "include/porytiles_gui.hpp"
-        "include/porytiles_context.hpp"
-        "include/porytiles_command_generator.hpp"
-        "include/imgui_utils.hpp"
-        "include/serializer.hpp"
+        "include/application.hpp"
         "include/platform.hpp"
         "include/platform/platform_windows.hpp"
-        "include/application.hpp"
+        "include/serializer.hpp"
+        "include/imgui_utils.hpp"
+        "include/porytiles/porytiles_gui.hpp"
+        "include/porytiles/porytiles_context.hpp"
+        "include/porytiles/porytiles_command_generator.hpp"
 )
 
 add_executable(pokedev ${SOURCE_FILES} ${INCLUDE_FILES})

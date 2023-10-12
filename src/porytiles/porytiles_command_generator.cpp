@@ -1,9 +1,9 @@
-#include <string>
-#include <filesystem>
 #include <imgui.h>
-#include "porytiles_context.hpp"
-#include "porytiles_command_generator.hpp"
+#include <filesystem>
+#include <string>
 #include "imgui_utils.hpp"
+#include "porytiles/porytiles_context.hpp"
+#include "porytiles/porytiles_command_generator.hpp"
 
 using namespace std;
 
