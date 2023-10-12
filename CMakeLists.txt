@@ -3,7 +3,7 @@ set(CMAKE_TOOLCHAIN_FILE $ENV{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake)
 
 project(pokedev
         VERSION 1.0
-        DESCRIPTION "A set of tools for working with pokemon decompilations."
+        DESCRIPTION "A set of tools for working with pokemon de-compilations."
         LANGUAGES CXX
 )
 
@@ -17,19 +17,20 @@ find_package(imgui CONFIG REQUIRED)
 set(SOURCE_FILES
         "src/main.cpp"
         "src/porytiles_gui.cpp"
-        "src/sdl_imgui_integration.cpp"
         "src/porytiles_command_generator.cpp"
         "src/imgui_utils.cpp"
         "src/platform/platform_windows.cpp"
+        "src/platform.cpp"
 )
 
 set(INCLUDE_FILES
-        "include/sdl_imgui_integration.hpp"
         "include/porytiles_gui.hpp"
         "include/porytiles_context.hpp"
         "include/porytiles_command_generator.hpp"
         "include/imgui_utils.hpp"
         "include/serializer.hpp"
+        "include/platform.hpp"
+        "include/platform/platform_windows.hpp"
 )
 
 add_executable(porytiles_gui ${SOURCE_FILES} ${INCLUDE_FILES})

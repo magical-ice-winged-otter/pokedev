@@ -1,11 +1,11 @@
-#if _WIN32
+#ifdef _WIN32
 
 #include <shobjidl.h>
 #include <string_view>
 #include <windows.h>
-#include "platform.hpp"
+#include "platform/platform_windows.hpp"
 
-void Platform::init()
+void Platform::Windows::init()
 {
     // Initialize COM for stuff like dialogue boxes.
     if (!SUCCEEDED(CoInitializeEx(nullptr, COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE)))
@@ -15,7 +15,7 @@ void Platform::init()
     }
 }
 
-void Platform::shutdown()
+void Platform::Windows::shutdown()
 {
     CoUninitialize();
 }
@@ -77,7 +77,7 @@ static bool tryGetPathFromDialog(IFileOpenDialog* fileDialog, std::filesystem::p
     return SUCCEEDED(result);
 }
 
-bool Platform::tryPickFile(std::filesystem::path& outPath, const FilePickerOptions& options)
+bool Platform::Windows::tryPickFile(std::filesystem::path& outPath, const FilePickerOptions& options)
 {
     IFileOpenDialog* fileOpenDialog;
     CoCreateInstance(__uuidof(FileOpenDialog), nullptr, CLSCTX_ALL, IID_PPV_ARGS(&fileOpenDialog));
@@ -88,7 +88,7 @@ bool Platform::tryPickFile(std::filesystem::path& outPath, const FilePickerOptio
     return result;
 }
 
-bool Platform::tryPickFolder(std::filesystem::path& outPath, const FilePickerOptions& options)
+bool Platform::Windows::tryPickFolder(std::filesystem::path& outPath, const FilePickerOptions& options)
 {
     IFileOpenDialog* fileOpenDialog;
     CoCreateInstance(__uuidof(FileOpenDialog), nullptr, CLSCTX_ALL, IID_PPV_ARGS(&fileOpenDialog));
@@ -104,9 +104,9 @@ bool Platform::tryPickFolder(std::filesystem::path& outPath, const FilePickerOpt
     return result;
 }
 
-void Platform::openPath(const std::filesystem::path& path)
+void Platform::Windows::openPath(const std::filesystem::path& path)
 {
     ShellExecute(nullptr, "explore", path.string().c_str(), nullptr, nullptr, SW_SHOWDEFAULT);
 }
 
-#endif
+#endif // _WIN32

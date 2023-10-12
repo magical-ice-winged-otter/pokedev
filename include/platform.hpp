@@ -2,11 +2,18 @@
 #define POKETOOLS_PLATFORM_HPP
 
 #include <filesystem>
+#include <SDL.h>
 
 namespace Platform
 {
     void init();
     void shutdown();
+    void startFrame();
+    void endFrame();
+
+    SDL_Renderer* getRenderer();
+    SDL_Window* getWindow();
+    bool wantsToQuit();
 
     struct FilePickerOptions
     {

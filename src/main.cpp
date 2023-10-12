@@ -1,66 +1,46 @@
 #include <cstdio>
-#include <imgui_impl_sdl2.h>
 #include <SDL.h>
-#include <filesystem>
-#include "sdl_imgui_integration.hpp"
+#include <cereal/archives/json.hpp>
+#include <fstream>
 #include "porytiles_gui.hpp"
 #include "platform.hpp"
+#include "serializer.hpp"
 
-int main(int argc, char *argv[])
+int main(int, char*[])
 {
-    if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER) != 0)
+    PorytilesGui porytilesGui {};
+
+    // Read everything from a file
+    const char* configName = "pokedev_porytiles_gui_config.json";
+
+    if (std::filesystem::exists(configName))
     {
-        printf("Error starting SDL: %s\n", SDL_GetError());
-        return -1;
-    }
-
-    SDL_Window *window = SDL_CreateWindow(
-        "Porytiles GUI",
-        SDL_WINDOWPOS_CENTERED,
-        SDL_WINDOWPOS_CENTERED,
-        1280,
-        720,
-        SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI);
-
-    SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_PRESENTVSYNC | SDL_RENDERER_ACCELERATED);
-
-    if (renderer == nullptr)
-    {
-        printf("Error creating renderer: %s\n", SDL_GetError());
-        return -1;
+        std::ifstream configFile {configName};
+        cereal::JSONInputArchive archive {configFile};
+        archive(
+                cereal::make_nvp("porytilesGui", porytilesGui)
+        );
     }
 
     Platform::init();
-    SDLImGuiIntegration::init(window, renderer);
-    PorytilesGui::init(renderer);
+    porytilesGui.init(Platform::getRenderer());
 
-    bool done = false;
-
-    while (!done)
+    while (!Platform::wantsToQuit())
     {
-        SDL_Event event;
-
-        while (SDL_PollEvent(&event))
-        {
-            SDLImGuiIntegration::processEvent(&event);
-
-            if (event.type == SDL_QUIT)
-                done = true;
-        }
-
-        SDL_RenderClear(renderer);
-        SDLImGuiIntegration::preRender();
-        PorytilesGui::render();        
-        SDLImGuiIntegration::postRender();
-        SDL_RenderPresent(renderer);
+        Platform::startFrame();
+        porytilesGui.render();
+        Platform::endFrame();
     }
 
+    porytilesGui.shutdown();
     Platform::shutdown();
-    SDLImGuiIntegration::shutdown();
-    PorytilesGui::shutdown();
 
-    SDL_DestroyRenderer(renderer);
-    SDL_DestroyWindow(window);
-    SDL_Quit();
+    // Save everything to a file.
+    std::ofstream configFile {configName};
+    cereal::JSONOutputArchive archive {configFile};
+    archive(
+            cereal::make_nvp("porytilesGui", porytilesGui)
+    );
+
     return 0;
 }
