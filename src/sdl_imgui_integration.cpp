@@ -1,9 +1,9 @@
 #include <imgui.h>
 #include <imgui_impl_sdl2.h>
 #include <imgui_impl_sdlrenderer2.h>
-#include "sdl_imgui_wrapper.hpp"
+#include "sdl_imgui_integration.hpp"
 
-namespace SDLImGui
+namespace SDLImGuiIntegration
 {
     void init(SDL_Window* window, SDL_Renderer* renderer)
     {

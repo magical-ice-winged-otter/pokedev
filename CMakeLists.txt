@@ -8,27 +8,26 @@ project(pokedev
 )
 
 set(CMAKE_CXX_STANDARD 20)
+#set(CMAKE_WIN32_EXECUTABLE ON)
 
 find_package(SDL2 CONFIG REQUIRED COMPONENTS SDL2 SDL2main)
 find_package(imgui CONFIG REQUIRED)
-find_package(unofficial-nativefiledialog CONFIG REQUIRED)
 find_package(nlohmann_json CONFIG REQUIRED)
 find_package(SDL2_image CONFIG REQUIRED)
 
 set(SOURCE_FILES
         "src/main.cpp"
         "src/porytiles_gui.cpp"
-        "src/file_dialog.cpp"
         "src/serializer.cpp"
-        "src/sdl_imgui_wrapper.cpp"
+        "src/sdl_imgui_integration.cpp"
         "src/porytiles_command_generator.cpp"
         "src/imgui_utils.cpp"
+        "src/platform/platform_windows.cpp"
 )
 
 set(INCLUDE_FILES
-        "include/file_dialog.hpp"
         "include/serializer.hpp"
-        "include/sdl_imgui_wrapper.hpp"
+        "include/sdl_imgui_integration.hpp"
         "include/porytiles_gui.hpp"
         "include/porytiles_context.hpp"
         "include/porytiles_command_generator.hpp"
@@ -47,7 +46,6 @@ target_link_libraries(porytiles_gui
         SDL2::SDL2
         SDL2::SDL2main
         imgui::imgui
-        unofficial::nativefiledialog::nfd
         nlohmann_json::nlohmann_json
         SDL2_image::SDL2_image
 )

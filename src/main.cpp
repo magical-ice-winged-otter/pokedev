@@ -1,11 +1,11 @@
 #include <cstdio>
-#include <imgui.h>
 #include <imgui_impl_sdl2.h>
-#include <imgui_impl_sdlrenderer2.h>
 #include <SDL.h>
+#include <filesystem>
 #include "serializer.hpp"
-#include "sdl_imgui_wrapper.hpp"
+#include "sdl_imgui_integration.hpp"
 #include "porytiles_gui.hpp"
+#include "platform.hpp"
 
 int main(int argc, char *argv[])
 {
@@ -31,8 +31,9 @@ int main(int argc, char *argv[])
         return -1;
     }
 
-    SDLImGui::init(window, renderer);
-    Serializer::init(argv);
+    Platform::init();
+    SDLImGuiIntegration::init(window, renderer);
+    Serializer::init(std::filesystem::path{argv[0]}.remove_filename() / "porytiles_gui_config.json");
     PorytilesGui::init(renderer);
 
     bool done = false;
@@ -43,26 +44,26 @@ int main(int argc, char *argv[])
 
         while (SDL_PollEvent(&event))
         {
-            SDLImGui::processEvent(&event);
+            SDLImGuiIntegration::processEvent(&event);
 
             if (event.type == SDL_QUIT)
                 done = true;
         }
 
         SDL_RenderClear(renderer);
-        SDLImGui::preRender();
+        SDLImGuiIntegration::preRender();
         PorytilesGui::render();        
-        SDLImGui::postRender();
+        SDLImGuiIntegration::postRender();
         SDL_RenderPresent(renderer);
     }
 
-    SDLImGui::shutdown();
+    Platform::shutdown();
+    SDLImGuiIntegration::shutdown();
     PorytilesGui::shutdown();
     Serializer::shutdown();
 
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
     SDL_Quit();
-
     return 0;
 }

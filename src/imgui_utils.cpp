@@ -3,24 +3,24 @@
 #include <filesystem>
 #include <SDL.h>
 #include <string>
-#include "file_dialog.hpp"
 #include "imgui_utils.hpp"
+#include "platform.hpp"
 
 using namespace std;
 
 namespace ImGuiUtils
 {
-    void FolderPicker(const char* label, filesystem::path& path, std::filesystem::path* defaultPath)
+    void FolderPicker(const char* label, filesystem::path& path, const Platform::FilePickerOptions& options)
     {
         ImGui::Text("%s", label);
 
         if (ImGui::Button(format("View##{}", label).c_str()))
-            system(format("explorer.exe {}", path.string()).c_str()); // todo: this only works on windows
+            Platform::openPath(path);
 
         ImGui::SameLine();
 
         if (ImGui::Button(format("Edit##{}", label).c_str()))
-            FileDialog::tryPickFolder(path, defaultPath != nullptr ? defaultPath->string().c_str() : nullptr);
+            Platform::tryPickFolder(path, options);
 
         ImGui::SameLine();
         string pathString {path.string()};
@@ -31,7 +31,7 @@ namespace ImGuiUtils
         ImGui::Spacing(); ImGui::Spacing();
     }
 
-    void FilePicker(const char* label, filesystem::path& path, std::filesystem::path* defaultPath, const char* filter)
+    void FilePicker(const char* label, filesystem::path& path, const Platform::FilePickerOptions& options)
     {
         ImGui::Text("%s", label);
 
@@ -41,7 +41,7 @@ namespace ImGuiUtils
         ImGui::SameLine();
 
         if (ImGui::Button(format("Edit##{}", label).c_str()))
-            FileDialog::tryPickFile(path, filter, defaultPath != nullptr ? defaultPath->string().c_str() : nullptr);
+            Platform::tryPickFile(path, options);
 
         ImGui::SameLine();
         string pathString {path.string()};

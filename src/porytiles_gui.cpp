@@ -2,12 +2,12 @@
 #include <SDL.h>
 #include <SDL_image.h>
 #include <imgui_stdlib.h>
-#include "file_dialog.hpp"
 #include "porytiles_gui.hpp"
 #include "porytiles_context.hpp"
 #include "porytiles_command_generator.hpp"
 #include "serializer.hpp"
 #include "imgui_utils.hpp"
+#include "platform.hpp"
 
 using namespace std;
 
@@ -124,8 +124,8 @@ namespace PorytilesGui
                     SDL_SetClipboardText(result.c_str());
                 }
 
-                ImGuiUtils::FolderPicker("Output Path", s_ctx.primaryCompileOutputPath, &s_defaultOutputPath);
-                ImGuiUtils::FolderPicker("Source Primary Path", s_ctx.sourcePrimaryPath, &s_defaultSourcePath);
+                ImGuiUtils::FolderPicker("Output Path", s_ctx.primaryCompileOutputPath, {.defaultPath = s_defaultOutputPath});
+                ImGuiUtils::FolderPicker("Source Primary Path", s_ctx.sourcePrimaryPath, {.defaultPath = s_defaultSourcePath});
                 ImGui::SetItemTooltip("Path to a directory containing the source data for a primary set.");
 
                 filesystem::path tilesImagePath {s_ctx.primaryCompileOutputPath / "tiles.png"};

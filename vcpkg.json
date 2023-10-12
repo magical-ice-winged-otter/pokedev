@@ -2,7 +2,6 @@
     "name": "porytiles-gui",
     "version-string": "0.1",
     "dependencies": [
-        "nativefiledialog",
         "sdl2-image",
         "nlohmann-json",
         {

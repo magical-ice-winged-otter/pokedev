@@ -13,7 +13,7 @@ namespace Serializer
     extern nlohmann::json g_config;
     extern std::vector<std::function<void()>> g_serializeCallbacks;
 
-    void init(char** argv);
+    void init(const std::filesystem::path& configPath);
     void shutdown();
 
     template<typename T>

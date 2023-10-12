@@ -14,9 +14,9 @@ namespace Serializer
 
     static filesystem::path s_configPath;
 
-    void init(char** argv)
+    void init(const std::filesystem::path& configPath)
     {
-        s_configPath = filesystem::path{argv[0]}.remove_filename() / "porytiles_gui_config.json";
+        s_configPath = configPath;
 
         if (filesystem::exists(s_configPath))
         {

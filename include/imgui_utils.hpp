@@ -2,11 +2,12 @@
 #define PORYTILES_GUI_IMGUI_UTILS_HPP
 
 #include <filesystem>
+#include "platform.hpp"
 
 namespace ImGuiUtils
 {
-    void FolderPicker(const char* label, std::filesystem::path& path, std::filesystem::path* defaultPath = nullptr);
-    void FilePicker(const char* label, std::filesystem::path& path, std::filesystem::path* = nullptr, const char* filter = nullptr);
+    void FolderPicker(const char* label, std::filesystem::path& path, const Platform::FilePickerOptions& options);
+    void FilePicker(const char* label, std::filesystem::path& path, const Platform::FilePickerOptions& options);
 
 } // namespace ImGuiUtils
 
