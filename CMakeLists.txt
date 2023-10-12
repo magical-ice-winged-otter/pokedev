@@ -22,6 +22,7 @@ set(SOURCE_FILES
         "src/platform/platform_windows.cpp"
         "src/platform.cpp"
         "src/serializer.cpp"
+        "src/application.cpp"
 )
 
 set(INCLUDE_FILES
@@ -32,6 +33,7 @@ set(INCLUDE_FILES
         "include/serializer.hpp"
         "include/platform.hpp"
         "include/platform/platform_windows.hpp"
+        "include/application.hpp"
 )
 
 add_executable(porytiles_gui ${SOURCE_FILES} ${INCLUDE_FILES})

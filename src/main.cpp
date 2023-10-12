@@ -1,27 +1,20 @@
 #include <SDL.h>
-#include "porytiles_gui.hpp"
 #include "platform.hpp"
-#include "serializer.hpp"
-
-using namespace Serializer;
+#include "application.hpp"
 
 int main(int, char*[])
 {
     Platform::init();
-    PorytilesGui porytilesGui {};
-    ConfigFile config("pokedev_porytiles_gui_config.json");
-    config.readData(nvp("porytilesGui", porytilesGui));
-    porytilesGui.init(Platform::getRenderer());
+    Application::init();
 
     while (!Platform::wantsToQuit())
     {
         Platform::startFrame();
-        porytilesGui.render();
+        Application::render();
         Platform::endFrame();
     }
 
-    porytilesGui.shutdown();
-    config.writeData(nvp("porytilesGui", porytilesGui));
+    Application::shutdown();
     Platform::shutdown();
     return 0;
 }
