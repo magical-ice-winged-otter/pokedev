@@ -17,29 +17,29 @@ public:
     void serialize(Archive& archive)
     {
         archive(
-                cereal::make_nvp("porytilesContext", s_ctx),
-                cereal::make_nvp("commandGenerator", s_commandGenerator),
-                cereal::make_nvp("showPrimaryCompilerTool", s_showPrimaryCompilerTool),
-                cereal::make_nvp("showPrimaryDecompilerTool", s_showPrimaryDecompilerTool),
-                cereal::make_nvp("showSecondaryCompilerTool", s_showSecondaryCompilerTool),
-                cereal::make_nvp("showSecondaryDecompilerTool", s_showSecondaryDecompilerTool),
-                cereal::make_nvp("defaultSourcePath", s_defaultSourcePath),
-                cereal::make_nvp("defaultOutputPath", s_defaultOutputPath)
+                cereal::make_nvp("porytilesContext", m_ctx),
+                cereal::make_nvp("commandGenerator", m_commandGenerator),
+                cereal::make_nvp("showPrimaryCompilerTool", m_showPrimaryCompilerTool),
+                cereal::make_nvp("showPrimaryDecompilerTool", m_showPrimaryDecompilerTool),
+                cereal::make_nvp("showSecondaryCompilerTool", m_showSecondaryCompilerTool),
+                cereal::make_nvp("showSecondaryDecompilerTool", m_showSecondaryDecompilerTool),
+                cereal::make_nvp("defaultSourcePath", m_defaultSourcePath),
+                cereal::make_nvp("defaultOutputPath", m_defaultOutputPath)
         );
     }
 
 private:
-    PorytilesContext s_ctx{};
-    PorytilesCommandGenerator s_commandGenerator {};
-    bool s_showPrimaryCompilerTool {};
-    bool s_showPrimaryDecompilerTool {};
-    bool s_showSecondaryDecompilerTool {};
-    bool s_showSecondaryCompilerTool {};
-    std::filesystem::path s_defaultSourcePath {};
-    std::filesystem::path s_defaultOutputPath {};
-    ImVec4 s_errorTextColor {1.0, 0.3, 0.3, 1};
-    SDL_Texture* s_previewTexture {};
-    SDL_Renderer* s_renderer {};
+    PorytilesContext m_ctx{};
+    PorytilesCommandGenerator m_commandGenerator {};
+    bool m_showPrimaryCompilerTool {};
+    bool m_showPrimaryDecompilerTool {};
+    bool m_showSecondaryDecompilerTool {};
+    bool m_showSecondaryCompilerTool {};
+    std::filesystem::path m_defaultSourcePath {};
+    std::filesystem::path m_defaultOutputPath {};
+    ImVec4 m_errorTextColor {1.0, 0.3, 0.3, 1};
+    SDL_Texture* m_previewTexture {};
+    SDL_Renderer* m_renderer {};
 };
 
 #endif // PORYTILES_GUI_HPP

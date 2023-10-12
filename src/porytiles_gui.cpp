@@ -9,17 +9,18 @@ using namespace std;
 
 // todo: tooltips for everything would be nice...
 // todo: a way to reset config / save config / load config would be nice...
+// todo: making this class smaller? the windows might be able to be split, more texture preview stuff...
 
 // General Settings
 
 void PorytilesGui::init(SDL_Renderer* renderer)
 {
-    s_renderer = renderer;
+    m_renderer = renderer;
 }
 
 void PorytilesGui::shutdown()
 {
-    SDL_DestroyTexture(s_previewTexture);
+    SDL_DestroyTexture(m_previewTexture);
 }
 
 void PorytilesGui::render()
@@ -29,7 +30,7 @@ void PorytilesGui::render()
     ImGui::SetNextWindowSize(viewport->Size);
     ImGui::Begin("Main Window", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_MenuBar);
 
-    s_commandGenerator.renderImGui();
+    m_commandGenerator.renderImGui();
 
     // Menu Bar
     {
@@ -46,10 +47,10 @@ void PorytilesGui::render()
 
             if (ImGui::BeginMenu("Tools"))
             {
-                ImGui::MenuItem("Primary Compiler", nullptr, &s_showPrimaryCompilerTool);
-                ImGui::MenuItem("Primary Decompiler", nullptr, &s_showPrimaryDecompilerTool);
-                ImGui::MenuItem("Secondary Compiler", nullptr, &s_showSecondaryCompilerTool);
-                ImGui::MenuItem("Secondary Decompiler", nullptr, &s_showSecondaryDecompilerTool);
+                ImGui::MenuItem("Primary Compiler", nullptr, &m_showPrimaryCompilerTool);
+                ImGui::MenuItem("Primary Decompiler", nullptr, &m_showPrimaryDecompilerTool);
+                ImGui::MenuItem("Secondary Compiler", nullptr, &m_showSecondaryCompilerTool);
+                ImGui::MenuItem("Secondary Decompiler", nullptr, &m_showSecondaryDecompilerTool);
                 ImGui::EndMenu();
             }
 
@@ -60,90 +61,90 @@ void PorytilesGui::render()
     // Windows
     {
 //            ImGui::ShowDemoWindow();
-        if (s_showPrimaryCompilerTool && ImGui::Begin("Primary Compiler", &s_showPrimaryCompilerTool))
+        if (m_showPrimaryCompilerTool && ImGui::Begin("Primary Compiler", &m_showPrimaryCompilerTool))
         {
             if (ImGui::Button("Copy Command to Clipboard"))
             {
-                string result = s_commandGenerator.generateCompilePrimaryCommand(s_ctx);
+                string result = m_commandGenerator.generateCompilePrimaryCommand(m_ctx);
                 SDL_SetClipboardText(result.c_str());
             }
 
-            ImGuiUtils::FolderPicker("Output Path", s_ctx.primaryCompileOutputPath, {.defaultPath = s_defaultOutputPath});
-            ImGuiUtils::FolderPicker("Source Primary Path", s_ctx.sourcePrimaryPath, {.defaultPath = s_defaultSourcePath});
+            ImGuiUtils::FolderPicker("Output Path", m_ctx.primaryCompileOutputPath, {.defaultPath = m_defaultOutputPath});
+            ImGuiUtils::FolderPicker("Source Primary Path", m_ctx.sourcePrimaryPath, {.defaultPath = m_defaultSourcePath});
             ImGui::SetItemTooltip("Path to a directory containing the source data for a primary set.");
 
-            filesystem::path tilesImagePath {s_ctx.primaryCompileOutputPath / "tiles.png"};
+            filesystem::path tilesImagePath {m_ctx.primaryCompileOutputPath / "tiles.png"};
 
             if (filesystem::exists(tilesImagePath))
             {
-                if (s_previewTexture == nullptr)
+                if (m_previewTexture == nullptr)
                 {
-                    s_previewTexture = IMG_LoadTexture(s_renderer, tilesImagePath.string().c_str());
+                    m_previewTexture = IMG_LoadTexture(m_renderer, tilesImagePath.string().c_str());
                 }
 
                 if (ImGui::Button("Reload Preview"))
                 {
-                    SDL_DestroyTexture(s_previewTexture);
-                    s_previewTexture = nullptr;
+                    SDL_DestroyTexture(m_previewTexture);
+                    m_previewTexture = nullptr;
                 }
 
                 Uint32 format;
                 int access, width, height;
-                SDL_QueryTexture(s_previewTexture, &format, &access, &width, &height);
-                ImGui::Image(s_previewTexture, ImVec2{static_cast<float>(width * 2), static_cast<float>(height * 2)});
+                SDL_QueryTexture(m_previewTexture, &format, &access, &width, &height);
+                ImGui::Image(m_previewTexture, ImVec2{static_cast<float>(width * 2), static_cast<float>(height * 2)});
             }
 
             ImGui::End();
         }
-        if (s_showSecondaryCompilerTool && ImGui::Begin("Secondary Compiler", &s_showSecondaryCompilerTool))
+        if (m_showSecondaryCompilerTool && ImGui::Begin("Secondary Compiler", &m_showSecondaryCompilerTool))
         {
             if (ImGui::Button("Copy Command to Clipboard"))
             {
-                string result = s_commandGenerator.generateCompileSecondaryCommand(s_ctx);
+                string result = m_commandGenerator.generateCompileSecondaryCommand(m_ctx);
                 SDL_SetClipboardText(result.c_str());
             }
 
-            ImGuiUtils::FolderPicker("Output Path", s_ctx.secondaryCompileOutputPath, {.defaultPath = s_defaultOutputPath});
-            ImGuiUtils::FolderPicker("Source Secondary Path", s_ctx.sourceSecondaryPath, {.defaultPath = s_defaultSourcePath});
-            ImGuiUtils::FolderPicker("Source Partner Primary Path", s_ctx.sourcePartnerPrimaryPath, {.defaultPath = s_defaultSourcePath});
+            ImGuiUtils::FolderPicker("Output Path", m_ctx.secondaryCompileOutputPath, {.defaultPath = m_defaultOutputPath});
+            ImGuiUtils::FolderPicker("Source Secondary Path", m_ctx.sourceSecondaryPath, {.defaultPath = m_defaultSourcePath});
+            ImGuiUtils::FolderPicker("Source Partner Primary Path", m_ctx.sourcePartnerPrimaryPath, {.defaultPath = m_defaultSourcePath});
 
             ImGui::SeparatorText("Paired Primary Color Assignment Config");
             ImGui::SetNextItemWidth(100);
-            ImGui::InputInt("Explore Cutoff", &s_ctx.primaryAssignExploreCutoff);
+            ImGui::InputInt("Explore Cutoff", &m_ctx.primaryAssignExploreCutoff);
 
-            if (ImGui::RadioButton("Depth-First Search", s_ctx.primaryAssignAlgorithm == "dfs")) s_ctx.primaryAssignAlgorithm = "dfs"; ImGui::SameLine();
-            if (ImGui::RadioButton("Breadth-First Search", s_ctx.primaryAssignAlgorithm == "bfs")) s_ctx.primaryAssignAlgorithm = "bfs";
+            if (ImGui::RadioButton("Depth-First Search", m_ctx.primaryAssignAlgorithm == "dfs")) m_ctx.primaryAssignAlgorithm = "dfs"; ImGui::SameLine();
+            if (ImGui::RadioButton("Breadth-First Search", m_ctx.primaryAssignAlgorithm == "bfs")) m_ctx.primaryAssignAlgorithm = "bfs";
 
             ImGui::SetNextItemWidth(150);
-            ImGui::InputText("Best Branches", &s_ctx.primaryBestBranches);
+            ImGui::InputText("Best Branches", &m_ctx.primaryBestBranches);
 
             ImGui::End();
         }
-        if (s_showPrimaryDecompilerTool && ImGui::Begin("Primary Decompiler", &s_showPrimaryDecompilerTool))
+        if (m_showPrimaryDecompilerTool && ImGui::Begin("Primary Decompiler", &m_showPrimaryDecompilerTool))
         {
             if (ImGui::Button("Copy Command to Clipboard"))
             {
-                string result = s_commandGenerator.generateDecompilePrimaryCommand(s_ctx);
+                string result = m_commandGenerator.generateDecompilePrimaryCommand(m_ctx);
                 SDL_SetClipboardText(result.c_str());
             }
 
-            ImGuiUtils::FolderPicker("Output Path", s_ctx.primaryDecompileOutputPath, {.defaultPath = s_defaultOutputPath});
-            ImGuiUtils::FolderPicker("Compiled Primary Path", s_ctx.compiledPrimaryPath, {.defaultPath = s_defaultOutputPath});
+            ImGuiUtils::FolderPicker("Output Path", m_ctx.primaryDecompileOutputPath, {.defaultPath = m_defaultOutputPath});
+            ImGuiUtils::FolderPicker("Compiled Primary Path", m_ctx.compiledPrimaryPath, {.defaultPath = m_defaultOutputPath});
             ImGui::End();
         }
-        if (s_showSecondaryDecompilerTool && ImGui::Begin("Secondary Decompiler", &s_showSecondaryDecompilerTool))
+        if (m_showSecondaryDecompilerTool && ImGui::Begin("Secondary Decompiler", &m_showSecondaryDecompilerTool))
         {
-            ImGui::TextColored(s_errorTextColor, "This feature is not yet supported by Porytiles! Running this command will currently do nothing.");
+            ImGui::TextColored(m_errorTextColor, "This feature is not yet supported by Porytiles! Running this command will currently do nothing.");
 
             if (ImGui::Button("Copy Command to Clipboard"))
             {
-                string result = s_commandGenerator.generateDecompileSecondaryCommand(s_ctx);
+                string result = m_commandGenerator.generateDecompileSecondaryCommand(m_ctx);
                 SDL_SetClipboardText(result.c_str());
             }
 
-            ImGuiUtils::FolderPicker("Output Path", s_ctx.secondaryDecompileOutputPath, {.defaultPath = s_defaultSourcePath});
-            ImGuiUtils::FolderPicker("Compiled Secondary Path", s_ctx.compiledSecondaryPath, {.defaultPath = s_defaultOutputPath});
-            ImGuiUtils::FolderPicker("Compiled Partner Primary Path", s_ctx.compiledPartnerPrimaryPath, {.defaultPath = s_defaultOutputPath});
+            ImGuiUtils::FolderPicker("Output Path", m_ctx.secondaryDecompileOutputPath, {.defaultPath = m_defaultSourcePath});
+            ImGuiUtils::FolderPicker("Compiled Secondary Path", m_ctx.compiledSecondaryPath, {.defaultPath = m_defaultOutputPath});
+            ImGuiUtils::FolderPicker("Compiled Partner Primary Path", m_ctx.compiledPartnerPrimaryPath, {.defaultPath = m_defaultOutputPath});
             ImGui::End();
         }
     }
@@ -153,12 +154,12 @@ void PorytilesGui::render()
         ImGui::SeparatorText("Tools");
 
         ImGui::Text("Primary"); ImGui::SameLine();
-        s_showPrimaryCompilerTool |= ImGui::Button("Compiler##Primary"); ImGui::SameLine();
-        s_showPrimaryDecompilerTool |= ImGui::Button("Decompiler##Primary");
+        m_showPrimaryCompilerTool |= ImGui::Button("Compiler##Primary"); ImGui::SameLine();
+        m_showPrimaryDecompilerTool |= ImGui::Button("Decompiler##Primary");
 
         ImGui::Text("Secondary"); ImGui::SameLine();
-        s_showSecondaryCompilerTool |= ImGui::Button("Compiler##Secondary"); ImGui::SameLine();
-        s_showSecondaryDecompilerTool |= ImGui::Button("Decompiler##Secondary");
+        m_showSecondaryCompilerTool |= ImGui::Button("Compiler##Secondary"); ImGui::SameLine();
+        m_showSecondaryDecompilerTool |= ImGui::Button("Decompiler##Secondary");
     }
 
     // Settings
@@ -170,15 +171,15 @@ void PorytilesGui::render()
             ImGui::Spacing(); ImGui::Spacing();
             ImGui::Indent();
 
-            ImGuiUtils::FolderPicker("Project Path", s_ctx.projectPath, {});
-            ImGuiUtils::FilePicker("Porytiles Executable File", s_ctx.porytilesExecutableFile, {});
-            ImGuiUtils::FilePicker("Behaviors Header File", s_ctx.behaviorsHeaderPath, {.filter = "h,hpp"});
-            ImGuiUtils::FolderPicker("Default Output Path", s_defaultOutputPath, {});
-            ImGuiUtils::FolderPicker("Default Source Path", s_defaultSourcePath, {});
+            ImGuiUtils::FolderPicker("Project Path", m_ctx.projectPath, {});
+            ImGuiUtils::FilePicker("Porytiles Executable File", m_ctx.porytilesExecutableFile, {});
+            ImGuiUtils::FilePicker("Behaviors Header File", m_ctx.behaviorsHeaderPath, {.filter = "h,hpp"});
+            ImGuiUtils::FolderPicker("Default Output Path", m_defaultOutputPath, {});
+            ImGuiUtils::FolderPicker("Default Source Path", m_defaultSourcePath, {});
 
             ImGui::Text("Palette Mode");
-            if (ImGui::RadioButton("True Color", s_ctx.paletteMode == "true-color")) s_ctx.paletteMode = "true-color"; ImGui::SameLine();
-            if (ImGui::RadioButton("Greyscale", s_ctx.paletteMode == "greyscale")) s_ctx.paletteMode = "greyscale";
+            if (ImGui::RadioButton("True Color", m_ctx.paletteMode == "true-color")) m_ctx.paletteMode = "true-color"; ImGui::SameLine();
+            if (ImGui::RadioButton("Greyscale", m_ctx.paletteMode == "greyscale")) m_ctx.paletteMode = "greyscale";
 
             ImGui::Unindent();
             ImGui::Spacing(); ImGui::Spacing();
@@ -188,18 +189,18 @@ void PorytilesGui::render()
             ImGui::Spacing(); ImGui::Spacing();
             ImGui::Indent();
 
-            if (ImGui::RadioButton("Emerald", s_ctx.baseGame == "pokeemerald")) s_ctx.baseGame = "pokeemerald"; ImGui::SameLine();
-            if (ImGui::RadioButton("Fire Red", s_ctx.baseGame == "pokefirered")) s_ctx.baseGame = "pokefirered"; ImGui::SameLine();
-            if (ImGui::RadioButton("Ruby", s_ctx.baseGame == "pokeruby")) s_ctx.baseGame = "pokeruby";
+            if (ImGui::RadioButton("Emerald", m_ctx.baseGame == "pokeemerald")) m_ctx.baseGame = "pokeemerald"; ImGui::SameLine();
+            if (ImGui::RadioButton("Fire Red", m_ctx.baseGame == "pokefirered")) m_ctx.baseGame = "pokefirered"; ImGui::SameLine();
+            if (ImGui::RadioButton("Ruby", m_ctx.baseGame == "pokeruby")) m_ctx.baseGame = "pokeruby";
 
-            if (ImGui::RadioButton("Dual", s_ctx.useDualLayer)) s_ctx.useDualLayer = true; ImGui::SameLine();
-            if (ImGui::RadioButton("Triple", !s_ctx.useDualLayer)) s_ctx.useDualLayer = false;
+            if (ImGui::RadioButton("Dual", m_ctx.useDualLayer)) m_ctx.useDualLayer = true; ImGui::SameLine();
+            if (ImGui::RadioButton("Triple", !m_ctx.useDualLayer)) m_ctx.useDualLayer = false;
 
             ImGui::SetNextItemWidth(300);
-            ImGui::ColorEdit3("Transparency Color", s_ctx.transparency);
+            ImGui::ColorEdit3("Transparency Color", m_ctx.transparency);
 
             ImGui::SetNextItemWidth(150);
-            ImGui::InputText("Default Behavior", &s_ctx.defaultBehavior);
+            ImGui::InputText("Default Behavior", &m_ctx.defaultBehavior);
 
             ImGui::Unindent();
             ImGui::Spacing(); ImGui::Spacing();
@@ -210,13 +211,13 @@ void PorytilesGui::render()
             ImGui::Indent();
 
             ImGui::SetNextItemWidth(100);
-            ImGui::InputInt("Assign Explore Cutoff", &s_ctx.assignExploreCutoff);
+            ImGui::InputInt("Assign Explore Cutoff", &m_ctx.assignExploreCutoff);
 
-            if (ImGui::RadioButton("Depth-First Search", s_ctx.assignAlgorithm == "dfs")) s_ctx.assignAlgorithm = "dfs"; ImGui::SameLine();
-            if (ImGui::RadioButton("Breadth-First Search", s_ctx.assignAlgorithm == "bfs")) s_ctx.assignAlgorithm = "bfs";
+            if (ImGui::RadioButton("Depth-First Search", m_ctx.assignAlgorithm == "dfs")) m_ctx.assignAlgorithm = "dfs"; ImGui::SameLine();
+            if (ImGui::RadioButton("Breadth-First Search", m_ctx.assignAlgorithm == "bfs")) m_ctx.assignAlgorithm = "bfs";
 
             ImGui::SetNextItemWidth(150);
-            ImGui::InputText("Best Branches", &s_ctx.bestBranches);
+            ImGui::InputText("Best Branches", &m_ctx.bestBranches);
 
             ImGui::Unindent();
             ImGui::Spacing(); ImGui::Spacing();
@@ -233,7 +234,7 @@ void PorytilesGui::render()
             static int s_palsPrimaryOverride {6};
             static int s_palsTotalOverride {13};
 
-            ImGui::TextColored(s_errorTextColor, "Work-in-progress");
+            ImGui::TextColored(m_errorTextColor, "Work-in-progress");
 
             // todo: this should largely be parsed directly from the game files, but maybe you want manual for testing
             // todo: needs a path for fieldmap, button to reload settings, regex to search file for properties
@@ -247,7 +248,7 @@ void PorytilesGui::render()
             ImGui::Spacing(); ImGui::Spacing();
             ImGui::Indent();
 
-            ImGui::TextColored(s_errorTextColor, "Work-in-progress");
+            ImGui::TextColored(m_errorTextColor, "Work-in-progress");
             // todo: full warning support. https://github.com/grunt-lucas/porytiles/wiki/Warnings-and-Errors
             // todo: probably implement this as a multi-selection toggle list, with a treat-as-error flag for each option
 
