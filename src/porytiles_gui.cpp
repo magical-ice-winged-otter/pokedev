@@ -2,12 +2,13 @@
 #include <SDL.h>
 #include <SDL_image.h>
 #include <imgui_stdlib.h>
+#include <cereal/archives/json.hpp>
+#include <fstream>
 #include "porytiles_gui.hpp"
 #include "porytiles_context.hpp"
 #include "porytiles_command_generator.hpp"
-#include "serializer.hpp"
 #include "imgui_utils.hpp"
-#include "platform.hpp"
+#include "serializer.hpp"
 
 using namespace std;
 
@@ -18,6 +19,7 @@ namespace PorytilesGui
 {
     // General Settings
     static PorytilesContext s_ctx{};
+    static PorytilesCommandGenerator s_commandGenerator {};
 
     // Tools
     static bool s_showPrimaryCompilerTool {};
@@ -35,46 +37,44 @@ namespace PorytilesGui
     void init(SDL_Renderer* renderer)
     {
         s_renderer = renderer;
-        PorytilesCommandGenerator::init();
 
-        // todo: this serialization code is kinda boilderplaty, not huge fan.
-        Serializer::registerValue("assignExploreCutoff", s_ctx.assignExploreCutoff); // Options
-        Serializer::registerValue("assignAlgorithm", s_ctx.assignAlgorithm);
-        Serializer::registerValue("bestBranches", s_ctx.bestBranches);
-        Serializer::registerValue("transparencyColor_R", s_ctx.transparency[0]);
-        Serializer::registerValue("transparencyColor_G", s_ctx.transparency[1]);
-        Serializer::registerValue("transparencyColor_B", s_ctx.transparency[2]);
-        Serializer::registerValue("defaultBehavior", s_ctx.defaultBehavior);
-        Serializer::registerValue("useDualLayer", s_ctx.useDualLayer);
-        Serializer::registerValue("baseGame", s_ctx.baseGame);
-        Serializer::registerValue("projectPath", s_ctx.projectPath);
-        Serializer::registerValue("porytilesExecutableFile", s_ctx.porytilesExecutableFile);
-        Serializer::registerValue("behaviorsHeaderPath", s_ctx.behaviorsHeaderPath);
-        Serializer::registerValue("paletteMode", s_ctx.paletteMode);
-        Serializer::registerValue("primaryCompileOutputPath", s_ctx.primaryCompileOutputPath); // Primary compiler
-        Serializer::registerValue("sourcePrimaryPath", s_ctx.sourcePrimaryPath);
-        Serializer::registerValue("secondaryCompileOutputPath", s_ctx.secondaryCompileOutputPath); // Secondary compiler
-        Serializer::registerValue("sourceSecondaryPath", s_ctx.sourceSecondaryPath);
-        Serializer::registerValue("sourcePartnerPrimaryPath", s_ctx.sourcePartnerPrimaryPath);
-        Serializer::registerValue("primaryAssignExploreCutoff", s_ctx.primaryAssignExploreCutoff);
-        Serializer::registerValue("primaryAssignAlgorithm", s_ctx.primaryAssignAlgorithm);
-        Serializer::registerValue("primaryBestBranches", s_ctx.primaryBestBranches);
-        Serializer::registerValue("primaryDecompileOutputPath", s_ctx.primaryDecompileOutputPath); // Primary decompiler
-        Serializer::registerValue("compiledPrimaryPath", s_ctx.compiledPrimaryPath);
-        Serializer::registerValue("secondaryDecompileOutputPath", s_ctx.secondaryDecompileOutputPath); // Secondary decompiler
-        Serializer::registerValue("compiledSecondaryPath", s_ctx.compiledSecondaryPath);
-        Serializer::registerValue("compiledPartnerPrimaryPath", s_ctx.compiledPartnerPrimaryPath);
-        Serializer::registerValue("showPrimaryCompiler", s_showPrimaryCompilerTool); // Gui settings
-        Serializer::registerValue("showPrimaryDecompiler", s_showPrimaryDecompilerTool);
-        Serializer::registerValue("showSecondaryCompiler", s_showSecondaryCompilerTool);
-        Serializer::registerValue("showSecondaryDecompiler", s_showSecondaryDecompilerTool);
-        Serializer::registerValue("defaultOutputPath", s_defaultOutputPath);
-        Serializer::registerValue("defaultSourcePath", s_defaultSourcePath);
+        const char* configName = "pokedev_porytiles_gui_config.json";
+
+        if (std::filesystem::exists(configName))
+        {
+            std::ifstream configFile {configName};
+            cereal::JSONInputArchive archive {configFile};
+
+            archive(
+                    cereal::make_nvp("porytilesCommandGenerator", s_commandGenerator),
+                    cereal::make_nvp("porytilesContext", s_ctx),
+                    cereal::make_nvp("showPrimaryCompilerTool", s_showPrimaryCompilerTool),
+                    cereal::make_nvp("showPrimaryDecompilerTool", s_showPrimaryDecompilerTool),
+                    cereal::make_nvp("showSecondaryCompilerTool", s_showSecondaryCompilerTool),
+                    cereal::make_nvp("showSecondaryDecompilerTool", s_showSecondaryDecompilerTool),
+                    cereal::make_nvp("defaultOutputPath", s_defaultOutputPath),
+                    cereal::make_nvp("defaultSourcePath", s_defaultSourcePath)
+            );
+        }
     }
 
     void shutdown()
     {
-        PorytilesCommandGenerator::shutdown();
+        const char* configName = "pokedev_porytiles_gui_config.json";
+        std::ofstream configFile {configName};
+        cereal::JSONOutputArchive archive {configFile};
+
+        archive(
+                cereal::make_nvp("porytilesCommandGenerator", s_commandGenerator),
+                cereal::make_nvp("porytilesContext", s_ctx),
+                cereal::make_nvp("showPrimaryCompilerTool", s_showPrimaryCompilerTool),
+                cereal::make_nvp("showPrimaryDecompilerTool", s_showPrimaryDecompilerTool),
+                cereal::make_nvp("showSecondaryCompilerTool", s_showSecondaryCompilerTool),
+                cereal::make_nvp("showSecondaryDecompilerTool", s_showSecondaryDecompilerTool),
+                cereal::make_nvp("defaultOutputPath", s_defaultOutputPath),
+                cereal::make_nvp("defaultSourcePath", s_defaultSourcePath)
+        );
+
         SDL_DestroyTexture(s_previewTexture);
     }
 
@@ -85,7 +85,7 @@ namespace PorytilesGui
         ImGui::SetNextWindowSize(viewport->Size);
         ImGui::Begin("Main Window", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_MenuBar);
 
-        PorytilesCommandGenerator::renderImGui();
+        s_commandGenerator.renderImGui();
 
         // Menu Bar
         {
@@ -120,7 +120,7 @@ namespace PorytilesGui
             {
                 if (ImGui::Button("Copy Command to Clipboard"))
                 {
-                    string result = PorytilesCommandGenerator::generateCompilePrimaryCommand(s_ctx);
+                    string result = s_commandGenerator.generateCompilePrimaryCommand(s_ctx);
                     SDL_SetClipboardText(result.c_str());
                 }
 
@@ -155,13 +155,13 @@ namespace PorytilesGui
             {
                 if (ImGui::Button("Copy Command to Clipboard"))
                 {
-                    string result = PorytilesCommandGenerator::generateCompileSecondaryCommand(s_ctx);
+                    string result = s_commandGenerator.generateCompileSecondaryCommand(s_ctx);
                     SDL_SetClipboardText(result.c_str());
                 }
 
-                ImGuiUtils::FolderPicker("Output Path", s_ctx.secondaryCompileOutputPath, &s_defaultOutputPath);
-                ImGuiUtils::FolderPicker("Source Secondary Path", s_ctx.sourceSecondaryPath, &s_defaultSourcePath);
-                ImGuiUtils::FolderPicker("Source Partner Primary Path", s_ctx.sourcePartnerPrimaryPath, &s_defaultSourcePath);
+                ImGuiUtils::FolderPicker("Output Path", s_ctx.secondaryCompileOutputPath, {.defaultPath = s_defaultOutputPath});
+                ImGuiUtils::FolderPicker("Source Secondary Path", s_ctx.sourceSecondaryPath, {.defaultPath = s_defaultSourcePath});
+                ImGuiUtils::FolderPicker("Source Partner Primary Path", s_ctx.sourcePartnerPrimaryPath, {.defaultPath = s_defaultSourcePath});
 
                 ImGui::SeparatorText("Paired Primary Color Assignment Config");
                 ImGui::SetNextItemWidth(100);
@@ -179,12 +179,12 @@ namespace PorytilesGui
             {
                 if (ImGui::Button("Copy Command to Clipboard"))
                 {
-                    string result = PorytilesCommandGenerator::generateDecompilePrimaryCommand(s_ctx);
+                    string result = s_commandGenerator.generateDecompilePrimaryCommand(s_ctx);
                     SDL_SetClipboardText(result.c_str());
                 }
 
-                ImGuiUtils::FolderPicker("Output Path", s_ctx.primaryDecompileOutputPath, &s_defaultOutputPath);
-                ImGuiUtils::FolderPicker("Compiled Primary Path", s_ctx.compiledPrimaryPath, &s_defaultOutputPath);
+                ImGuiUtils::FolderPicker("Output Path", s_ctx.primaryDecompileOutputPath, {.defaultPath = s_defaultOutputPath});
+                ImGuiUtils::FolderPicker("Compiled Primary Path", s_ctx.compiledPrimaryPath, {.defaultPath = s_defaultOutputPath});
                 ImGui::End();
             }
             if (s_showSecondaryDecompilerTool && ImGui::Begin("Secondary Decompiler", &s_showSecondaryDecompilerTool))
@@ -193,13 +193,13 @@ namespace PorytilesGui
 
                 if (ImGui::Button("Copy Command to Clipboard"))
                 {
-                    string result = PorytilesCommandGenerator::generateDecompileSecondaryCommand(s_ctx);
+                    string result = s_commandGenerator.generateDecompileSecondaryCommand(s_ctx);
                     SDL_SetClipboardText(result.c_str());
                 }
 
-                ImGuiUtils::FolderPicker("Output Path", s_ctx.secondaryDecompileOutputPath, &s_defaultSourcePath);
-                ImGuiUtils::FolderPicker("Compiled Secondary Path", s_ctx.compiledSecondaryPath, &s_defaultOutputPath);
-                ImGuiUtils::FolderPicker("Compiled Partner Primary Path", s_ctx.compiledPartnerPrimaryPath, &s_defaultOutputPath);
+                ImGuiUtils::FolderPicker("Output Path", s_ctx.secondaryDecompileOutputPath, {.defaultPath = s_defaultSourcePath});
+                ImGuiUtils::FolderPicker("Compiled Secondary Path", s_ctx.compiledSecondaryPath, {.defaultPath = s_defaultOutputPath});
+                ImGuiUtils::FolderPicker("Compiled Partner Primary Path", s_ctx.compiledPartnerPrimaryPath, {.defaultPath = s_defaultOutputPath});
                 ImGui::End();
             }
         }
@@ -226,11 +226,11 @@ namespace PorytilesGui
                 ImGui::Spacing(); ImGui::Spacing();
                 ImGui::Indent();
 
-                ImGuiUtils::FolderPicker("Project Path", s_ctx.projectPath);
-                ImGuiUtils::FilePicker("Porytiles Executable File", s_ctx.porytilesExecutableFile);
-                ImGuiUtils::FilePicker("Behaviors Header File", s_ctx.behaviorsHeaderPath, nullptr, "h,hpp");
-                ImGuiUtils::FolderPicker("Default Output Path", s_defaultOutputPath);
-                ImGuiUtils::FolderPicker("Default Source Path", s_defaultSourcePath);
+                ImGuiUtils::FolderPicker("Project Path", s_ctx.projectPath, {});
+                ImGuiUtils::FilePicker("Porytiles Executable File", s_ctx.porytilesExecutableFile, {});
+                ImGuiUtils::FilePicker("Behaviors Header File", s_ctx.behaviorsHeaderPath, {.filter = "h,hpp"});
+                ImGuiUtils::FolderPicker("Default Output Path", s_defaultOutputPath, {});
+                ImGuiUtils::FolderPicker("Default Source Path", s_defaultSourcePath, {});
 
                 ImGui::Text("Palette Mode");
                 if (ImGui::RadioButton("True Color", s_ctx.paletteMode == "true-color")) s_ctx.paletteMode = "true-color"; ImGui::SameLine();

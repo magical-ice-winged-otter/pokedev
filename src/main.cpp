@@ -2,7 +2,6 @@
 #include <imgui_impl_sdl2.h>
 #include <SDL.h>
 #include <filesystem>
-#include "serializer.hpp"
 #include "sdl_imgui_integration.hpp"
 #include "porytiles_gui.hpp"
 #include "platform.hpp"
@@ -33,7 +32,6 @@ int main(int argc, char *argv[])
 
     Platform::init();
     SDLImGuiIntegration::init(window, renderer);
-    Serializer::init(std::filesystem::path{argv[0]}.remove_filename() / "porytiles_gui_config.json");
     PorytilesGui::init(renderer);
 
     bool done = false;
@@ -60,7 +58,6 @@ int main(int argc, char *argv[])
     Platform::shutdown();
     SDLImGuiIntegration::shutdown();
     PorytilesGui::shutdown();
-    Serializer::shutdown();
 
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);

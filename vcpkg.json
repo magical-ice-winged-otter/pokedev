@@ -1,15 +1,18 @@
 {
     "name": "porytiles-gui",
     "version-string": "0.1",
-    "dependencies": [
-        "sdl2-image",
-        "nlohmann-json",
+    "dependencies":
+    [
+        {
+            "name": "sdl2",
+            "features": ["base"]
+        },
+        {
+            "name": "sdl2-image"
+        },
         {
             "name": "imgui",
-            "features": [
-                "sdl2-binding",
-                "sdl2-renderer-binding"
-            ]
+            "features": ["sdl2-binding", "sdl2-renderer-binding"]
         }
     ]
 }

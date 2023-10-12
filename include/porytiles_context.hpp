@@ -3,6 +3,7 @@
 
 #include <filesystem>
 #include <string>
+#include <cereal/cereal.hpp>
 
 // The working state that Porytiles needs to produce valid results.
 // Every field except file paths are given reasonable defaults, closely following the
@@ -42,6 +43,39 @@ struct PorytilesContext
     std::filesystem::path secondaryDecompileOutputPath {};
     std::filesystem::path compiledSecondaryPath {};
     std::filesystem::path compiledPartnerPrimaryPath {};
+
+    template<class Archive>
+    void serialize(Archive& archive)
+    {
+        archive(
+                CEREAL_NVP(projectPath),  /*General*/
+                CEREAL_NVP(porytilesExecutableFile),
+                CEREAL_NVP(behaviorsHeaderPath),
+                CEREAL_NVP(paletteMode),
+                CEREAL_NVP(baseGame),
+                CEREAL_NVP(useDualLayer),
+                cereal::make_nvp("transparency_R", transparency[0]),
+                cereal::make_nvp("transparency_G", transparency[1]),
+                cereal::make_nvp("transparency_B", transparency[2]),
+                CEREAL_NVP(defaultBehavior),
+                CEREAL_NVP(assignExploreCutoff),
+                CEREAL_NVP(assignAlgorithm),
+                CEREAL_NVP(bestBranches),
+                CEREAL_NVP(primaryCompileOutputPath), /*Compile Primary*/
+                CEREAL_NVP(sourcePrimaryPath),
+                CEREAL_NVP(secondaryCompileOutputPath), /*Compile Secondary*/
+                CEREAL_NVP(sourceSecondaryPath),
+                CEREAL_NVP(sourcePartnerPrimaryPath),
+                CEREAL_NVP(primaryAssignExploreCutoff),
+                CEREAL_NVP(primaryAssignAlgorithm),
+                CEREAL_NVP(primaryBestBranches),
+                CEREAL_NVP(primaryDecompileOutputPath), /*Decompile Primary*/
+                CEREAL_NVP(compiledPrimaryPath),
+                CEREAL_NVP(secondaryDecompileOutputPath),  /*Decompile Secondary*/
+                CEREAL_NVP(compiledSecondaryPath),
+                CEREAL_NVP(compiledPartnerPrimaryPath)
+        );
+    }
 };
 
 #endif // PORYTILES_GUI_CONTEXT

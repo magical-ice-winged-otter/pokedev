@@ -1,36 +1,23 @@
-#ifndef PORYTILES_GUI_SERIALIZER_HPP
-#define PORYTILES_GUI_SERIALIZER_HPP
+#ifndef POKETOOLS_SERIALIZER_HPP
+#define POKETOOLS_SERIALIZER_HPP
 
 #include <filesystem>
 #include <string>
-#include <nlohmann/json.hpp>
-#include <vector>
+#include <cereal/cereal.hpp>
 
-// todo: allow saving + loading from specific files, not just at startup
-
-namespace Serializer
+namespace std::filesystem
 {
-    extern nlohmann::json g_config;
-    extern std::vector<std::function<void()>> g_serializeCallbacks;
-
-    void init(const std::filesystem::path& configPath);
-    void shutdown();
-
-    template<typename T>
-    void registerValue(const std::string& id, T& value)
+    template<class Archive>
+    inline std::string save_minimal(const Archive&, const std::filesystem::path& path)
     {
-        if (g_config.contains(id))
-            value = g_config[id];
-
-        g_serializeCallbacks.emplace_back([id, &value]() {
-            g_config[id] = value;
-        });
+        return path.string();
     }
 
-    // Specializations for serializing more complicated types
-
-    template<> void registerValue(const std::string& id, std::filesystem::path& value);
+    template<class Archive>
+    inline void load_minimal(const Archive&, std::filesystem::path& path, const std::string& value)
+    {
+        path = filesystem::path {value};
+    }
 }
 
-#endif // PORYTILES_GUI_SERIALIZER_HPP
-
+#endif

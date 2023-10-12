@@ -3,123 +3,102 @@
 #include <imgui.h>
 #include "porytiles_context.hpp"
 #include "porytiles_command_generator.hpp"
-#include "serializer.hpp"
 #include "imgui_utils.hpp"
 
 using namespace std;
 
-namespace PorytilesCommandGenerator
+void PorytilesCommandGenerator::renderImGui()
 {
-    static bool s_shouldUseRelativePaths {};
-    static bool s_shouldWslFakeAbsolute {};
-    static filesystem::path s_relativeBasePath {};
+    ImGui::SeparatorText("Command Generator");
+    ImGui::Checkbox("Should Use Relative Paths", &m_shouldUseRelativePaths);
 
-    void init()
+    if (m_shouldUseRelativePaths)
     {
-        Serializer::registerValue("shouldUseRelativePaths", s_shouldUseRelativePaths);
-        Serializer::registerValue("relativeBasePath", s_relativeBasePath);
-        Serializer::registerValue("shouldWslFakeAbsolute", s_shouldWslFakeAbsolute);
+        ImGuiUtils::FolderPicker("Base Path", m_relativeBasePath, {});
+        ImGui::Checkbox("Should WSL Fake Absolute Path", &m_shouldWslFakeAbsolute);
     }
+}
 
-    void shutdown()
+string PorytilesCommandGenerator::getPathString(const filesystem::path& path)
+{
+    if (m_shouldUseRelativePaths)
     {
-        // No shutdown logic needed for now.
+        filesystem::path relativePath {filesystem::relative(path, m_relativeBasePath)};
+
+        if (m_shouldWslFakeAbsolute)
+            relativePath = filesystem::path{"/"} / relativePath;
+
+        string relativeString = relativePath.string();
+        replace(relativeString.begin(), relativeString.end(), '\\', '/');
+        return relativeString;
     }
+    else return path.string();
+}
 
-    void renderImGui()
-    {
-        ImGui::SeparatorText("Command Generator");
-        ImGui::Checkbox("Should Use Relative Paths", &s_shouldUseRelativePaths);
+string PorytilesCommandGenerator::getOptions(PorytilesContext& context, const filesystem::path& outputPath)
+{
+    string result {};
+    result += format(" -output={} ", getPathString(outputPath));
+    result += format(" -tiles-output-pal={} ", context.paletteMode);
+    result += format(" -target-base-game={} ", context.baseGame);
 
-        if (s_shouldUseRelativePaths)
-        {
-            ImGuiUtils::FolderPicker("Base Path", s_relativeBasePath);
-            ImGui::Checkbox("Should WSL Fake Absolute Path", &s_shouldWslFakeAbsolute);
-        }
-    }
+    if (context.useDualLayer)
+        result+= " -dual-layer ";
 
-    static string getPathString(const filesystem::path& path)
-    {
-        if (s_shouldUseRelativePaths)
-        {
-            filesystem::path relativePath {filesystem::relative(path, s_relativeBasePath)};
+    result += format(" -transparency-color={},{},{} ", context.transparency[0] * 255, context.transparency[1] * 255, context.transparency[2] * 255);
+    result += format(" -default-behavior={} ", context.defaultBehavior);
+    result += format(" -assign-explore-cutoff={} ", context.assignExploreCutoff);
+    result += format(" -assign-algorithm={} ", context.assignAlgorithm);
+    result += format(" -best-branches={} ", context.bestBranches);
 
-            if (s_shouldWslFakeAbsolute)
-                relativePath = filesystem::path{"/"} / relativePath;
+    // todo: fieldmap options
+    // todo: warning options
 
-            string relativeString = relativePath.string();
-            replace(relativeString.begin(), relativeString.end(), '\\', '/');
-            return relativeString;
-        }
-        else return path.string();
-    }
+    return result;
+}
 
-    static string getOptions(PorytilesContext& context, const filesystem::path& outputPath)
-    {
-        string result {};
-        result += format(" -output={} ", getPathString(outputPath));
-        result += format(" -tiles-output-pal={} ", context.paletteMode);
-        result += format(" -target-base-game={} ", context.baseGame);
+string PorytilesCommandGenerator::generateCompilePrimaryCommand(PorytilesContext& context)
+{
+    string options {getOptions(context, context.primaryCompileOutputPath)};
+    string porytiles {getPathString(context.porytilesExecutableFile)};
+    string behaviorsHeader {getPathString(context.behaviorsHeaderPath)};
 
-        if (context.useDualLayer)
-            result+= " -dual-layer ";
+    string srcPrimaryPath {getPathString(context.sourcePrimaryPath)};
+    return format("{} compile-primary {} {} {}", porytiles, options, srcPrimaryPath, behaviorsHeader);
+}
 
-        result += format(" -transparency-color={},{},{} ", context.transparency[0] * 255, context.transparency[1] * 255, context.transparency[2] * 255);
-        result += format(" -default-behavior={} ", context.defaultBehavior);
-        result += format(" -assign-explore-cutoff={} ", context.assignExploreCutoff);
-        result += format(" -assign-algorithm={} ", context.assignAlgorithm);
-        result += format(" -best-branches={} ", context.bestBranches);
+string PorytilesCommandGenerator::generateCompileSecondaryCommand(PorytilesContext& context)
+{
+    string options {getOptions(context, context.secondaryCompileOutputPath)};
+    string porytiles {getPathString(context.porytilesExecutableFile)};
+    string behaviorsHeader {getPathString(context.behaviorsHeaderPath)};
 
-        // todo: fieldmap options
-        // todo: warning options
+    options += format(" -primary-assign-explore-cutoff={} ", context.primaryAssignExploreCutoff);
+    options += format(" -primary-assign-algorithm={} ", context.primaryAssignAlgorithm);
+    options += format(" -primary-best-branches={} ", context.primaryBestBranches);
 
-        return result;
-    }
+    string srcSecondaryPath {getPathString(context.sourceSecondaryPath)};
+    string srcPartnerPrimaryPath {getPathString(context.sourcePartnerPrimaryPath)};
+    return format("{} compile-secondary {} {} {} {}", porytiles, options, srcSecondaryPath, srcPartnerPrimaryPath, behaviorsHeader);
+}
 
-    string generateCompilePrimaryCommand(PorytilesContext& context)
-    {
-        string options {getOptions(context, context.primaryCompileOutputPath)};
-        string porytiles {getPathString(context.porytilesExecutableFile)};
-        string behaviorsHeader {getPathString(context.behaviorsHeaderPath)};
+string PorytilesCommandGenerator::generateDecompilePrimaryCommand(PorytilesContext& context)
+{
+    string options {getOptions(context, context.primaryDecompileOutputPath)};
+    string porytiles {getPathString(context.porytilesExecutableFile)};
+    string behaviorsHeader {getPathString(context.behaviorsHeaderPath)};
 
-        string srcPrimaryPath {getPathString(context.sourcePrimaryPath)};
-        return format("{} compile-primary {} {} {}", porytiles, options, srcPrimaryPath, behaviorsHeader);
-    }
+    string compiledPrimaryPath {getPathString(context.compiledPrimaryPath)};
+    return format("{} decompile-primary {} {} {}", porytiles, options, compiledPrimaryPath, behaviorsHeader);
+}
 
-    string generateCompileSecondaryCommand(PorytilesContext& context)
-    {
-        string options {getOptions(context, context.secondaryCompileOutputPath)};
-        string porytiles {getPathString(context.porytilesExecutableFile)};
-        string behaviorsHeader {getPathString(context.behaviorsHeaderPath)};
+string PorytilesCommandGenerator::generateDecompileSecondaryCommand(PorytilesContext& context)
+{
+    string options {getOptions(context, context.secondaryDecompileOutputPath)};
+    string porytiles {getPathString(context.porytilesExecutableFile)};
+    string behaviorsHeader {getPathString(context.behaviorsHeaderPath)};
 
-        options += format(" -primary-assign-explore-cutoff={} ", context.primaryAssignExploreCutoff);
-        options += format(" -primary-assign-algorithm={} ", context.primaryAssignAlgorithm);
-        options += format(" -primary-best-branches={} ", context.primaryBestBranches);
-
-        string srcSecondaryPath {getPathString(context.sourceSecondaryPath)};
-        string srcPartnerPrimaryPath {getPathString(context.sourcePartnerPrimaryPath)};
-        return format("{} compile-secondary {} {} {} {}", porytiles, options, srcSecondaryPath, srcPartnerPrimaryPath, behaviorsHeader);
-    }
-
-    string generateDecompilePrimaryCommand(PorytilesContext& context)
-    {
-        string options {getOptions(context, context.primaryDecompileOutputPath)};
-        string porytiles {getPathString(context.porytilesExecutableFile)};
-        string behaviorsHeader {getPathString(context.behaviorsHeaderPath)};
-
-        string compiledPrimaryPath {getPathString(context.compiledPrimaryPath)};
-        return format("{} decompile-primary {} {} {}", porytiles, options, compiledPrimaryPath, behaviorsHeader);
-    }
-
-    string generateDecompileSecondaryCommand(PorytilesContext& context)
-    {
-        string options {getOptions(context, context.secondaryDecompileOutputPath)};
-        string porytiles {getPathString(context.porytilesExecutableFile)};
-        string behaviorsHeader {getPathString(context.behaviorsHeaderPath)};
-
-        string compiledSecondaryPath {getPathString(context.compiledSecondaryPath)};
-        string compiledPartnerPrimaryPath {getPathString(context.compiledPartnerPrimaryPath)};
-        return format("{} decompile-secondary {} {} {} {}", porytiles, options, compiledSecondaryPath, compiledPartnerPrimaryPath, behaviorsHeader);
-    }
-
-} // namespace PorytilesCommandGenerator
+    string compiledSecondaryPath {getPathString(context.compiledSecondaryPath)};
+    string compiledPartnerPrimaryPath {getPathString(context.compiledPartnerPrimaryPath)};
+    return format("{} decompile-secondary {} {} {} {}", porytiles, options, compiledSecondaryPath, compiledPartnerPrimaryPath, behaviorsHeader);
+}
