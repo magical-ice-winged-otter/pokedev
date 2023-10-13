@@ -31,11 +31,11 @@ void PorytilesGui::renderSettings()
         ImGui::Spacing();
         ImGui::Indent();
 
-        ImGuiUtils::FolderPicker("Project Path", m_ctx.projectPath, {});
-        ImGuiUtils::FilePicker("Porytiles Executable File", m_ctx.porytilesExecutableFile, {});
-        ImGuiUtils::FilePicker("Behaviors Header File", m_ctx.behaviorsHeaderPath, {.filter = "h,hpp"});
-        ImGuiUtils::FolderPicker("Default Output Path", m_defaultOutputPath, {});
-        ImGuiUtils::FolderPicker("Default Source Path", m_defaultSourcePath, {});
+        ImGuiUtils::folderPicker("Project Path", m_ctx.projectPath, {});
+        ImGuiUtils::filePicker("Porytiles Executable File", m_ctx.porytilesExecutableFile, {});
+        ImGuiUtils::filePicker("Behaviors Header File", m_ctx.behaviorsHeaderPath, {.filter = "h,hpp"});
+        ImGuiUtils::folderPicker("Default Output Path", m_defaultOutputPath, {});
+        ImGuiUtils::folderPicker("Default Source Path", m_defaultSourcePath, {});
 
         ImGui::Text("Palette Mode");
         if (ImGui::RadioButton("True Color", m_ctx.paletteMode == "true-color")) m_ctx.paletteMode = "true-color";
@@ -141,9 +141,9 @@ void PorytilesGui::renderPrimaryCompilerWindow(bool* isOpen)
             SDL_SetClipboardText(result.c_str());
         }
 
-        ImGuiUtils::FolderPicker("Output Path", m_ctx.primaryCompileOutputPath,
+        ImGuiUtils::folderPicker("Output Path", m_ctx.primaryCompileOutputPath,
                                  {.defaultPath = m_defaultOutputPath});
-        ImGuiUtils::FolderPicker("Source Primary Path", m_ctx.sourcePrimaryPath,
+        ImGuiUtils::folderPicker("Source Primary Path", m_ctx.sourcePrimaryPath,
                                  {.defaultPath = m_defaultSourcePath});
         ImGui::SetItemTooltip("Path to a directory containing the source data for a primary set.");
 
@@ -182,9 +182,9 @@ void PorytilesGui::renderPrimaryDecompilerWindow(bool* isOpen)
             SDL_SetClipboardText(result.c_str());
         }
 
-        ImGuiUtils::FolderPicker("Output Path", m_ctx.primaryDecompileOutputPath,
+        ImGuiUtils::folderPicker("Output Path", m_ctx.primaryDecompileOutputPath,
                                  {.defaultPath = m_defaultOutputPath});
-        ImGuiUtils::FolderPicker("Compiled Primary Path", m_ctx.compiledPrimaryPath,
+        ImGuiUtils::folderPicker("Compiled Primary Path", m_ctx.compiledPrimaryPath,
                                  {.defaultPath = m_defaultOutputPath});
         ImGui::End();
     }
@@ -200,11 +200,11 @@ void PorytilesGui::renderSecondaryCompilerWindow(bool* isOpen)
             SDL_SetClipboardText(result.c_str());
         }
 
-        ImGuiUtils::FolderPicker("Output Path", m_ctx.secondaryCompileOutputPath,
+        ImGuiUtils::folderPicker("Output Path", m_ctx.secondaryCompileOutputPath,
                                  {.defaultPath = m_defaultOutputPath});
-        ImGuiUtils::FolderPicker("Source Secondary Path", m_ctx.sourceSecondaryPath,
+        ImGuiUtils::folderPicker("Source Secondary Path", m_ctx.sourceSecondaryPath,
                                  {.defaultPath = m_defaultSourcePath});
-        ImGuiUtils::FolderPicker("Source Partner Primary Path", m_ctx.sourcePartnerPrimaryPath,
+        ImGuiUtils::folderPicker("Source Partner Primary Path", m_ctx.sourcePartnerPrimaryPath,
                                  {.defaultPath = m_defaultSourcePath});
 
         ImGui::SeparatorText("Paired Primary Color Assignment Config");
@@ -239,11 +239,11 @@ void PorytilesGui::renderSecondaryDecompilerWindow(bool* isOpen)
             SDL_SetClipboardText(result.c_str());
         }
 
-        ImGuiUtils::FolderPicker("Output Path", m_ctx.secondaryDecompileOutputPath,
+        ImGuiUtils::folderPicker("Output Path", m_ctx.secondaryDecompileOutputPath,
                                  {.defaultPath = m_defaultSourcePath});
-        ImGuiUtils::FolderPicker("Compiled Secondary Path", m_ctx.compiledSecondaryPath,
+        ImGuiUtils::folderPicker("Compiled Secondary Path", m_ctx.compiledSecondaryPath,
                                  {.defaultPath = m_defaultOutputPath});
-        ImGuiUtils::FolderPicker("Compiled Partner Primary Path", m_ctx.compiledPartnerPrimaryPath,
+        ImGuiUtils::folderPicker("Compiled Partner Primary Path", m_ctx.compiledPartnerPrimaryPath,
                                  {.defaultPath = m_defaultOutputPath});
         ImGui::End();
     }

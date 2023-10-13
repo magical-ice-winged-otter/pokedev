@@ -2,6 +2,7 @@
 #include "platform.hpp"
 #include "porytiles/porytiles_gui.hpp"
 #include "serializer.hpp"
+#include "trainers/trainer_data.hpp"
 
 static struct WindowState
 {
@@ -62,6 +63,7 @@ void Application::render()
     ImGuiViewport* viewport = ImGui::GetMainViewport();
     ImGui::SetNextWindowPos(viewport->Pos);
     ImGui::SetNextWindowSize(viewport->Size);
+    ImGui::GetIO().ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
 
     int flags =
         ImGuiWindowFlags_NoDecoration |
@@ -99,6 +101,13 @@ void Application::render()
     }
 
     ImGui::End();
+
+    if (ImGui::Begin("Trainer Editor"))
+    {
+        static TrainerMonData s_trainerData{};
+        drawMonData(s_trainerData);
+        ImGui::End();
+    }
 
     if (ws.showPrimaryCompilerTool) s_porytilesGui.renderPrimaryCompilerWindow(&ws.showPrimaryCompilerTool);
     if (ws.showPrimaryDecompilerTool) s_porytilesGui.renderPrimaryDecompilerWindow(&ws.showPrimaryDecompilerTool);

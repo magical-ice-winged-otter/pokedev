@@ -14,7 +14,7 @@ void PorytilesCommandGenerator::renderSettings()
 
     if (m_shouldUseRelativePaths)
     {
-        ImGuiUtils::FolderPicker("Base Path", m_relativeBasePath, {});
+        ImGuiUtils::folderPicker("Base Path", m_relativeBasePath, {});
         ImGui::Checkbox("Should WSL Fake Absolute Path", &m_shouldWslFakeAbsolute);
     }
 }
