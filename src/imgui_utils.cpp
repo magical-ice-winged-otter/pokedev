@@ -17,6 +17,9 @@ namespace ImGuiUtils
 
     bool FilteredCombo::draw(const char* label, int& outSelectedIndex)
     {
+        if (m_values.empty())
+            return false;
+
         bool isOpen = ImGui::BeginCombo(label, m_values[outSelectedIndex].c_str());
 
         if (isOpen)
