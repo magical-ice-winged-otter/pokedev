@@ -24,7 +24,7 @@ namespace ImGuiUtils
 
         if (isOpen)
         {
-            // Keep track of the open history, so we can auto-focus on the filter input.
+            // Keep track of the open history, so we can autofocus on the filter input.
             if (!m_wasOpen)
                 ImGui::SetKeyboardFocusHere();
 

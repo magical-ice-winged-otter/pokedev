@@ -23,6 +23,7 @@ set(SOURCE_FILES
         "src/imgui_utils.cpp"
         "src/porytiles/porytiles_gui.cpp"
         "src/porytiles/porytiles_command_generator.cpp"
+        "src/text_parser.cpp"
 )
 
 set(INCLUDE_FILES

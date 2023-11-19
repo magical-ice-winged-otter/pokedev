@@ -486,9 +486,9 @@ public:
 
     void draw()
     {
-        m_speciesCombo.draw("Species", m_selectedSpeciesIndex);
-
-        ImGui::InputInt("Level", &m_level);
+        m_speciesCombo.draw("##Species", m_selectedSpeciesIndex);
+        ImGui::Text("Level"); ImGui::SameLine();
+        ImGui::InputInt("##Level", &m_level);
         m_level = std::clamp(m_level, 0, 100);
 
         for (size_t i = 0; i < properties.size(); i++)
@@ -633,7 +633,7 @@ inline void drawMonData(TrainerMonData& data)
 
     if (ImGui::Button("load data"))
     {
-        std::filesystem::path projectRoot{R"(\\wsl.localhost\Ubuntu\home\poetahto\projects\decomps\islandgame2)"};
+        std::filesystem::path projectRoot{R"(\\wsl.localhost\Debian\home\poetahto\projects\islandgame2)"};
 
         s_data.moves = parseNameData(projectRoot / "src/data/text/move_names.h", "gMoveNames");
         s_data.species = parseNameData(projectRoot / "src/data/text/species_names.h", "gSpeciesNames");
@@ -645,12 +645,45 @@ inline void drawMonData(TrainerMonData& data)
     }
 
     if (ImGui::Button("generate command"))
-    {
-        std::string result = data.generateData();
-        printf("%s\n", result.c_str());
-        SDL_SetClipboardText(result.c_str());
-    }
+        SDL_SetClipboardText(data.generateData().c_str());
 
+    ImGui::SeparatorText("Trainer");
+    static int s_selectedItem {};
+    static const char* s_itemList {"ITEM_NONE\0ITEM_HYPER_POTION"};
+    ImGui::PushItemWidth(ImGui::CalcItemWidth() / 4);
+    ImGui::Combo("##item1", &s_selectedItem, s_itemList); ImGui::SameLine();
+    ImGui::Combo("##item2", &s_selectedItem, s_itemList); ImGui::SameLine();
+    ImGui::Combo("##item3", &s_selectedItem, s_itemList); ImGui::SameLine();
+    ImGui::Combo("##item4", &s_selectedItem, s_itemList);
+    ImGui::PopItemWidth();
+    static int s_trainerClass {};
+    ImGui::Combo("Trainer Class", &s_trainerClass, "TRAINER_CLASS_PKMN_TRAINER_1\0TRAINER\0COOLGUY");
+    static int s_encounterMusic {};
+    ImGui::Combo("Encounter Music", &s_encounterMusic, "TRAINER_ENCOUNTER_MUSIC_HIKER\0HIKER");
+    static int s_picture {};
+    ImGui::Combo("Picture", &s_picture, "TRAINER_PIC_COOLTRAINER_M");
+    static std::string s_name{};
+    ImGui::InputText("Name", &s_name);
+    static bool s_doubleBattle{};
+    ImGui::Checkbox("Double battle", &s_doubleBattle);
+
+    ImGui::SeparatorText("Flags");
+    static bool s_flag {};
+    ImGui::Checkbox("Check Bad Move", &s_flag);
+    // todo: dynamically get all flags
+
+    static int s_partyIndex{};
+    static const char* s_partyMembers[] { "Bulbasaur", "Venusaur", "Charizard", "Volcarona"};
+    ImGui::SeparatorText("Trainer Party");
+    ImGui::SetNextItemWidth(150);
+    ImGui::ListBox("##Party", &s_partyIndex, s_partyMembers, IM_ARRAYSIZE(s_partyMembers)); // todo: add members into list
+    ImGui::SameLine();
+
+    ImGui::PushStyleVar(ImGuiStyleVar_ChildRounding, 5.0f);
+    ImGui::BeginChild("Mon Editor", ImVec2(0, 350), true);
     data.draw();
+    ImGui::EndChild();
+    ImGui::PopStyleVar();
+
     ImGui::PopItemWidth();
 }
