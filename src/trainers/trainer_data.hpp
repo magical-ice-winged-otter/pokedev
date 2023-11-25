@@ -1,15 +1,10 @@
 ﻿#include <imgui.h>
 #include <imgui_stdlib.h>
+#include <regex>
 #include <string>
 #include "imgui_utils.hpp"
 #include "serializer.hpp"
 #include "text_parser.hpp"
-
-struct NameData
-{
-    std::string name;
-    std::string define;
-};
 
 struct NameDataList
 {
@@ -26,11 +21,15 @@ struct NameDataList
 
 struct PokeemeraldData
 {
-    NameDataList moves{};
-    NameDataList species{};
-    NameDataList abilities{};
-    NameDataList natures{};
-    NameDataList items{};
+    std::vector<std::string> moves{};
+    std::vector<std::string> species{};
+    std::vector<std::string> abilities{};
+    std::vector<std::string> natures{};
+    std::vector<std::string> items{};
+    std::vector<std::string> trainerClasses{};
+    std::vector<std::string> trainerEncounterMusic{};
+    std::vector<std::string> trainerPictures{};
+    std::vector<std::string> trainerAiFlags{};
 };
 
 static PokeemeraldData s_data{};
@@ -235,20 +234,20 @@ struct GenderProperty final : TrainerMonProperty
 struct MovesProperty final : TrainerMonProperty
 {
     MovesProperty() :
-        m_moveCombo1(s_data.moves.names),
-        m_moveCombo2(s_data.moves.names),
-        m_moveCombo3(s_data.moves.names),
-        m_moveCombo4(s_data.moves.names)
+            m_moveCombo1(s_data.moves),
+            m_moveCombo2(s_data.moves),
+            m_moveCombo3(s_data.moves),
+            m_moveCombo4(s_data.moves)
     {
     }
 
     std::string compileLine() override
     {
         return std::format(".moves = {{{}, {}, {}, {}}}",
-                           s_data.moves.defines[m_selectedMove1Index],
-                           s_data.moves.defines[m_selectedMove2Index],
-                           s_data.moves.defines[m_selectedMove3Index],
-                           s_data.moves.defines[m_selectedMove4Index]
+                           s_data.moves[m_selectedMove1Index],
+                           s_data.moves[m_selectedMove2Index],
+                           s_data.moves[m_selectedMove3Index],
+                           s_data.moves[m_selectedMove4Index]
         );
     }
 
@@ -269,10 +268,10 @@ struct MovesProperty final : TrainerMonProperty
     void serialize(Archive& archive)
     {
         archive(
-            CUSTOM_NAME("moveIndex_1", m_selectedMove1Index),
-            CUSTOM_NAME("moveIndex_2", m_selectedMove2Index),
-            CUSTOM_NAME("moveIndex_3", m_selectedMove3Index),
-            CUSTOM_NAME("moveIndex_4", m_selectedMove4Index)
+                CUSTOM_NAME("moveIndex_1", m_selectedMove1Index),
+                CUSTOM_NAME("moveIndex_2", m_selectedMove2Index),
+                CUSTOM_NAME("moveIndex_3", m_selectedMove3Index),
+                CUSTOM_NAME("moveIndex_4", m_selectedMove4Index)
         );
     }
 
@@ -294,13 +293,13 @@ private:
 
 struct AbilityProperty final : TrainerMonProperty
 {
-    AbilityProperty() : m_combo{s_data.abilities.names}
+    AbilityProperty() : m_combo{s_data.abilities}
     {
     }
 
     std::string compileLine() override
     {
-        return std::format(".ability = {}", s_data.abilities.defines[m_selectedIndex]);
+        return std::format(".ability = {}", s_data.abilities[m_selectedIndex]);
     }
 
     void draw() override
@@ -326,13 +325,13 @@ private:
 
 struct NatureProperty final : TrainerMonProperty
 {
-    NatureProperty() : m_combo{s_data.natures.defines}
+    NatureProperty() : m_combo{s_data.natures}
     {
     }
 
     std::string compileLine() override
     {
-        return std::format(".nature = TRAINER_PARTY_NATURE({})", s_data.natures.defines[m_selectedIndex]);
+        return std::format(".nature = TRAINER_PARTY_NATURE({})", s_data.natures[m_selectedIndex]);
     }
 
     void draw() override
@@ -358,13 +357,13 @@ private:
 
 struct ItemProperty final : TrainerMonProperty
 {
-    ItemProperty() : m_combo{s_data.items.names}
+    ItemProperty() : m_combo{s_data.items}
     {
     }
 
     std::string compileLine() override
     {
-        return std::format(".heldItem = {}", s_data.items.defines[m_selectedIndex]);
+        return std::format(".heldItem = {}", s_data.items[m_selectedIndex]);
     }
 
     void draw() override
@@ -395,15 +394,12 @@ struct BallProperty final : TrainerMonProperty
         ImGuiTextFilter filter{"BALL"};
         filter.Build();
 
-        for (size_t i = 0; i < s_data.items.size(); i++)
+        for (const std::string& item : s_data.items)
         {
-            if (s_data.items.defines[i] == "FIRST_BALL")
-                break;
-
-            if (filter.PassFilter(s_data.items.defines[i].c_str()))
+            if (filter.PassFilter(item.c_str()))
             {
-                m_ballData.names.push_back(s_data.items.names[i]);
-                m_ballData.defines.push_back(s_data.items.defines[i]);
+                m_ballData.names.push_back(item);
+                m_ballData.defines.push_back(item);
             }
         }
     }
@@ -464,7 +460,7 @@ class TrainerMonData
 public:
     std::vector<Toggleable<TrainerMonProperty&>> properties;
 
-    TrainerMonData() : m_speciesCombo{s_data.species.defines}
+    TrainerMonData() : m_speciesCombo{s_data.species}
     {
     }
 
@@ -472,7 +468,7 @@ public:
     {
         std::string result{"    {\n"};
         result += std::format("        .species = {},\n        .lvl = {}",
-                              s_data.species.defines[m_selectedSpeciesIndex], m_level);
+                              s_data.species[m_selectedSpeciesIndex], m_level);
 
         for (auto property : properties)
         {
@@ -512,9 +508,9 @@ public:
     void serialize(Archive& archive)
     {
         archive(
-            CUSTOM_NAME("speciesIndex", m_selectedSpeciesIndex),
-            CUSTOM_NAME("level", m_level),
-            AUTO_NAME(properties)
+                CUSTOM_NAME("speciesIndex", m_selectedSpeciesIndex),
+                CUSTOM_NAME("level", m_level),
+                AUTO_NAME(properties)
         );
     }
 
@@ -540,94 +536,27 @@ inline void initializeEmeraldExpansionProperties(TrainerMonData& data)
     data.properties.emplace_back(false, *new FriendshipProperty);
 }
 
-inline NameDataList parseNameData(const std::filesystem::path& nameFilePath, const std::string& arrayName)
+inline std::vector<std::string> parseDefines(const std::filesystem::path& filePath, const char* regex)
 {
-    NameDataList result{};
-    std::ifstream stream{nameFilePath};
+    std::ifstream stream {filePath};
+    std::string line {};
+    std::vector<std::string> results {};
+    std::smatch match {};
 
-    TextParser::tryFind(stream, arrayName);
-    TextParser::tryFind(stream, '{');
-
-    while (TextParser::tryFind(stream, '[', '}'))
+    while (std::getline(stream, line))
     {
-        stream.get(); // skip the '['
-        NameData data{};
-        result.defines.push_back(TextParser::readToExclusive(stream, ']'));
-        TextParser::tryFind(stream, '"');
-        stream.get(); // skip the '"'
-        result.names.push_back(TextParser::readToExclusive(stream, '"'));
-    }
+        bool hasDefine = line.find("#define") != std::string::npos;
 
-    return result;
-}
-
-inline NameDataList parseItemData(const std::filesystem::path& projectFilePath)
-{
-    NameDataList result{};
-    std::ifstream stream{projectFilePath / "include/constants/items.h"};
-
-    TextParser::tryFind(stream, "#define ITEM_NONE 0");
-
-    while (TextParser::tryFind(stream, '#'))
-    {
-        TextParser::tryFind(stream, ' ');
-        stream.get(); // skip the ' '
-        std::string value = TextParser::readToExclusive(stream, ' ');
-
-        if (value == "ITEMS_COUNT")
-            break;
-
-        // todo: find proper item name?
-        result.defines.push_back(value);
-        result.names.push_back(value);
-    }
-
-    return result;
-}
-
-inline NameDataList parseNatureData(const std::filesystem::path& projectFilePath)
-{
-    NameDataList result{};
-    std::ifstream stream{projectFilePath / "src/data/text/nature_names.h"};
-
-    // Pass 1: get all the name pointers
-    std::unordered_map<std::string, std::string> namePointerLookup{};
-
-    while (TextParser::tryFind(stream, "static const u8", '{'))
-    {
-        stream.ignore(16); // skip the "static const u8 " part
-        std::string pointerId = TextParser::readToExclusive(stream, '[');
-        TextParser::tryFind(stream, '"');
-        stream.get(); // ignore the '"'
-        std::string pointerValue = TextParser::readToExclusive(stream, '"');
-        namePointerLookup.emplace(pointerId, pointerValue);
-    }
-
-    // Pass 2: get all the names
-    stream.clear();
-    stream.seekg(0);
-    TextParser::tryFind(stream, "gNatureNamePointers");
-    TextParser::tryFind(stream, '{');
-
-    while (TextParser::tryFind(stream, '[', '}'))
-    {
-        stream.get(); // skip the '['
-        std::string define = TextParser::readToExclusive(stream, ']');
-        TextParser::tryFind(stream, 's');
-        std::string pointerId = TextParser::readToExclusive(stream, ',');
-
-        // Try to resolve the pointer reference.
-        if (namePointerLookup.contains(pointerId))
+        if (hasDefine && std::regex_search(line, match, std::regex(regex)))
         {
-            result.names.push_back(namePointerLookup[pointerId]);
-            result.defines.push_back(define);
+            size_t start = line.find("#define") + 8;
+            size_t end = line.find(' ', start);
+            results.emplace_back(line.substr(start, end - start));
         }
     }
 
-    return result;
+    return results;
 }
-
-
 
 inline void drawMonData(TrainerMonData& data)
 {
@@ -637,22 +566,34 @@ inline void drawMonData(TrainerMonData& data)
     static ImGuiUtils::FilteredCombo* trainerItemCombo2 {};
     static ImGuiUtils::FilteredCombo* trainerItemCombo3 {};
     static ImGuiUtils::FilteredCombo* trainerItemCombo4 {};
+    static ImGuiUtils::FilteredCombo* trainerClass {};
+    static ImGuiUtils::FilteredCombo* trainerEncounterMusic {};
+    static ImGuiUtils::FilteredCombo* trainerPicture {};
+    static bool* trainerAiFlags {};
 
     if (ImGui::Button("load data"))
     {
         isInitialized = true;
         std::filesystem::path projectRoot{R"(\\wsl.localhost\Debian\home\poetahto\projects\islandgame2)"};
 
-        s_data.moves = parseNameData(projectRoot / "src/data/text/move_names.h", "gMoveNames");
-        s_data.species = parseNameData(projectRoot / "src/data/text/species_names.h", "gSpeciesNames");
-        s_data.abilities = parseNameData(projectRoot / "src/data/text/abilities.h", "gAbilityNames");
-        s_data.natures = parseNatureData(projectRoot);
-        s_data.items = parseItemData(projectRoot);
+        s_data.abilities = parseDefines(projectRoot / "include/constants/abilities.h", ".*#define ABILITY_");
+        s_data.species = parseDefines(projectRoot / "include/constants/species.h", ".*#define SPECIES_");
+        s_data.moves = parseDefines(projectRoot / "include/constants/moves.h", ".*#define MOVE_");
+        s_data.items = parseDefines(projectRoot / "include/constants/items.h", ".*#define ITEM_");
+        s_data.natures = parseDefines(projectRoot / "include/constants/pokemon.h", ".*#define NATURE_");
+        s_data.trainerClasses = parseDefines(projectRoot / "include/constants/trainers.h", ".*#define TRAINER_CLASS_");
+        s_data.trainerEncounterMusic = parseDefines(projectRoot / "include/constants/trainers.h", ".*#define TRAINER_ENCOUNTER_MUSIC_");
+        s_data.trainerPictures = parseDefines(projectRoot / "include/constants/trainers.h", ".*#define TRAINER_PIC_");
+        s_data.trainerAiFlags = parseDefines(projectRoot / "include/constants/battle_ai.h", ".*#define AI_FLAG_.*\\(.*\\)");
 
-        trainerItemCombo1 = new ImGuiUtils::FilteredCombo {s_data.items.names};
-        trainerItemCombo2 = new ImGuiUtils::FilteredCombo {s_data.items.names};
-        trainerItemCombo3 = new ImGuiUtils::FilteredCombo {s_data.items.names};
-        trainerItemCombo4 = new ImGuiUtils::FilteredCombo {s_data.items.names};
+        trainerItemCombo1 = new ImGuiUtils::FilteredCombo {s_data.items};
+        trainerItemCombo2 = new ImGuiUtils::FilteredCombo {s_data.items};
+        trainerItemCombo3 = new ImGuiUtils::FilteredCombo {s_data.items};
+        trainerItemCombo4 = new ImGuiUtils::FilteredCombo {s_data.items};
+        trainerClass = new ImGuiUtils::FilteredCombo {s_data.trainerClasses};
+        trainerEncounterMusic = new ImGuiUtils::FilteredCombo {s_data.trainerEncounterMusic};
+        trainerPicture = new ImGuiUtils::FilteredCombo {s_data.trainerPictures};
+        trainerAiFlags = new bool[s_data.trainerAiFlags.size()] {false};
 
         initializeEmeraldExpansionProperties(data);
     }
@@ -663,30 +604,34 @@ inline void drawMonData(TrainerMonData& data)
             SDL_SetClipboardText(data.generateData().c_str());
 
         ImGui::SeparatorText("Trainer");
-        static int s_selectedItem {};
+        static int s_selectedItem1 {};
+        static int s_selectedItem2 {};
+        static int s_selectedItem3 {};
+        static int s_selectedItem4 {};
         ImGui::PushItemWidth(ImGui::CalcItemWidth() / 4);
 
-        trainerItemCombo1->draw("##item1", s_selectedItem); ImGui::SameLine();
-        trainerItemCombo2->draw("##item2", s_selectedItem); ImGui::SameLine();
-        trainerItemCombo3->draw("##item3", s_selectedItem); ImGui::SameLine();
-        trainerItemCombo4->draw("##item4", s_selectedItem);
+        trainerItemCombo1->draw("##item1", s_selectedItem1); ImGui::SameLine();
+        trainerItemCombo2->draw("##item2", s_selectedItem2); ImGui::SameLine();
+        trainerItemCombo3->draw("##item3", s_selectedItem3); ImGui::SameLine();
+        trainerItemCombo4->draw("##item4", s_selectedItem4);
 
         ImGui::PopItemWidth();
-        static int s_trainerClass {};
-        ImGui::Combo("Trainer Class", &s_trainerClass, "TRAINER_CLASS_PKMN_TRAINER_1\0TRAINER\0COOLGUY");
-        static int s_encounterMusic {};
-        ImGui::Combo("Encounter Music", &s_encounterMusic, "TRAINER_ENCOUNTER_MUSIC_HIKER\0HIKER");
-        static int s_picture {};
-        ImGui::Combo("Picture", &s_picture, "TRAINER_PIC_COOLTRAINER_M");
+        static int trainerClassIndex {};
+        trainerClass->draw("Trainer Class", trainerClassIndex);
+        static int trainerEncounterMusicIndex {};
+        trainerEncounterMusic->draw("Encounter Music", trainerEncounterMusicIndex);
+        static int trainerPictureIndex {};
+        trainerPicture->draw("Picture", trainerPictureIndex);
         static std::string s_name{};
         ImGui::InputText("Name", &s_name);
         static bool s_doubleBattle{};
         ImGui::Checkbox("Double battle", &s_doubleBattle);
 
-        ImGui::SeparatorText("Flags");
-        static bool s_flag {};
-        ImGui::Checkbox("Check Bad Move", &s_flag);
-        // todo: dynamically get all flags
+        if (ImGui::CollapsingHeader("Flags"))
+        {
+            for (int i = 0; i < s_data.trainerAiFlags.size(); ++i)
+                ImGui::Checkbox(s_data.trainerAiFlags[i].c_str(), &trainerAiFlags[i]);
+        }
 
         static int s_partyIndex{};
         static const char* s_partyMembers[] { "Bulbasaur", "Venusaur", "Charizard", "Volcarona"};
