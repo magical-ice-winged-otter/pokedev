@@ -460,6 +460,7 @@ class TrainerMonData
 public:
     std::vector<Toggleable<TrainerMonProperty&>> properties;
 
+
     TrainerMonData() : m_speciesCombo{s_data.species}
     {
     }

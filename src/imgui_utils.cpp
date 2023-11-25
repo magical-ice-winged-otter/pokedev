@@ -9,18 +9,19 @@ using namespace std;
 
 namespace ImGuiUtils
 {
-    FilteredCombo::FilteredCombo(const std::vector<std::string>& values, const char* filter) :
-        m_filter{filter},
-        m_values{values}
+    FilteredCombo::FilteredCombo(const vector <std::string> &values, const char *label, const char *filter) :
+            m_filter{filter},
+            m_values{values},
+            m_label {label}
     {
     }
 
-    bool FilteredCombo::draw(const char* label, int& outSelectedIndex)
+    bool FilteredCombo::draw()
     {
         if (m_values.empty())
             return false;
 
-        bool isOpen = ImGui::BeginCombo(label, m_values[outSelectedIndex].c_str());
+        bool isOpen = ImGui::BeginCombo(m_label, m_values[selectedIndex].c_str());
 
         if (isOpen)
         {
@@ -47,7 +48,7 @@ namespace ImGuiUtils
                     for (int i = clipper.DisplayStart; i < clipper.DisplayEnd; i++)
                     {
                         if (ImGui::Selectable(m_values[m_passedValueIndices[i]].c_str()))
-                            outSelectedIndex = m_passedValueIndices[i];
+                            selectedIndex = m_passedValueIndices[i];
                     }
                 }
             }
@@ -61,7 +62,7 @@ namespace ImGuiUtils
                     for (int i = clipper.DisplayStart; i < clipper.DisplayEnd; i++)
                     {
                         if (ImGui::Selectable(m_values[i].c_str()))
-                            outSelectedIndex = i;
+                            selectedIndex = i;
                     }
                 }
             }

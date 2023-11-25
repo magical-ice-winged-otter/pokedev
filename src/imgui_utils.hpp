@@ -14,14 +14,16 @@ namespace ImGuiUtils
     class FilteredCombo
     {
     public:
-        explicit FilteredCombo(const std::vector<std::string>& values, const char* filter = "");
-        bool draw(const char* label, int& outSelectedIndex);
+        FilteredCombo(const std::vector<std::string>& values, const char* label, const char* filter = "");
+        bool draw();
+        size_t selectedIndex {};
     private:
         bool m_wasOpen {};
         bool m_hasFilter {};
         ImGuiTextFilter m_filter {};
         const std::vector<std::string>& m_values {};
         std::vector<size_t> m_passedValueIndices {};
+        const char* m_label {};
 
         void updatePassedValueIndices();
     };
