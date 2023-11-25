@@ -1,3 +1,5 @@
+# todo: would love to simplify this file, but im honestly not good enough w/ cmake to do it well
+
 cmake_minimum_required(VERSION 3.15)
 set(CMAKE_TOOLCHAIN_FILE $ENV{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake)
 
@@ -7,41 +9,38 @@ project(pokedev
         LANGUAGES CXX
 )
 
-set(CMAKE_CXX_STANDARD 20)
-#set(CMAKE_WIN32_EXECUTABLE ON)
-
 find_package(SDL2 CONFIG REQUIRED COMPONENTS SDL2 SDL2main)
 find_package(SDL2_image CONFIG REQUIRED)
 find_package(imgui CONFIG REQUIRED)
 
+set(CMAKE_CXX_STANDARD 20)
 set(SOURCE_FILES
         "src/main.cpp"
+        "src/application.hpp"
         "src/application.cpp"
-        "src/platform.cpp"
-        "src/platform/platform_windows.cpp"
-        "src/serializer.cpp"
         "src/imgui_utils.cpp"
-        "src/porytiles/porytiles_gui.cpp"
-        "src/porytiles/porytiles_command_generator.cpp"
+        "src/imgui_utils.hpp"
+        "src/serializer.cpp"
+        "src/serializer.hpp"
         "src/text_parser.cpp"
+        "src/text_parser.hpp"
+        "src/platform.cpp"
+        "src/platform.hpp"
+        "src/platform/platform_windows.cpp"
+        "src/platform/platform_windows.hpp"
+        "src/porytiles/porytiles_gui.cpp"
+        "src/porytiles/porytiles_gui.hpp"
+        "src/porytiles/porytiles_context.hpp"
+        "src/porytiles/porytiles_command_generator.cpp"
+        "src/porytiles/porytiles_command_generator.hpp"
+        "src/trainers/trainer_data.hpp"
 )
 
-set(INCLUDE_FILES
-        "include/application.hpp"
-        "include/platform.hpp"
-        "include/platform/platform_windows.hpp"
-        "include/serializer.hpp"
-        "include/imgui_utils.hpp"
-        "include/porytiles/porytiles_gui.hpp"
-        "include/porytiles/porytiles_context.hpp"
-        "include/porytiles/porytiles_command_generator.hpp"
-)
-
-add_executable(pokedev ${SOURCE_FILES} ${INCLUDE_FILES})
+add_executable(pokedev ${SOURCE_FILES})
 
 target_include_directories(pokedev
         PRIVATE
-        include
+        src
         lib/include
 )
 

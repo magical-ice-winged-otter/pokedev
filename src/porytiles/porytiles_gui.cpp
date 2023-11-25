@@ -3,7 +3,7 @@
 #include <SDL.h>
 #include <SDL_image.h>
 #include "imgui_utils.hpp"
-#include "porytiles/porytiles_gui.hpp"
+#include "porytiles_gui.hpp"
 
 using namespace std;
 
