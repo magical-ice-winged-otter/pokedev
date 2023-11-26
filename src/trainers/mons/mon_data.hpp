@@ -11,7 +11,7 @@ enum class MonGender
     Female,
 };
 
-struct TrainerMonData
+struct MonData
 {
     // These are non-optional elements.
     size_t speciesIndex {};
@@ -53,7 +53,7 @@ struct TrainerMonData
 
 };
 
-inline std::string generateMonStruct(const TrainerMonData& monData, GameData& gameData)
+inline std::string generateMonStruct(const MonData& monData, GameData& gameData)
 {
     std::string result = "    {\n";
 

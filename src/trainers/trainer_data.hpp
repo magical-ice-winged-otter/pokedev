@@ -232,7 +232,7 @@
 //    return results;
 //}
 //
-//inline void drawMonData(TrainerMonData& data)
+//inline void drawMonData(MonData& data)
 //{
 //    ImGui::PushItemWidth(-ImGui::GetContentRegionAvail().x * 0.25f);
 //    static bool isInitialized {false};

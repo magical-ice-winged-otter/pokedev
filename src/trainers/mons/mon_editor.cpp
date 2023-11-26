@@ -18,7 +18,7 @@ void MonEditor::init(GameData& gameData)
     setDataToEdit(nullptr);
 }
 
-void MonEditor::setDataToEdit(TrainerMonData *data)
+void MonEditor::setDataToEdit(MonData *data)
 {
     m_dataToEdit = data;
 
@@ -39,10 +39,6 @@ void MonEditor::draw()
 {
     if (m_dataToEdit == nullptr) {
         return;
-    }
-
-    if (ImGui::CollapsingHeader("Output")) {
-        ImGui::Text("%s", generateMonStruct(*m_dataToEdit, *m_gameData).c_str());
     }
 
     // Species Combo
@@ -238,5 +234,9 @@ void MonEditor::draw()
         m_ballCombo.draw();
         m_dataToEdit->ballIndex = m_ballCombo.selectedIndex;
         ImGui::EndDisabled();
+    }
+
+    if (ImGui::CollapsingHeader("Output")) {
+        ImGui::Text("%s", generateMonStruct(*m_dataToEdit, *m_gameData).c_str());
     }
 }

@@ -8,12 +8,12 @@ class MonEditor
 {
 public:
     void init(GameData& gameData);
-    void setDataToEdit(TrainerMonData* data);
+    void setDataToEdit(MonData* data);
     void draw();
 
 private:
     GameData* m_gameData {};
-    TrainerMonData* m_dataToEdit {};
+    MonData* m_dataToEdit {};
     ImGuiUtils::FilteredCombo m_abilityCombo {};
     ImGuiUtils::FilteredCombo m_itemCombo {};
     ImGuiUtils::FilteredCombo m_move1Combo {};

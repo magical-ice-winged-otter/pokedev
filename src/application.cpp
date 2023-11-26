@@ -3,6 +3,7 @@
 #include "porytiles/porytiles_gui.hpp"
 #include "serializer.hpp"
 #include "trainers/trainer_data.hpp"
+#include "trainers/trainer_editor.hpp"
 #include "trainers/mons/mon_editor.hpp"
 #include "game_data.hpp"
 
@@ -49,8 +50,8 @@ static void saveConfig()
 }
 
 static GameData s_gameData;
-static MonEditor s_monEditor;
-static TrainerMonData s_monData{};
+static TrainerEditor s_trainerEditor;
+static TrainerData s_trainerData{};
 
 void Application::init()
 {
@@ -59,8 +60,8 @@ void Application::init()
 
     // todo: do not hardcode path - config it
     s_gameData = loadGameData(R"(\\wsl.localhost\Debian\home\poetahto\projects\islandgame2)");
-    s_monEditor.init(s_gameData);
-    s_monEditor.setDataToEdit(&s_monData); // just for testing, real populating latar
+    s_trainerEditor.init(s_gameData);
+    s_trainerEditor.setDataToEdit(&s_trainerData); // just for testing, real populating latar
 }
 
 void Application::shutdown()
@@ -115,7 +116,7 @@ void Application::render()
 
     if (ImGui::Begin("Trainer Editor"))
     {
-        s_monEditor.draw();
+        s_trainerEditor.draw();
         ImGui::End();
     }
 

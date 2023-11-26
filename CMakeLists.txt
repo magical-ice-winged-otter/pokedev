@@ -36,6 +36,8 @@ set(SOURCE_FILES
         src/porytiles/porytiles_command_generator.cpp
         src/porytiles/porytiles_command_generator.hpp
         src/trainers/trainer_data.hpp
+        src/trainers/trainer_editor.cpp
+        src/trainers/trainer_editor.hpp
         src/trainers/mons/mon_editor.hpp
         src/trainers/mons/mon_editor.cpp
         src/trainers/mons/mon_data.hpp
