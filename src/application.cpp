@@ -3,7 +3,7 @@
 #include "porytiles/porytiles_gui.hpp"
 #include "serializer.hpp"
 #include "trainers/trainer_data.hpp"
-#include "trainers/mon_editor.hpp"
+#include "trainers/mons/mon_editor.hpp"
 #include "game_data.hpp"
 
 static struct WindowState
