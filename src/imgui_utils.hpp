@@ -2,6 +2,7 @@
 #define POKEDEV_IMGUI_UTILS_HPP
 
 #include <filesystem>
+#include <imgui.h>
 #include "platform.hpp"
 
 /// Re-usable, custom ImGui widgets.
@@ -14,18 +15,17 @@ namespace ImGuiUtils
     class FilteredCombo
     {
     public:
-        FilteredCombo(const std::vector<std::string>& values, const char* label, const char* filter = "");
+        void init(const std::vector<std::string>* values, const char* label);
         bool draw();
         size_t selectedIndex {};
     private:
+        void updatePassedValueIndices();
+        const std::vector<std::string>* m_values {};
+        const char* m_label {};
+        std::vector<size_t> m_passedValueIndices {};
         bool m_wasOpen {};
         bool m_hasFilter {};
         ImGuiTextFilter m_filter {};
-        const std::vector<std::string>& m_values {};
-        std::vector<size_t> m_passedValueIndices {};
-        const char* m_label {};
-
-        void updatePassedValueIndices();
     };
 
     void folderPicker(const char* label, std::filesystem::path& path, const Platform::FilePickerOptions& options);

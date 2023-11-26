@@ -144,7 +144,7 @@ namespace cereal
           int x, y;
           ar( x, y );
 
-          // use construct object to initialize with loaded data
+          // use construct object to init with loaded data
           construct( x, y );
 
           // access to member variables and functions via -> operator
@@ -164,7 +164,7 @@ namespace cereal
   class construct
   {
     public:
-      //! Construct and initialize the type T with the given arguments
+      //! Construct and init the type T with the given arguments
       /*! This will forward all arguments to the underlying type T,
           calling an appropriate constructor.
 

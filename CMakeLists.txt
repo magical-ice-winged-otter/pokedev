@@ -15,25 +15,31 @@ find_package(imgui CONFIG REQUIRED)
 
 set(CMAKE_CXX_STANDARD 20)
 set(SOURCE_FILES
-        "src/main.cpp"
-        "src/application.hpp"
-        "src/application.cpp"
-        "src/imgui_utils.cpp"
-        "src/imgui_utils.hpp"
-        "src/serializer.cpp"
-        "src/serializer.hpp"
-        "src/text_parser.cpp"
-        "src/text_parser.hpp"
-        "src/platform.cpp"
-        "src/platform.hpp"
-        "src/platform/platform_windows.cpp"
-        "src/platform/platform_windows.hpp"
-        "src/porytiles/porytiles_gui.cpp"
-        "src/porytiles/porytiles_gui.hpp"
-        "src/porytiles/porytiles_context.hpp"
-        "src/porytiles/porytiles_command_generator.cpp"
-        "src/porytiles/porytiles_command_generator.hpp"
-        "src/trainers/trainer_data.hpp"
+        src/main.cpp
+        src/application.hpp
+        src/application.cpp
+        src/imgui_utils.cpp
+        src/imgui_utils.hpp
+        src/serializer.cpp
+        src/serializer.hpp
+        src/text_parser.cpp
+        src/text_parser.hpp
+        src/game_data.hpp
+        src/game_data.cpp
+        src/platform.cpp
+        src/platform.hpp
+        src/platform/platform_windows.cpp
+        src/platform/platform_windows.hpp
+        src/porytiles/porytiles_gui.cpp
+        src/porytiles/porytiles_gui.hpp
+        src/porytiles/porytiles_context.hpp
+        src/porytiles/porytiles_command_generator.cpp
+        src/porytiles/porytiles_command_generator.hpp
+        src/trainers/trainer_data.hpp
+        src/trainers/mon_editor.hpp
+        src/trainers/mon_editor.cpp
+        src/trainers/mon_data.hpp
+        src/trainers/mon_data.cpp
 )
 
 add_executable(pokedev ${SOURCE_FILES})

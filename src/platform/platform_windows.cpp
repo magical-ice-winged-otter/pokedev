@@ -10,7 +10,7 @@ void Platform::Windows::init()
     // Initialize COM for stuff like dialogue boxes.
     if (!SUCCEEDED(CoInitializeEx(nullptr, COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE)))
     {
-        printf("WINDOWS: Failed to initialize COM!");
+        printf("WINDOWS: Failed to init COM!");
         return;
     }
 }
