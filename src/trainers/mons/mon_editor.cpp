@@ -1,6 +1,7 @@
+#include <imgui.h>
+#include <imgui_stdlib.h>
 #include "mon_editor.hpp"
 #include "game_data.hpp"
-#include <imgui.h>
 
 void MonEditor::init(GameData& gameData)
 {
@@ -20,21 +21,27 @@ void MonEditor::init(GameData& gameData)
 void MonEditor::setDataToEdit(TrainerMonData *data)
 {
     m_dataToEdit = data;
-    m_abilityCombo.selectedIndex = data != nullptr ? data->abilityIndex : 0;
-    m_itemCombo.selectedIndex = data != nullptr ? data->itemIndex : 0;
-    m_move1Combo.selectedIndex = data != nullptr ? data->movesIndex[0] : 0;
-    m_move2Combo.selectedIndex = data != nullptr ? data->movesIndex[1] : 0;
-    m_move3Combo.selectedIndex = data != nullptr ? data->movesIndex[2] : 0;
-    m_move4Combo.selectedIndex = data != nullptr ? data->movesIndex[3] : 0;
-    m_natureCombo.selectedIndex = data != nullptr ? data->natureIndex : 0;
-    m_ballCombo.selectedIndex = data != nullptr ? data->ballIndex : 0;
-    m_speciesCombo.selectedIndex = data != nullptr ? data->speciesIndex : 0;
+
+    if (data != nullptr) {
+        m_abilityCombo.selectedIndex = data->abilityIndex;
+        m_itemCombo.selectedIndex = data->itemIndex;
+        m_move1Combo.selectedIndex = data->movesIndex[0];
+        m_move2Combo.selectedIndex = data->movesIndex[1];
+        m_move3Combo.selectedIndex = data->movesIndex[2];
+        m_move4Combo.selectedIndex = data->movesIndex[3];
+        m_natureCombo.selectedIndex = data->natureIndex;
+        m_ballCombo.selectedIndex = data->ballIndex;
+        m_speciesCombo.selectedIndex = data->speciesIndex;
+    }
 }
 
 void MonEditor::draw()
 {
-    if (ImGui::CollapsingHeader("Output"))
-    {
+    if (m_dataToEdit == nullptr) {
+        return;
+    }
+
+    if (ImGui::CollapsingHeader("Output")) {
         ImGui::Text("%s", generateMonStruct(*m_dataToEdit, *m_gameData).c_str());
     }
 
@@ -42,6 +49,129 @@ void MonEditor::draw()
     {
         m_speciesCombo.draw();
         m_dataToEdit->speciesIndex = m_speciesCombo.selectedIndex;
+    }
+
+    // Level
+    ImGui::InputInt("Level", &m_dataToEdit->level);
+    m_dataToEdit->level = std::clamp(m_dataToEdit->level, 0, 100);
+
+    // Gender
+    {
+        ImGui::Checkbox("##hasGender", &m_dataToEdit->hasGender);
+        ImGui::SameLine();
+        ImGui::BeginDisabled(!m_dataToEdit->hasGender);
+
+        if (ImGui::RadioButton("Male", m_dataToEdit->gender == MonGender::Male)) {
+            m_dataToEdit->gender = MonGender::Male;
+        }
+
+        ImGui::SameLine();
+
+        if (ImGui::RadioButton("Female", m_dataToEdit->gender == MonGender::Female)) {
+            m_dataToEdit->gender = MonGender::Female;
+        }
+
+        ImGui::EndDisabled();
+    }
+
+    // Nickname
+    {
+        ImGui::Checkbox("##hasNickname", &m_dataToEdit->hasNickname);
+        ImGui::SameLine();
+        ImGui::BeginDisabled(!m_dataToEdit->hasNickname);
+        ImGui::InputText("Nickname", &m_dataToEdit->nickname);
+        ImGui::EndDisabled();
+    }
+
+    // Is Shiny
+    {
+        ImGui::Checkbox("##hasIsShiny", &m_dataToEdit->hasIsShiny);
+        ImGui::SameLine();
+        ImGui::BeginDisabled(!m_dataToEdit->hasIsShiny);
+        ImGui::Checkbox("Is Shiny", &m_dataToEdit->isShiny);
+        ImGui::EndDisabled();
+    }
+
+    // EVs
+    {
+        ImGui::Checkbox("##hasEvs", &m_dataToEdit->hasEvs);
+        ImGui::SameLine();
+        ImGui::BeginDisabled(!m_dataToEdit->hasEvs);
+        ImGui::PushItemWidth(ImGui::CalcItemWidth() / 8);
+
+        if (ImGui::Button("Max##ev")) {
+            for (int i = 0; i < 6; i++) {
+                m_dataToEdit->evs[i] = 252;
+            }
+        }
+        ImGui::SameLine();
+
+        if (ImGui::Button("Zero##ev")) {
+            for (int i = 0; i < 6; i++) {
+                m_dataToEdit->evs[i] = 0;
+            }
+        }
+        ImGui::SameLine();
+
+        for (int i = 0; i < 6; i++) {
+            ImGui::PushID(i);
+            ImGui::DragInt("##EV", &m_dataToEdit->evs[i], 1, 0, 252);
+
+            if (i < 5) {
+                ImGui::SameLine();
+            }
+
+            ImGui::PopID();
+        }
+        ImGui::PopItemWidth();
+        ImGui::EndDisabled();
+    }
+
+    // IVs
+    {
+        ImGui::Checkbox("##hasIvs", &m_dataToEdit->hasIvs);
+        ImGui::SameLine();
+        ImGui::BeginDisabled(!m_dataToEdit->hasIvs);
+        ImGui::PushItemWidth(ImGui::CalcItemWidth() / 8);
+
+        if (ImGui::Button("Max##iv")) {
+            for (int i = 0; i < 6; i++) {
+                m_dataToEdit->ivs[i] = 252;
+            }
+        }
+        ImGui::SameLine();
+
+        if (ImGui::Button("Zero##iv")) {
+            for (int i = 0; i < 6; i++) {
+                m_dataToEdit->ivs[i] = 0;
+            }
+        }
+        ImGui::SameLine();
+
+        for (int i = 0; i < 6; i++) {
+            ImGui::PushID(i);
+            ImGui::DragInt("##IV", &m_dataToEdit->ivs[i], 1, 0, 252);
+
+            if (i < 5) {
+                ImGui::SameLine();
+            }
+
+            ImGui::PopID();
+        }
+        ImGui::PopItemWidth();
+        ImGui::EndDisabled();
+    }
+
+    // Friendship
+    {
+        ImGui::Checkbox("##hasFriendship", &m_dataToEdit->hasFriendship);
+        ImGui::SameLine();
+        ImGui::BeginDisabled(!m_dataToEdit->hasFriendship);
+
+        ImGui::InputInt("Friendship", &m_dataToEdit->friendship);
+        m_dataToEdit->friendship = std::clamp(m_dataToEdit->friendship, 0, 255);
+
+        ImGui::EndDisabled();
     }
 
     // Ability Combo
@@ -53,6 +183,7 @@ void MonEditor::draw()
         m_dataToEdit->abilityIndex = m_abilityCombo.selectedIndex;
         ImGui::EndDisabled();
     }
+
     // Item Combo
     {
         ImGui::Checkbox("##hasItem", &m_dataToEdit->hasItem);
@@ -62,6 +193,7 @@ void MonEditor::draw()
         m_dataToEdit->itemIndex = m_itemCombo.selectedIndex;
         ImGui::EndDisabled();
     }
+
     // Moves Combos
     {
         ImGui::PushItemWidth(ImGui::CalcItemWidth() / 4);
@@ -87,6 +219,7 @@ void MonEditor::draw()
         ImGui::EndDisabled();
         ImGui::PopItemWidth();
     }
+
     // Nature Combo
     {
         ImGui::Checkbox("##hasNature", &m_dataToEdit->hasNature);
@@ -96,6 +229,7 @@ void MonEditor::draw()
         m_dataToEdit->natureIndex = m_natureCombo.selectedIndex;
         ImGui::EndDisabled();
     }
+
     // Ball Combo
     {
         ImGui::Checkbox("##hasBall", &m_dataToEdit->hasBall);

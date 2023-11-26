@@ -58,7 +58,26 @@ inline std::string generateMonStruct(const TrainerMonData& monData, GameData& ga
     std::string result = "    {\n";
 
     result += std::format("        .species = {},\n", gameData.speciesLoader.speciesNames[monData.speciesIndex]);
+    result += std::format("        .lvl = {},\n", monData.level);
 
+    if (monData.hasNickname) {
+        result += std::format("        .nickname = COMPOUND_STRING({}),\n", monData.nickname);
+    }
+    if (monData.hasGender) {
+        result += std::format("        .gender = TRAINER_MON_{},\n", monData.gender == MonGender::Female ? "FEMALE" : "MALE");
+    }
+    if (monData.hasFriendship) {
+        result += std::format("        .friendship = {},\n", monData.friendship);
+    }
+    if (monData.hasIsShiny) {
+        result += std::format("        .isShiny = {},\n", monData.isShiny ? "TRUE" : "FALSE");
+    }
+    if (monData.hasEvs) {
+        result += std::format("        .ev = TRAINER_PARTY_EVS({}, {}, {}, {}, {}, {}),\n", monData.evs[0], monData.evs[1], monData.evs[2], monData.evs[3], monData.evs[4], monData.evs[5]);
+    }
+    if (monData.hasIvs) {
+        result += std::format("        .ev = TRAINER_PARTY_IVS({}, {}, {}, {}, {}, {}),\n", monData.ivs[0], monData.ivs[1], monData.ivs[2], monData.ivs[3], monData.ivs[4], monData.ivs[5]);
+    }
     if (monData.hasAbility) {
         result += std::format("        .ability = {},\n", gameData.abilityLoader.abilityNames[monData.abilityIndex]);
     }
