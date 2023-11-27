@@ -11,7 +11,6 @@
 struct PorytilesContext
 {
     // General Options
-    std::filesystem::path projectPath {};
     std::filesystem::path porytilesExecutableFile {};
     std::filesystem::path behaviorsHeaderPath {};
     std::string paletteMode {"greyscale"};
@@ -48,8 +47,7 @@ struct PorytilesContext
     void serialize(Archive& archive)
     {
         archive(
-                AUTO_NAME(projectPath),  /*General*/
-                AUTO_NAME(porytilesExecutableFile),
+                AUTO_NAME(porytilesExecutableFile), /*General*/
                 AUTO_NAME(behaviorsHeaderPath),
                 AUTO_NAME(paletteMode),
                 AUTO_NAME(baseGame),

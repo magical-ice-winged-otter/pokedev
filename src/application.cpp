@@ -2,41 +2,47 @@
 #include "platform.hpp"
 #include "porytiles/porytiles_gui.hpp"
 #include "serializer.hpp"
-#include "trainers/trainer_editor.hpp"
 #include "trainers/mons/mon_editor.hpp"
-#include "game_data.hpp"
+#include "game_loaders.hpp"
+#include "shortcuts/shortcuts.hpp"
 
 static struct WindowState
 {
     bool showSettings{};
     bool showImGuiDemo{};
-    bool showPrimaryCompilerTool{};
-    bool showPrimaryDecompilerTool{};
-    bool showSecondaryCompilerTool{};
-    bool showSecondaryDecompilerTool{};
+    bool showPrimaryCompiler{};
+    bool showPrimaryDecompiler{};
+    bool showSecondaryCompiler{};
+    bool showSecondaryDecompiler{};
+    bool showShortcuts{};
 
     template <class Archive>
-    void serialize(Archive& archive)
-    {
+    void serialize(Archive& archive) {
         archive(
             CUSTOM_NAME("showSettings", showSettings),
             CUSTOM_NAME("showImGuiDemo", showImGuiDemo),
-            CUSTOM_NAME("showPrimaryCompilerTool", showPrimaryCompilerTool),
-            CUSTOM_NAME("showSecondaryCompilerTool", showSecondaryCompilerTool),
-            CUSTOM_NAME("showPrimaryDecompilerTool", showPrimaryDecompilerTool),
-            CUSTOM_NAME("showSecondaryDecompilerTool", showSecondaryDecompilerTool)
+            CUSTOM_NAME("showPrimaryCompilerTool", showPrimaryCompiler),
+            CUSTOM_NAME("showSecondaryCompilerTool", showSecondaryCompiler),
+            CUSTOM_NAME("showPrimaryDecompilerTool", showPrimaryDecompiler),
+            CUSTOM_NAME("showSecondaryDecompilerTool", showSecondaryDecompiler),
+            CUSTOM_NAME("showShortcuts", showShortcuts)
         );
     }
-} ws;
+} window;
 
 static ConfigFile s_config{"pokedev_config.json"};
 static PorytilesGui s_porytilesGui{};
+static ShortcutGui s_shortcutGui {};
+
+GameLoaders Application::loaders {};
+GameSettings Application::settings {};
 
 static void reloadConfig()
 {
     s_config.readData(
         CUSTOM_NAME("porytilesGui", s_porytilesGui),
-        CUSTOM_NAME("windowState", ws)
+        CUSTOM_NAME("windowState", window),
+        CUSTOM_NAME("gameSettings", Application::settings)
     );
 }
 
@@ -44,33 +50,24 @@ static void saveConfig()
 {
     s_config.writeData(
         CUSTOM_NAME("porytilesGui", s_porytilesGui),
-        CUSTOM_NAME("windowState", ws)
+        CUSTOM_NAME("windowState", window),
+        CUSTOM_NAME("gameSettings", Application::settings)
     );
 }
 
-static GameData s_gameData;
-static TrainerEditor s_trainerEditor;
-static TrainerData s_trainerData{};
-
-void Application::init()
-{
+void Application::init() {
     reloadConfig();
+    loaders = createLoaders(settings.projectPath);
     s_porytilesGui.init(Platform::getRenderer());
-
-    // todo: do not hardcode path - config it
-    s_gameData = loadGameData(R"(\\wsl.localhost\Debian\home\poetahto\projects\islandgame2)");
-    s_trainerEditor.init(s_gameData);
-    s_trainerEditor.setDataToEdit(&s_trainerData); // just for testing, real populating latar
+    s_shortcutGui = ShortcutGui::loadFromFile(R"(C:\home\code\pokedev\src\pokeemerald.shortcuts.txt)");
 }
 
-void Application::shutdown()
-{
+void Application::shutdown() {
     s_porytilesGui.shutdown();
     saveConfig();
 }
 
-void Application::render()
-{
+void Application::render() {
     ImGuiViewport* viewport = ImGui::GetMainViewport();
     ImGui::SetNextWindowPos(viewport->Pos);
     ImGui::SetNextWindowSize(viewport->Size);
@@ -84,51 +81,52 @@ void Application::render()
 
     ImGui::Begin("Main Window", nullptr, flags);
 
-    if (ImGui::BeginMenuBar())
-    {
-        if (ImGui::BeginMenu("File"))
-        {
-            if (ImGui::MenuItem("Reload Config"))
+    if (ImGui::BeginMenuBar()) {
+        if (ImGui::BeginMenu("File")) {
+            if (ImGui::MenuItem("Reload Config")) {
                 reloadConfig();
-
-            if (ImGui::MenuItem("Save Config"))
+            }
+            if (ImGui::MenuItem("Save Config")) {
                 saveConfig();
-
-            ImGui::MenuItem("Settings", nullptr, &ws.showSettings);
+            }
+            ImGui::MenuItem("Settings", nullptr, &window.showSettings);
             ImGui::EndMenu();
         }
-
-        if (ImGui::BeginMenu("Tools"))
-        {
-            ImGui::MenuItem("Primary Compiler", nullptr, &ws.showPrimaryCompilerTool);
-            ImGui::MenuItem("Primary Decompiler", nullptr, &ws.showPrimaryDecompilerTool);
-            ImGui::MenuItem("Secondary Compiler", nullptr, &ws.showSecondaryCompilerTool);
-            ImGui::MenuItem("Secondary Decompiler", nullptr, &ws.showSecondaryDecompilerTool);
-            ImGui::MenuItem("ImGui Demo", nullptr, &ws.showImGuiDemo);
+        if (ImGui::BeginMenu("Tools")) {
+            ImGui::MenuItem("ImGui Demo", nullptr, &window.showImGuiDemo);
+            ImGui::MenuItem("Primary Compiler", nullptr, &window.showPrimaryCompiler);
+            ImGui::MenuItem("Primary Decompiler", nullptr, &window.showPrimaryDecompiler);
+            ImGui::MenuItem("Secondary Compiler", nullptr, &window.showSecondaryCompiler);
+            ImGui::MenuItem("Secondary Decompiler", nullptr, &window.showSecondaryDecompiler);
+            ImGui::MenuItem("Shortcuts", nullptr, &window.showShortcuts);
             ImGui::EndMenu();
         }
-
         ImGui::EndMenuBar();
     }
 
     ImGui::End();
 
-    // todo: WIP stuff
-//    if (ImGui::Begin("Trainer Editor"))
-//    {
-//        s_trainerEditor.draw();
-//        ImGui::End();
-//    }
-
-    if (ws.showPrimaryCompilerTool) s_porytilesGui.renderPrimaryCompilerWindow(&ws.showPrimaryCompilerTool);
-    if (ws.showPrimaryDecompilerTool) s_porytilesGui.renderPrimaryDecompilerWindow(&ws.showPrimaryDecompilerTool);
-    if (ws.showSecondaryCompilerTool) s_porytilesGui.renderSecondaryCompilerWindow(&ws.showSecondaryCompilerTool);
-    if (ws.showSecondaryDecompilerTool) s_porytilesGui.renderSecondaryDecompilerWindow(&ws.showSecondaryDecompilerTool);
-    if (ws.showImGuiDemo) ImGui::ShowDemoWindow(&ws.showImGuiDemo);
-
-    if (ws.showSettings && ImGui::Begin("Settings", &ws.showSettings))
-    {
-        s_porytilesGui.renderSettings();
+    if (window.showPrimaryCompiler) {
+        s_porytilesGui.drawPrimaryCompilerWindow(&window.showPrimaryCompiler);
+    }
+    if (window.showPrimaryDecompiler) {
+        s_porytilesGui.drawPrimaryDecompilerWindow(&window.showPrimaryDecompiler);
+    }
+    if (window.showSecondaryCompiler) {
+        s_porytilesGui.drawSecondaryCompilerWindow(&window.showSecondaryCompiler);
+    }
+    if (window.showSecondaryDecompiler) {
+        s_porytilesGui.drawSecondaryDecompilerWindow(&window.showSecondaryDecompiler);
+    }
+    if (window.showImGuiDemo) {
+        ImGui::ShowDemoWindow(&window.showImGuiDemo);
+    }
+    if (window.showShortcuts) {
+        s_shortcutGui.draw();
+    }
+    if (window.showSettings && ImGui::Begin("Settings", &window.showSettings)) {
+        settings.draw();
+        s_porytilesGui.drawSettings();
         ImGui::End();
     }
 }

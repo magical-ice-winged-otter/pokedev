@@ -13,11 +13,11 @@ public:
     void init(SDL_Renderer* renderer);
     void shutdown();
 
-    void renderSettings();
-    void renderPrimaryCompilerWindow(bool* isOpen);
-    void renderPrimaryDecompilerWindow(bool* isOpen);
-    void renderSecondaryCompilerWindow(bool* isOpen);
-    void renderSecondaryDecompilerWindow(bool* isOpen);
+    void drawSettings();
+    void drawPrimaryCompilerWindow(bool* isOpen);
+    void drawPrimaryDecompilerWindow(bool* isOpen);
+    void drawSecondaryCompilerWindow(bool* isOpen);
+    void drawSecondaryDecompilerWindow(bool* isOpen);
 
     template<class Archive>
     void serialize(Archive& archive)

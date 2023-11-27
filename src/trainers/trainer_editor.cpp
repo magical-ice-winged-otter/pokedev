@@ -1,13 +1,13 @@
 #include "trainer_editor.hpp"
+#include "application.hpp"
 
-void TrainerEditor::init(GameData &gameData) {
-    m_gameData = &gameData;
-    m_monEditor.init(gameData);
+void TrainerEditor::init() {
+    m_monEditor.init();
     setDataToEdit(nullptr);
 }
 
 void TrainerEditor::setDataToEdit(TrainerData *data) {
-    m_dataToEdit = data;
+    m_data = data;
 
     if (data != nullptr) {
         if (data->partyMemberCount > 0) {
@@ -19,12 +19,12 @@ void TrainerEditor::setDataToEdit(TrainerData *data) {
 
 void TrainerEditor::draw() {
     if (ImGui::BeginListBox("Party Members")) {
-        for (int i = 0; i < m_dataToEdit->partyMemberCount; i++) {
+        for (int i = 0; i < m_data->partyMemberCount; i++) {
             ImGui::PushID(i);
-            const char* speciesName = m_gameData->speciesLoader.speciesNames[m_dataToEdit->partyMembers[i].speciesIndex].c_str();
+            const char* speciesName = Application::loaders.species.names[m_data->partyMembers[i].speciesIndex].c_str();
             if (ImGui::Selectable(speciesName, m_editedPartyMemberIndex == i)) {
                 m_editedPartyMemberIndex = i;
-                m_monEditor.setDataToEdit(&m_dataToEdit->partyMembers[i]);
+                m_monEditor.setDataToEdit(&m_data->partyMembers[i]);
             }
             if (m_editedPartyMemberIndex == i) {
                 ImGui::SetItemDefaultFocus();
@@ -33,8 +33,8 @@ void TrainerEditor::draw() {
         }
         ImGui::EndListBox();
     }
-    ImGui::InputInt("Party Size", &m_dataToEdit->partyMemberCount);
-    m_dataToEdit->partyMemberCount = std::clamp(m_dataToEdit->partyMemberCount, 1, 6);
+    ImGui::InputInt("Party Size", &m_data->partyMemberCount);
+    m_data->partyMemberCount = std::clamp(m_data->partyMemberCount, 1, 6);
 
     ImGui::PushStyleVar(ImGuiStyleVar_ChildRounding, 5.0f);
     ImGui::BeginChild("Mon Editor", ImVec2(0, 350), true);

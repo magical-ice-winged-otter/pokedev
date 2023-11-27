@@ -2,18 +2,17 @@
 
 #include "mon_data.hpp"
 #include "imgui_utils.hpp"
-#include "game_data.hpp"
+#include "game_loaders.hpp"
 
 class MonEditor
 {
 public:
-    void init(GameData& gameData);
+    void init();
     void setDataToEdit(MonData* data);
     void draw();
 
 private:
-    GameData* m_gameData {};
-    MonData* m_dataToEdit {};
+    MonData* m_data {};
     ImGuiUtils::FilteredCombo m_abilityCombo {};
     ImGuiUtils::FilteredCombo m_itemCombo {};
     ImGuiUtils::FilteredCombo m_move1Combo {};
@@ -23,5 +22,4 @@ private:
     ImGuiUtils::FilteredCombo m_natureCombo {};
     ImGuiUtils::FilteredCombo m_ballCombo {};
     ImGuiUtils::FilteredCombo m_speciesCombo {};
-
 };

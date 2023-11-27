@@ -4,6 +4,7 @@
 #include <SDL_image.h>
 #include "imgui_utils.hpp"
 #include "porytiles_gui.hpp"
+#include "application.hpp"
 
 using namespace std;
 
@@ -21,7 +22,7 @@ void PorytilesGui::shutdown()
     SDL_DestroyTexture(m_previewTexture);
 }
 
-void PorytilesGui::renderSettings()
+void PorytilesGui::drawSettings()
 {
     m_commandGenerator.renderSettings();
 
@@ -31,7 +32,6 @@ void PorytilesGui::renderSettings()
         ImGui::Spacing();
         ImGui::Indent();
 
-        ImGuiUtils::folderPicker("Project Path", m_ctx.projectPath, {});
         ImGuiUtils::filePicker("Porytiles Executable File", m_ctx.porytilesExecutableFile, {});
         ImGuiUtils::filePicker("Behaviors Header File", m_ctx.behaviorsHeaderPath, {.filter = "h,hpp"});
         ImGuiUtils::folderPicker("Default Output Path", m_defaultOutputPath, {});
@@ -131,7 +131,7 @@ void PorytilesGui::renderSettings()
     }
 }
 
-void PorytilesGui::renderPrimaryCompilerWindow(bool* isOpen)
+void PorytilesGui::drawPrimaryCompilerWindow(bool* isOpen)
 {
     if (ImGui::Begin("Primary Compiler", isOpen))
     {
@@ -172,7 +172,7 @@ void PorytilesGui::renderPrimaryCompilerWindow(bool* isOpen)
     }
 }
 
-void PorytilesGui::renderPrimaryDecompilerWindow(bool* isOpen)
+void PorytilesGui::drawPrimaryDecompilerWindow(bool* isOpen)
 {
     if (ImGui::Begin("Primary Decompiler", isOpen))
     {
@@ -190,7 +190,7 @@ void PorytilesGui::renderPrimaryDecompilerWindow(bool* isOpen)
     }
 }
 
-void PorytilesGui::renderSecondaryCompilerWindow(bool* isOpen)
+void PorytilesGui::drawSecondaryCompilerWindow(bool* isOpen)
 {
     if (ImGui::Begin("Secondary Compiler", isOpen))
     {
@@ -226,7 +226,7 @@ void PorytilesGui::renderSecondaryCompilerWindow(bool* isOpen)
     }
 }
 
-void PorytilesGui::renderSecondaryDecompilerWindow(bool* isOpen)
+void PorytilesGui::drawSecondaryDecompilerWindow(bool* isOpen)
 {
     if (ImGui::Begin("Secondary Decompiler", isOpen))
     {

@@ -24,8 +24,8 @@ set(SOURCE_FILES
         src/serializer.hpp
         src/text_parser.cpp
         src/text_parser.hpp
-        src/game_data.hpp
-        src/game_data.cpp
+        src/game_loaders.hpp
+        src/game_loaders.cpp
         src/platform.cpp
         src/platform.hpp
         src/platform/platform_windows.cpp
@@ -40,6 +40,13 @@ set(SOURCE_FILES
         src/trainers/mons/mon_editor.hpp
         src/trainers/mons/mon_editor.cpp
         src/trainers/mons/mon_data.hpp
+        src/game_settings.hpp
+        src/game_settings.cpp
+        src/trainers/mons/mon_data.cpp
+        src/shortcuts/shortcuts.hpp
+        src/shortcuts/shortcuts.cpp
+        src/string_parsing_util.hpp
+        src/string_parsing_util.cpp
 )
 
 add_executable(pokedev ${SOURCE_FILES})

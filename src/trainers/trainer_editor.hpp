@@ -1,7 +1,7 @@
 #ifndef POKEDEV_TRAINER_EDITOR_HPP
 #define POKEDEV_TRAINER_EDITOR_HPP
 
-#include "game_data.hpp"
+#include "game_loaders.hpp"
 #include "mons/mon_data.hpp"
 #include "mons/mon_editor.hpp"
 
@@ -19,14 +19,13 @@ struct TrainerData {
 
 class TrainerEditor {
 public:
-    void init(GameData& gameData);
+    void init();
     void setDataToEdit(TrainerData* data);
     void draw();
 
 private:
-    GameData* m_gameData {};
     MonEditor m_monEditor {};
-    TrainerData* m_dataToEdit {};
+    TrainerData* m_data {};
     size_t m_editedPartyMemberIndex {};
 };
 
