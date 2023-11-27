@@ -4,24 +4,29 @@
 #include "shortcuts.hpp"
 #include "string_parsing_util.hpp"
 #include "platform.hpp"
+#include "application.hpp"
 
-ShortcutGui ShortcutGui::loadFromFile(const std::filesystem::path &file) {
+void ShortcutGui::init(const std::filesystem::path &file) {
     std::ifstream shortcutFileStream {file};
     std::string line {};
-    ShortcutGui result {};
 
     while (std::getline(shortcutFileStream, line)) {
-        Shortcut& shortcut = result.shortcuts[result.shortcutCount];
-        result.shortcutCount++;
+        if (line.empty()) {
+            continue;
+        }
 
         std::string rawPath;
+        std::string rawDescription;
         std::string rawGroups;
 
         tryGetCsvColumn(line, 0, rawPath);
-        tryGetCsvColumn(line, 1, shortcut.description);
+        tryGetCsvColumn(line, 1, rawDescription);
         tryGetCsvColumn(line, 2, rawGroups);
 
+        Shortcut& shortcut = shortcuts[shortcutCount];
         shortcut.path = rawPath;
+        shortcut.description = getBetween(rawDescription, '"');
+        shortcutCount++;
 
         // Now, extract the raw group names from the final column and parse them.
         std::vector<std::string> groupNames = split(rawGroups, "|");
@@ -30,8 +35,8 @@ ShortcutGui ShortcutGui::loadFromFile(const std::filesystem::path &file) {
             bool foundGroup {false};
 
             // Check for an existing group we can fit in
-            for (int i = 0; i < result.groupCount; ++i) {
-                ShortcutGroup& group = result.groups[i];
+            for (int i = 0; i < groupCount; ++i) {
+                ShortcutGroup& group = groups[i];
 
                 if (group.name == groupName) {
                     group.members[group.memberCount] = &shortcut;
@@ -44,34 +49,39 @@ ShortcutGui ShortcutGui::loadFromFile(const std::filesystem::path &file) {
 
             // We are the first member of the group, so create a new one
             if (!foundGroup) {
-                ShortcutGroup& newGroup = result.groups[result.groupCount];
+                ShortcutGroup& newGroup = groups[groupCount];
                 newGroup.name = groupName;
                 newGroup.members[0] = &shortcut;
                 newGroup.memberCount = 1;
-                result.groupCount++;
+                groupCount++;
                 shortcut.groups[shortcut.groupCount] = &newGroup;
                 shortcut.groupCount++;
             }
         }
     }
-
-    return result;
 }
 
 void ShortcutGui::draw() {
     for (int i = 0; i < groupCount; ++i) {
         ShortcutGroup& group = groups[i];
+        ImGui::PushID(i);
 
         if (ImGui::CollapsingHeader(group.name.c_str())) {
+            if (ImGui::Button("Open All")) {
+                for (int j = 0; j < group.memberCount; ++j) {
+                    Platform::openFile(Application::settings.projectPath / group.members[j]->path);
+                }
+            }
             for (int j = 0; j < group.memberCount; ++j) {
                 Shortcut* shortcut = group.members[j];
 
                 if (ImGui::Button(shortcut->path.string().c_str())) {
-                    Platform::openPath(shortcut->path);
+                    Platform::openFile(Application::settings.projectPath / shortcut->path);
                 }
                 ImGui::SameLine();
                 ImGui::Text("%s", shortcut->description.c_str());
             }
         }
+        ImGui::PopID();
     }
 }

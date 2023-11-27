@@ -109,4 +109,8 @@ void Platform::Windows::openPath(const std::filesystem::path& path)
     ShellExecute(nullptr, "explore", path.string().c_str(), nullptr, nullptr, SW_SHOWDEFAULT);
 }
 
+void Platform::Windows::openFile(const std::filesystem::path &path) {
+    ShellExecute(nullptr, "open", path.string().c_str(), nullptr, nullptr, SW_SHOWDEFAULT);
+}
+
 #endif // _WIN32

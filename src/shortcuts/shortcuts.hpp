@@ -38,7 +38,7 @@ struct ShortcutGui {
     Shortcut shortcuts[MAX_SHORTCUTS] {};
 
     void draw();
-    static ShortcutGui loadFromFile(const std::filesystem::path& file);
+    void init(const std::filesystem::path& file);
 };
 
 /*

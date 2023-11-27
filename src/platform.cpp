@@ -9,11 +9,9 @@ static SDL_Window* s_window{};
 static SDL_Renderer* s_renderer{};
 static bool s_wantsToQuit{false};
 
-void Platform::init()
-{
+void Platform::init() {
     // Initialize SDL and our window
-    if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER) != 0)
-    {
+    if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER) != 0) {
         printf("Error starting SDL: %s\n", SDL_GetError());
         return;
     }
@@ -26,8 +24,7 @@ void Platform::init()
         720,
         SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI);
 
-    if (std::filesystem::exists("icon.png"))
-    {
+    if (std::filesystem::exists("icon.png")) {
         printf("loaded icon!");
         SDL_Surface* icon = IMG_Load("icon.png");
         SDL_SetWindowIcon(s_window, icon);
@@ -36,8 +33,7 @@ void Platform::init()
 
     s_renderer = SDL_CreateRenderer(s_window, -1, SDL_RENDERER_PRESENTVSYNC | SDL_RENDERER_ACCELERATED);
 
-    if (s_renderer == nullptr)
-    {
+    if (s_renderer == nullptr) {
         printf("Error creating renderer: %s\n", SDL_GetError());
         return;
     }
@@ -55,8 +51,7 @@ void Platform::init()
 #endif
 }
 
-void Platform::shutdown()
-{
+void Platform::shutdown() {
     // Shutdown platform-dependent code
 #ifdef _WIN32
     Windows::shutdown();
@@ -76,17 +71,16 @@ void Platform::shutdown()
     s_window = nullptr;
 }
 
-void Platform::startFrame()
-{
+void Platform::startFrame() {
     // Flush the event loop
     SDL_Event event;
 
-    while (SDL_PollEvent(&event))
-    {
+    while (SDL_PollEvent(&event)) {
         ImGui_ImplSDL2_ProcessEvent(&event);
 
-        if (event.type == SDL_QUIT)
+        if (event.type == SDL_QUIT) {
             s_wantsToQuit = true;
+        }
     }
 
     // Reset the renderer for the next frame.
@@ -96,31 +90,26 @@ void Platform::startFrame()
     ImGui::NewFrame();
 }
 
-void Platform::endFrame()
-{
+void Platform::endFrame() {
     // Submit render data to be drawn.
     ImGui::Render();
     ImGui_ImplSDLRenderer2_RenderDrawData(ImGui::GetDrawData());
     SDL_RenderPresent(s_renderer);
 }
 
-SDL_Renderer* Platform::getRenderer()
-{
+SDL_Renderer* Platform::getRenderer() {
     return s_renderer;
 }
 
-SDL_Window* Platform::getWindow()
-{
+SDL_Window* Platform::getWindow() {
     return s_window;
 }
 
-bool Platform::wantsToQuit()
-{
+bool Platform::wantsToQuit() {
     return s_wantsToQuit;
 }
 
-bool Platform::tryPickFile(std::filesystem::path& outPath, const FilePickerOptions& options)
-{
+bool Platform::tryPickFile(std::filesystem::path& outPath, const FilePickerOptions& options) {
 #ifdef _WIN32
     return Windows::tryPickFile(outPath, options);
 #else
@@ -129,8 +118,7 @@ bool Platform::tryPickFile(std::filesystem::path& outPath, const FilePickerOptio
 #endif
 }
 
-bool Platform::tryPickFolder(std::filesystem::path& outPath, const FilePickerOptions& options)
-{
+bool Platform::tryPickFolder(std::filesystem::path& outPath, const FilePickerOptions& options) {
 #ifdef _WIN32
     return Windows::tryPickFolder(outPath, options);
 #else
@@ -139,12 +127,20 @@ bool Platform::tryPickFolder(std::filesystem::path& outPath, const FilePickerOpt
 #endif
 }
 
-void Platform::openPath(const std::filesystem::path& path)
-{
+void Platform::openPath(const std::filesystem::path& path) {
 #ifdef _WIN32
     return Windows::openPath(path);
 #else
     printf("Platform does not support opening paths!\n");
+    return false;
+#endif
+}
+
+void Platform::openFile(const std::filesystem::path &path) {
+#ifdef _WIN32
+    return Windows::openFile(path);
+#else
+    printf("Platform does not support opening files!\n");
     return false;
 #endif
 }

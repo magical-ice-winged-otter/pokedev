@@ -21,27 +21,38 @@ std::vector<std::string> parseDefines(const std::filesystem::path& filePath, con
     return results;
 }
 
-bool tryGetCsvColumn(const std::string& line, int index, std::string& outResult) {
-    size_t argStart {};
+bool tryGetCsvColumn(const std::string& line, int targetColumn, std::string& outResult) {
+    bool quoted {};
+    int currentColumn {};
 
-    for (size_t i = 0; i < index; ++i) {
-        // Find the first space between args
-        argStart = line.find(',', argStart);
+    for (char cur : line) {
+        if (quoted) {
+            if (cur == '"') {
+                quoted = false;
+            }
+        }
+        else {
+            if (cur == '"') {
+                quoted = true;
+            }
+            else if (cur == ',') {
+                if (targetColumn == currentColumn) {
+                    // We just exited our target column, so parsing is done.
+                    break;
+                }
+                currentColumn++;
 
-        // Often, we have multiple spaces between args, so skip them all.
-        argStart = line.find_first_not_of(' ', argStart + 1);
+                if (targetColumn == currentColumn) {
+                    // We just entered our target column, so skip the ','
+                    continue;
+                }
+            }
+        }
+        if (targetColumn == currentColumn) {
+            outResult += cur;
+        }
     }
 
-    // Make sure we actually found our target: otherwise we failed.
-    if (argStart == std::string::npos) {
-        return false;
-    }
-
-    // Now we skip over to the end of the word, *assuming no spaces within*.
-    size_t argEnd {line.find(',', argStart + 1)};
-
-    // If we were given a valid buffer, write the result into it.
-    outResult = line.substr(argStart, argEnd - argStart);
     trim(outResult);
     return true;
 }

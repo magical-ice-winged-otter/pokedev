@@ -59,7 +59,7 @@ void Application::init() {
     reloadConfig();
     loaders = createLoaders(settings.projectPath);
     s_porytilesGui.init(Platform::getRenderer());
-    s_shortcutGui = ShortcutGui::loadFromFile(R"(C:\home\code\pokedev\src\pokeemerald.shortcuts.txt)");
+    s_shortcutGui.init(R"(C:\home\code\pokedev\src\pokeemerald.shortcuts.txt)");
 }
 
 void Application::shutdown() {
