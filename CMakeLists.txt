@@ -13,6 +13,9 @@ find_package(SDL2 CONFIG REQUIRED COMPONENTS SDL2 SDL2main)
 find_package(SDL2_image CONFIG REQUIRED)
 find_package(imgui CONFIG REQUIRED)
 
+# stops the console from popping up, probably windows-only
+set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /SUBSYSTEM:WINDOWS /ENTRY:mainCRTStartup")
+
 set(CMAKE_CXX_STANDARD 20)
 set(SOURCE_FILES
         src/main.cpp

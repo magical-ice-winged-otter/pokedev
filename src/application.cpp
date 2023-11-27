@@ -14,7 +14,7 @@ static struct WindowState
     bool showPrimaryDecompiler{};
     bool showSecondaryCompiler{};
     bool showSecondaryDecompiler{};
-    bool showShortcuts{};
+    bool showShortcuts{true};
 
     template <class Archive>
     void serialize(Archive& archive) {
