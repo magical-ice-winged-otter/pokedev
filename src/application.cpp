@@ -81,6 +81,13 @@ void Application::render() {
         ImGuiWindowFlags_NoBringToFrontOnFocus |
         ImGuiWindowFlags_MenuBar;
 
+    if (ImGui::IsKeyPressed(ImGuiKey_F11, false)) {
+        // toggle fullscreen
+        SDL_Window* sdlWindow = Platform::getWindow();
+        bool isFullscreen = (SDL_GetWindowFlags(sdlWindow) & SDL_WINDOW_FULLSCREEN_DESKTOP) != 0;
+        SDL_SetWindowFullscreen(sdlWindow, isFullscreen ? 0 : SDL_WINDOW_FULLSCREEN_DESKTOP);
+    }
+
     ImGui::Begin("Main Window", nullptr, flags);
 
     if (ImGui::BeginMenuBar()) {
