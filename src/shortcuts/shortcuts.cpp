@@ -5,10 +5,18 @@
 #include "string_parsing_util.hpp"
 #include "platform.hpp"
 #include "application.hpp"
+#include "imgui_utils.hpp"
 
-void ShortcutGui::init(const std::filesystem::path &file) {
-    std::ifstream shortcutFileStream {file};
+void ShortcutGui::init() {
+    std::ifstream shortcutFileStream {shortcutFilePath};
+
+    if (!shortcutFileStream.is_open()) {
+        return;
+    }
+
     std::string line {};
+    groupCount = 0;
+    shortcutCount = 0;
 
     while (std::getline(shortcutFileStream, line)) {
         if (line.empty()) {
@@ -61,27 +69,36 @@ void ShortcutGui::init(const std::filesystem::path &file) {
     }
 }
 
-void ShortcutGui::draw() {
-    for (int i = 0; i < groupCount; ++i) {
-        ShortcutGroup& group = groups[i];
-        ImGui::PushID(i);
+void ShortcutGui::draw(bool& isOpen) {
+    if (ImGui::Begin("Shortcuts", &isOpen)) {
+        ImGuiUtils::filePicker("Shortcut File", shortcutFilePath, {});
 
-        if (ImGui::CollapsingHeader(group.name.c_str())) {
-            if (ImGui::Button("Open All")) {
-                for (int j = 0; j < group.memberCount; ++j) {
-                    Platform::openFile(Application::settings.projectPath / group.members[j]->path);
-                }
-            }
-            for (int j = 0; j < group.memberCount; ++j) {
-                Shortcut* shortcut = group.members[j];
-
-                if (ImGui::Button(shortcut->path.string().c_str())) {
-                    Platform::openFile(Application::settings.projectPath / shortcut->path);
-                }
-                ImGui::SameLine();
-                ImGui::Text("%s", shortcut->description.c_str());
-            }
+        if (ImGui::Button("Reload")) {
+            init();
         }
-        ImGui::PopID();
+
+        for (int i = 0; i < groupCount; ++i) {
+            ShortcutGroup& group = groups[i];
+            ImGui::PushID(i);
+
+            if (ImGui::CollapsingHeader(group.name.c_str())) {
+                if (ImGui::Button("Open All")) {
+                    for (int j = 0; j < group.memberCount; ++j) {
+                        Platform::openFile(Application::settings.projectPath / group.members[j]->path);
+                    }
+                }
+                for (int j = 0; j < group.memberCount; ++j) {
+                    Shortcut* shortcut = group.members[j];
+
+                    if (ImGui::Button(shortcut->path.string().c_str())) {
+                        Platform::openFile(Application::settings.projectPath / shortcut->path);
+                    }
+                    ImGui::SameLine();
+                    ImGui::Text("%s", shortcut->description.c_str());
+                }
+            }
+            ImGui::PopID();
+        }
+        ImGui::End();
     }
 }

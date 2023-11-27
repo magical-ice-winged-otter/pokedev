@@ -41,6 +41,7 @@ static void reloadConfig()
 {
     s_config.readData(
         CUSTOM_NAME("porytilesGui", s_porytilesGui),
+        CUSTOM_NAME("shortcutGui", s_shortcutGui),
         CUSTOM_NAME("windowState", window),
         CUSTOM_NAME("gameSettings", Application::settings)
     );
@@ -50,6 +51,7 @@ static void saveConfig()
 {
     s_config.writeData(
         CUSTOM_NAME("porytilesGui", s_porytilesGui),
+        CUSTOM_NAME("shortcutGui", s_shortcutGui),
         CUSTOM_NAME("windowState", window),
         CUSTOM_NAME("gameSettings", Application::settings)
     );
@@ -57,9 +59,9 @@ static void saveConfig()
 
 void Application::init() {
     reloadConfig();
-    loaders = createLoaders(settings.projectPath);
+//    loaders = createLoaders(settings.projectPath); // todo: slow
     s_porytilesGui.init(Platform::getRenderer());
-    s_shortcutGui.init(R"(C:\home\code\pokedev\src\pokeemerald.shortcuts.txt)");
+    s_shortcutGui.init();
 }
 
 void Application::shutdown() {
@@ -122,11 +124,13 @@ void Application::render() {
         ImGui::ShowDemoWindow(&window.showImGuiDemo);
     }
     if (window.showShortcuts) {
-        s_shortcutGui.draw();
+        s_shortcutGui.draw(window.showShortcuts);
     }
     if (window.showSettings && ImGui::Begin("Settings", &window.showSettings)) {
         settings.draw();
-        s_porytilesGui.drawSettings();
+        if (ImGui::CollapsingHeader("Porytiles")) {
+            s_porytilesGui.drawSettings();
+        }
         ImGui::End();
     }
 }

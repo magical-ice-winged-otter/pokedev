@@ -20,8 +20,7 @@ public:
     void drawSecondaryDecompilerWindow(bool* isOpen);
 
     template<class Archive>
-    void serialize(Archive& archive)
-    {
+    void serialize(Archive& archive) {
         archive(
                 CUSTOM_NAME("porytilesContext", m_ctx),
                 CUSTOM_NAME("commandGenerator", m_commandGenerator),

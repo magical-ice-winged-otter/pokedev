@@ -121,10 +121,16 @@ namespace ImGuiUtils
     {
         ImGui::Text("%s", label);
 
-        if (ImGui::Button(format("View##{}", label).c_str()))
-            Platform::openPath(path);
+        if (ImGui::Button(format("Open##{}", label).c_str()))
+            Platform::openFile(path);
 
         ImGui::SameLine();
+
+        if (ImGui::Button(format("View##{}", label).c_str()))
+            Platform::openPath(path.parent_path());
+
+        ImGui::SameLine();
+
 
         if (ImGui::Button(format("Edit##{}", label).c_str()))
             tryPickFile(path, options);

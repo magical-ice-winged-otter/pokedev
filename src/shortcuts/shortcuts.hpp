@@ -37,8 +37,17 @@ struct ShortcutGui {
     int shortcutCount {};
     Shortcut shortcuts[MAX_SHORTCUTS] {};
 
-    void draw();
-    void init(const std::filesystem::path& file);
+    std::filesystem::path shortcutFilePath {};
+
+    void draw(bool& isOpen);
+    void init();
+
+    template<class Archive>
+    void serialize(Archive& archive) {
+        archive(
+                AUTO_NAME(shortcutFilePath)
+        );
+    }
 };
 
 /*
