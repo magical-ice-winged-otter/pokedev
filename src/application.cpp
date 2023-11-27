@@ -2,7 +2,6 @@
 #include "platform.hpp"
 #include "porytiles/porytiles_gui.hpp"
 #include "serializer.hpp"
-#include "trainers/trainer_data.hpp"
 #include "trainers/trainer_editor.hpp"
 #include "trainers/mons/mon_editor.hpp"
 #include "game_data.hpp"
@@ -114,11 +113,12 @@ void Application::render()
 
     ImGui::End();
 
-    if (ImGui::Begin("Trainer Editor"))
-    {
-        s_trainerEditor.draw();
-        ImGui::End();
-    }
+    // todo: WIP stuff
+//    if (ImGui::Begin("Trainer Editor"))
+//    {
+//        s_trainerEditor.draw();
+//        ImGui::End();
+//    }
 
     if (ws.showPrimaryCompilerTool) s_porytilesGui.renderPrimaryCompilerWindow(&ws.showPrimaryCompilerTool);
     if (ws.showPrimaryDecompilerTool) s_porytilesGui.renderPrimaryDecompilerWindow(&ws.showPrimaryDecompilerTool);
