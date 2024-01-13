@@ -35,8 +35,8 @@ namespace Platform
     // todo: try save file as?
     bool tryPickFile(std::filesystem::path& outPath, const FilePickerOptions& options);
     bool tryPickFolder(std::filesystem::path& outPath, const FilePickerOptions& options);
-    void openPath(const std::filesystem::path& path);
-    void openFile(const std::filesystem::path& path);
+    bool openPath(const std::filesystem::path& path);
+    bool openFile(const std::filesystem::path& path);
 
 } // namespace Platform
 

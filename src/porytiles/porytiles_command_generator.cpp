@@ -4,6 +4,7 @@
 #include "imgui_utils.hpp"
 #include "porytiles_context.hpp"
 #include "porytiles_command_generator.hpp"
+#include <algorithm>
 
 using namespace std;
 
