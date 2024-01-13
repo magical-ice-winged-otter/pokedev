@@ -1,7 +1,14 @@
 #ifndef POKEDEV_PLATFORM_HPP
 #define POKEDEV_PLATFORM_HPP
 
+#ifdef _WIN32
 #include <filesystem>
+#else
+#include <vector>
+#include <filesystem>
+#endif
+
+#include <optional>
 #include <SDL.h>
 
 /// The tools that handle platform-specific tasks, and ensures compatability on all devices.

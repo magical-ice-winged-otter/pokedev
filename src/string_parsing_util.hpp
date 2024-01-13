@@ -1,7 +1,13 @@
 #ifndef POKEDEV_STRING_PARSING_UTIL_HPP
 #define POKEDEV_STRING_PARSING_UTIL_HPP
 
+#ifdef _WIN32
+#include <filesystem>
+#else
 #include <vector>
+#include <filesystem>
+#endif
+
 #include <string>
 #include <filesystem>
 
