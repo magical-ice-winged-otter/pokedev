@@ -1,5 +1,6 @@
 build
 imgui.ini
+pokedev_config.json
 
 # IDE user directories
 .idea
