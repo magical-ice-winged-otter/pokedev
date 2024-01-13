@@ -4,8 +4,7 @@
     "dependencies":
     [
         {
-            "name": "sdl2",
-            "features": ["base"]
+            "name": "sdl2"
         },
         {
             "name": "sdl2-image"
