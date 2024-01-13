@@ -12,6 +12,9 @@
         {
             "name": "imgui",
             "features": ["sdl2-binding", "sdl2-renderer-binding"]
+        },
+        {
+            "name": "fmt"
         }
     ]
 }

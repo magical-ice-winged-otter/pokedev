@@ -9,7 +9,7 @@
 #endif
 
 #include <imgui.h>
-#include <format>
+#include <fmt/core.h>
 #include "platform.hpp"
 
 /// Re-usable, custom ImGui widgets.

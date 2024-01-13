@@ -12,6 +12,7 @@ project(pokedev
 find_package(SDL2 CONFIG REQUIRED)
 find_package(SDL2_image CONFIG REQUIRED)
 find_package(imgui CONFIG REQUIRED)
+find_package(fmt CONFIG REQUIRED)
 
 # stops the console from popping up, probably windows-only
 set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /SUBSYSTEM:WINDOWS /ENTRY:mainCRTStartup")
@@ -68,4 +69,5 @@ target_link_libraries(pokedev
         $<IF:$<TARGET_EXISTS:SDL2::SDL2>,SDL2::SDL2,SDL2::SDL2-static>
         $<IF:$<TARGET_EXISTS:SDL2_image::SDL2_image>,SDL2_image::SDL2_image,SDL2_image::SDL2_image-static>
         imgui::imgui
+        fmt::fmt
 )
