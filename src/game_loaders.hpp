@@ -1,12 +1,8 @@
 #ifndef POKEDEV_GAME_LOADERS_HPP
 #define POKEDEV_GAME_LOADERS_HPP
 
-#ifdef _WIN32
-#include <filesystem>
-#else
 #include <vector>
 #include <filesystem>
-#endif
 
 class AbilityLoader {
 public:

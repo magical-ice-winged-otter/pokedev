@@ -1,15 +1,9 @@
 #ifndef POKEDEV_STRING_PARSING_UTIL_HPP
 #define POKEDEV_STRING_PARSING_UTIL_HPP
 
-#ifdef _WIN32
-#include <filesystem>
-#else
 #include <vector>
 #include <filesystem>
-#endif
-
 #include <string>
-#include <filesystem>
 
 std::vector<std::string> parseDefines(const std::filesystem::path& filePath, const char* regex);
 bool tryGetCsvColumn(const std::string& line, int index, std::string& outResult);

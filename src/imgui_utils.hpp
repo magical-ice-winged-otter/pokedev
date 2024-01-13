@@ -1,13 +1,8 @@
 #ifndef POKEDEV_IMGUI_UTILS_HPP
 #define POKEDEV_IMGUI_UTILS_HPP
 
-#ifdef _WIN32
-#include <filesystem>
-#else
 #include <vector>
 #include <filesystem>
-#endif
-
 #include <imgui.h>
 #include <fmt/core.h>
 #include "platform.hpp"
