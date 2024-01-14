@@ -1,6 +1,7 @@
 #ifndef POKEDEV_GAME_LOADERS_HPP
 #define POKEDEV_GAME_LOADERS_HPP
 
+#include <vector>
 #include <filesystem>
 
 class AbilityLoader {

@@ -2,8 +2,8 @@
 #define POKEDEV_STRING_PARSING_UTIL_HPP
 
 #include <vector>
-#include <string>
 #include <filesystem>
+#include <string>
 
 std::vector<std::string> parseDefines(const std::filesystem::path& filePath, const char* regex);
 bool tryGetCsvColumn(const std::string& line, int index, std::string& outResult);

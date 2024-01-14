@@ -1,7 +1,14 @@
 #ifndef POKEDEV_PLATFORM_HPP
 #define POKEDEV_PLATFORM_HPP
 
+#ifdef _WIN32
 #include <filesystem>
+#else
+#include <vector>
+#include <filesystem>
+#endif
+
+#include <optional>
 #include <SDL.h>
 
 /// The tools that handle platform-specific tasks, and ensures compatability on all devices.
@@ -28,8 +35,8 @@ namespace Platform
     // todo: try save file as?
     bool tryPickFile(std::filesystem::path& outPath, const FilePickerOptions& options);
     bool tryPickFolder(std::filesystem::path& outPath, const FilePickerOptions& options);
-    void openPath(const std::filesystem::path& path);
-    void openFile(const std::filesystem::path& path);
+    bool openPath(const std::filesystem::path& path);
+    bool openFile(const std::filesystem::path& path);
 
 } // namespace Platform
 

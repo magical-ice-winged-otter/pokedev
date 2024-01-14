@@ -4,8 +4,7 @@
     "dependencies":
     [
         {
-            "name": "sdl2",
-            "features": ["base"]
+            "name": "sdl2"
         },
         {
             "name": "sdl2-image"
@@ -13,6 +12,9 @@
         {
             "name": "imgui",
             "features": ["sdl2-binding", "sdl2-renderer-binding"]
+        },
+        {
+            "name": "fmt"
         }
     ]
 }

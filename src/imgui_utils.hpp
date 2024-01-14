@@ -1,8 +1,10 @@
 #ifndef POKEDEV_IMGUI_UTILS_HPP
 #define POKEDEV_IMGUI_UTILS_HPP
 
+#include <vector>
 #include <filesystem>
 #include <imgui.h>
+#include <fmt/core.h>
 #include "platform.hpp"
 
 /// Re-usable, custom ImGui widgets.

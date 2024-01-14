@@ -1,6 +1,6 @@
 # todo: would love to simplify this file, but im honestly not good enough w/ cmake to do it well
 
-cmake_minimum_required(VERSION 3.15)
+cmake_minimum_required(VERSION 3.20...3.28)
 set(CMAKE_TOOLCHAIN_FILE $ENV{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake)
 
 project(pokedev
@@ -9,14 +9,15 @@ project(pokedev
         LANGUAGES CXX
 )
 
-find_package(SDL2 CONFIG REQUIRED COMPONENTS SDL2 SDL2main)
+find_package(SDL2 CONFIG REQUIRED)
 find_package(SDL2_image CONFIG REQUIRED)
 find_package(imgui CONFIG REQUIRED)
+find_package(fmt CONFIG REQUIRED)
 
-# stops the console from popping up, probably windows-only
-set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /SUBSYSTEM:WINDOWS /ENTRY:mainCRTStartup")
+if(WIN32)
+    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /SUBSYSTEM:WINDOWS /ENTRY:mainCRTStartup")
+endif()
 
-set(CMAKE_CXX_STANDARD 20)
 set(SOURCE_FILES
         src/main.cpp
         src/application.hpp
@@ -54,6 +55,8 @@ set(SOURCE_FILES
 
 add_executable(pokedev ${SOURCE_FILES})
 
+target_compile_features(${PROJECT_NAME} PRIVATE cxx_std_20)
+
 target_include_directories(pokedev
         PRIVATE
         src
@@ -62,8 +65,9 @@ target_include_directories(pokedev
 
 target_link_libraries(pokedev
         PRIVATE
-        SDL2::SDL2
-        SDL2::SDL2main
-        SDL2_image::SDL2_image
+        $<TARGET_NAME_IF_EXISTS:SDL2::SDL2main>
+        $<IF:$<TARGET_EXISTS:SDL2::SDL2>,SDL2::SDL2,SDL2::SDL2-static>
+        $<IF:$<TARGET_EXISTS:SDL2_image::SDL2_image>,SDL2_image::SDL2_image,SDL2_image::SDL2_image-static>
         imgui::imgui
+        fmt::fmt
 )

@@ -99,18 +99,18 @@ namespace ImGuiUtils
     {
         ImGui::Text("%s", label);
 
-        if (ImGui::Button(format("View##{}", label).c_str()))
+        if (ImGui::Button(fmt::format("View##{}", label).c_str()))
             Platform::openPath(path);
 
         ImGui::SameLine();
 
-        if (ImGui::Button(format("Edit##{}", label).c_str()))
+        if (ImGui::Button(fmt::format("Edit##{}", label).c_str()))
             tryPickFolder(path, options);
 
         ImGui::SameLine();
         string pathString{path.string()};
 
-        if (ImGui::InputTextWithHint(format("##{}", label).c_str(), "No folder selected", &pathString))
+        if (ImGui::InputTextWithHint(fmt::format("##{}", label).c_str(), "No folder selected", &pathString))
             path = filesystem::path{pathString};
 
         ImGui::Spacing();
@@ -121,24 +121,24 @@ namespace ImGuiUtils
     {
         ImGui::Text("%s", label);
 
-        if (ImGui::Button(format("Open##{}", label).c_str()))
+        if (ImGui::Button(fmt::format("Open##{}", label).c_str()))
             Platform::openFile(path);
 
         ImGui::SameLine();
 
-        if (ImGui::Button(format("View##{}", label).c_str()))
+        if (ImGui::Button(fmt::format("View##{}", label).c_str()))
             Platform::openPath(path.parent_path());
 
         ImGui::SameLine();
 
 
-        if (ImGui::Button(format("Edit##{}", label).c_str()))
+        if (ImGui::Button(fmt::format("Edit##{}", label).c_str()))
             tryPickFile(path, options);
 
         ImGui::SameLine();
         string pathString{path.string()};
 
-        if (ImGui::InputTextWithHint(format("##{}", label).c_str(), "No file selected", &pathString))
+        if (ImGui::InputTextWithHint(fmt::format("##{}", label).c_str(), "No file selected", &pathString))
             path = filesystem::path{pathString};
 
         ImGui::Spacing();

@@ -104,13 +104,15 @@ bool Platform::Windows::tryPickFolder(std::filesystem::path& outPath, const File
     return result;
 }
 
-void Platform::Windows::openPath(const std::filesystem::path& path)
+bool Platform::Windows::openPath(const std::filesystem::path& path)
 {
     ShellExecute(nullptr, "explore", path.string().c_str(), nullptr, nullptr, SW_SHOWDEFAULT);
+    return true;
 }
 
-void Platform::Windows::openFile(const std::filesystem::path &path) {
+bool Platform::Windows::openFile(const std::filesystem::path &path) {
     ShellExecute(nullptr, "open", path.string().c_str(), nullptr, nullptr, SW_SHOWDEFAULT);
+    return true;
 }
 
 #endif // _WIN32

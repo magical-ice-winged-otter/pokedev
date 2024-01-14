@@ -127,7 +127,7 @@ bool Platform::tryPickFolder(std::filesystem::path& outPath, const FilePickerOpt
 #endif
 }
 
-void Platform::openPath(const std::filesystem::path& path) {
+bool Platform::openPath(const std::filesystem::path& path) {
 #ifdef _WIN32
     return Windows::openPath(path);
 #else
@@ -136,7 +136,7 @@ void Platform::openPath(const std::filesystem::path& path) {
 #endif
 }
 
-void Platform::openFile(const std::filesystem::path &path) {
+bool Platform::openFile(const std::filesystem::path &path) {
 #ifdef _WIN32
     return Windows::openFile(path);
 #else
