@@ -42,11 +42,19 @@ void DrawUtil::scanImage(Mat& mat, std::function<std::optional<uchar*>(const Dra
     }
 }
 
-//box[0] = upper left corner,
-//box[1] = bottom right corner
-void DrawUtil::getSpriteBox(Mat& mat, int box[2][2] ) {
+//box[0] the offset (usually 0, 0)
+//box[1] the actual box definition
+void DrawUtil::scanSpriteBox(Mat& mat, int box[2][2], std::function<void(const Rect&)> boxConsumer) {
     int upperLeftX = std::min(box[0][0], box[1][0]);
     int upperLeftY = std::min(box[0][1], box[1][1]);
     int bottomRightX = std::max(box[0][0], box[1][0]);
     int bottomRightY = std::max(box[0][1], box[1][1]);
+
+    for (int i = upperLeftY; i < mat.rows; i = i + bottomRightY) {
+        for (int j = upperLeftX; j < mat.cols; j = j + bottomRightX) {
+            printf("x: %d, y: %d\n", j, i);
+            Rect spriteBox(j, i, bottomRightX - 1, bottomRightY - 1);
+            boxConsumer(spriteBox);
+        }
+    }
 }
