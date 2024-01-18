@@ -26,36 +26,20 @@ endif()
 
 set(SOURCE_FILES
         src/main.cpp
-        src/application.hpp
         src/application.cpp
         src/imgui_utils.cpp
-        src/imgui_utils.hpp
         src/serializer.cpp
-        src/serializer.hpp
         src/text_parser.cpp
-        src/text_parser.hpp
-        src/game_loaders.hpp
         src/game_loaders.cpp
         src/platform.cpp
-        src/platform.hpp
         src/platform/platform_windows.cpp
-        src/platform/platform_windows.hpp
         src/porytiles/porytiles_gui.cpp
-        src/porytiles/porytiles_gui.hpp
-        src/porytiles/porytiles_context.hpp
         src/porytiles/porytiles_command_generator.cpp
-        src/porytiles/porytiles_command_generator.hpp
         src/trainers/trainer_editor.cpp
-        src/trainers/trainer_editor.hpp
-        src/trainers/mons/mon_editor.hpp
         src/trainers/mons/mon_editor.cpp
-        src/trainers/mons/mon_data.hpp
-        src/game_settings.hpp
         src/game_settings.cpp
         src/trainers/mons/mon_data.cpp
-        src/shortcuts/shortcuts.hpp
         src/shortcuts/shortcuts.cpp
-        src/string_parsing_util.hpp
         src/string_parsing_util.cpp
 )
 
@@ -67,7 +51,7 @@ target_compile_features(${PROJECT_NAME} PRIVATE cxx_std_23)
 
 target_include_directories(pokedev
         PRIVATE
-        src
+        include
         lib/include
 )
 

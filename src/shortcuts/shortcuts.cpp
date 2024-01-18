@@ -1,7 +1,7 @@
 #include <fstream>
 #include <string>
 #include <imgui.h>
-#include "shortcuts.hpp"
+#include "shortcuts/shortcuts.hpp"
 #include "string_parsing_util.hpp"
 #include "platform.hpp"
 #include "application.hpp"

@@ -1,4 +1,4 @@
-#include "trainer_editor.hpp"
+#include "trainers/trainer_editor.hpp"
 #include "application.hpp"
 
 void TrainerEditor::init() {

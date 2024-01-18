@@ -3,7 +3,7 @@
 #include <shobjidl.h>
 #include <string_view>
 #include <windows.h>
-#include "platform_windows.hpp"
+#include "platform/platform_windows.hpp"
 
 void Platform::Windows::init()
 {
