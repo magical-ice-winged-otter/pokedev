@@ -1,5 +1,6 @@
 
 #include "spritesheets.hpp"
+#include "spritesheets/draw.hpp"
 
 using namespace cv; //we are only going to use opencv namespace here for loading images ideally.
 

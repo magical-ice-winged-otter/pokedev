@@ -1,13 +1,9 @@
 #pragma once
 
 #include <filesystem>
-
 #include <SDL_image.h>
-#include <opencv2/core.hpp>
-#include <opencv2/imgcodecs.hpp>
-#include <opencv2/highgui.hpp>
+#include <opencv2/opencv.hpp>
 
-#include "spritesheets/draw.hpp"
 
 extern const cv::Mat DEAD_IMAGE;
 

@@ -16,14 +16,12 @@ void scanImage(Mat& mat, std::function<std::optional<uchar*>(DrawUtil::Generator
     int channels = mat.channels();
     int nRows = mat.rows;
     int nCols = mat.cols;
-    if (mat.isContinuous())
-    {
+    if (mat.isContinuous()) {
         nCols *= nRows;
         nRows = 1;
     }
     uchar* p;
-    for(int i = 0; i < nRows; ++i)
-    {
+    for(int i = 0; i < nRows; ++i) {
         p = mat.ptr<uchar>(i);
         for (int j = 0; j < nCols; ++j) {
             uchar* col_ptr = &p[j];
@@ -35,10 +33,9 @@ void scanImage(Mat& mat, std::function<std::optional<uchar*>(DrawUtil::Generator
 
             DrawUtil::GeneratorPixel pixel = { col_ptr, channels};
             std::optional<uchar*> modified = modify(pixel);
-            if (modified.has_value()) {
-                for (int c = 0; c < channels; ++c) {
-                    col_ptr[c] = modified.value()[c];
-                }
+            if (!modified.has_value()) continue;
+            for (int c = 0; c < channels; ++c) {
+                col_ptr[c] = modified.value()[c];
             }
         }
     }
