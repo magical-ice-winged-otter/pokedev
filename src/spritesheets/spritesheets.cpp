@@ -77,3 +77,32 @@ Mat reOrderSheet(Mat& src, int box[2][2], std::vector<int> order) {
     //todo: need to fix the palette, but opencv doesn't provide that.
     return dest;
 }
+
+//Resizes the spritesheet by individually resizing each sprite and then collecting them back
+Mat SpriteSheetData::resizeSheet(int box[2][2], int resizeBox[2][2], InterpolationFlags flag) {
+    Mat src = this->m_image;
+    int rowBoxes = src.rows / box[1][1];
+    int colBoxes = src.cols / box[1][0];
+
+    int newBoxWidth = resizeBox[1][0];
+    int newBoxHeight = resizeBox[1][1];
+    Mat dest;
+    dest.create(rowBoxes * newBoxHeight, colBoxes * newBoxWidth, src.type());
+    
+    std::vector<Mat> destBox;
+    DrawUtil::scanSpriteBox(src, box, [&src, &dest, &newBoxWidth, &newBoxHeight, &flag, &destBox](const Rect& rect) -> void {
+        Mat region {src(rect)};
+        Mat resized;
+        resize(region, resized, Size(newBoxWidth, newBoxHeight), 0, 0, flag);
+        destBox.push_back(resized);
+    });
+
+    int i = 0;
+    DrawUtil::scanSpriteBox(dest, resizeBox, [&dest, &destBox, &i](const Rect& rect) -> void {
+        Mat region {dest(rect)};
+        destBox[i].copyTo(region);
+        i++;
+    });
+
+    return dest;
+}

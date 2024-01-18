@@ -1,6 +1,7 @@
 #include "platform.hpp"
 #include "application.hpp"
 
+#include <fmt/core.h>
 #include <filesystem>
 #include "spritesheets/draw.hpp"
 #include "spritesheets/spritesheets.hpp"
@@ -36,6 +37,10 @@ int main(int argc, char* argv[]) {
             {0, 0}, 
             {32, 48}
         };
+        int resize[2][2] = {
+            {0, 0},
+            {16, 32}
+        };
         //std::vector<int> order = {1, 4, 10, 5, 3, 8, 16, 9, 11, 12, 13, 14,  2,  6, 15,  7};
         std::vector<int> order = {1, 4, -1, 5, 3, 8, -1, 9, -1, -1, -1, -1,  2,  6, -1,  7};
         
@@ -47,10 +52,24 @@ int main(int argc, char* argv[]) {
         });
         */     
         SpriteSheetData reorder(data, box, order);
-        imshow("Another window", data.m_image);
-        imshow("Display window", reorder.m_image);
-
+        imshow("Original window", data.m_image);
+        imshow("Reordered window", reorder.m_image);
         imwrite("./tests/output.png", reorder.m_image);
+
+        for (InterpolationFlags flag : {INTER_NEAREST,
+            INTER_LINEAR,
+            INTER_CUBIC,
+            INTER_AREA,
+            INTER_LANCZOS4,
+            INTER_LINEAR_EXACT,
+            INTER_NEAREST_EXACT
+        }) {
+            int val = static_cast<int>(flag);
+            Mat resized = reorder.resizeSheet(box, resize, flag);
+            imshow(fmt::format("Resized window-{}", val), resized);
+            imwrite(fmt::format("./tests/output-resize-{}.png", val), resized);
+        }
+        
         waitKey(0);
         return 0;
     }

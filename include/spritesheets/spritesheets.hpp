@@ -23,6 +23,7 @@ class SpriteSheetData {
         inline SDL_Texture* getSDLTexture(SDL_Renderer* renderer) {
             return ::getSDLTexture(renderer,  this->m_image);
         }
+        Mat resizeSheet(int box[2][2], int resizeBox[2][2], InterpolationFlags flag);
 
     private:
         
