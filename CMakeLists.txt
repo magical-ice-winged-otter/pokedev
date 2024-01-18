@@ -51,6 +51,8 @@ set(SOURCE_FILES
         src/trainers/mons/mon_data.cpp
         src/tools/shortcuts_tool.cpp
         src/string_parsing_util.cpp
+        src/spritesheets/draw.cpp
+        src/spritesheets/draw.hpp
 )
 
 include_directories( ${OpenCV_INCLUDE_DIRS} )

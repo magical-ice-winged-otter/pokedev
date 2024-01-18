@@ -10,7 +10,7 @@ Mat DrawUtil::loadImage(const std::filesystem::path& imageFile) {
     return img;
 }
 
-void scanImage(Mat& mat, std::function<uchar*(DrawUtil::GeneratorPixel)> modify) {
+void scanImage(Mat& mat, std::function<std::optional<uchar*>(DrawUtil::GeneratorPixel)> modify) {
     // accept only char type matrices
     CV_Assert(mat.depth() == CV_8U);
     int channels = mat.channels();
@@ -34,9 +34,11 @@ void scanImage(Mat& mat, std::function<uchar*(DrawUtil::GeneratorPixel)> modify)
             }
 
             DrawUtil::GeneratorPixel pixel = { col_ptr, channels};
-            uchar* modified = modify(pixel);
-            for (int c = 0; c < channels; ++c) {
-                col_ptr[c] = modified[c];
+            std::optional<uchar*> modified = modify(pixel);
+            if (modified.has_value()) {
+                for (int c = 0; c < channels; ++c) {
+                    col_ptr[c] = modified.value()[c];
+                }
             }
         }
     }
