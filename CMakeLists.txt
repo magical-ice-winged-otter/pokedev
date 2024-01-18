@@ -2,12 +2,17 @@
 
 cmake_minimum_required(VERSION 3.20...3.28)
 set(CMAKE_TOOLCHAIN_FILE $ENV{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake)
+set(CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_STANDARD 23)
+set_property(TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 23)
 
 project(pokedev
         VERSION 1.0
         DESCRIPTION "A set of tools for working with pokemon de-compilations."
         LANGUAGES CXX
 )
+
+add_compile_options("-fcoroutines")
 
 find_package(SDL2 CONFIG REQUIRED)
 find_package(SDL2_image CONFIG REQUIRED)
@@ -54,9 +59,11 @@ set(SOURCE_FILES
         src/string_parsing_util.cpp
 )
 
+include_directories( ${OpenCV_INCLUDE_DIRS} )
+
 add_executable(pokedev ${SOURCE_FILES})
 
-target_compile_features(${PROJECT_NAME} PRIVATE cxx_std_20)
+target_compile_features(${PROJECT_NAME} PRIVATE cxx_std_23)
 
 target_include_directories(pokedev
         PRIVATE
@@ -71,5 +78,5 @@ target_link_libraries(pokedev
         $<IF:$<TARGET_EXISTS:SDL2_image::SDL2_image>,SDL2_image::SDL2_image,SDL2_image::SDL2_image-static>
         imgui::imgui
         fmt::fmt
-        opencv_ml opencv_dnn opencv_core opencv_flann
+        ${OpenCV_LIBS}
 )
