@@ -1,5 +1,5 @@
 #include "application.hpp"
-#include "mon_data.hpp"
+#include "trainers/mons/mon_data.hpp"
 #include <fmt/core.h>
 
 std::string MonData::generateStruct() const {

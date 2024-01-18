@@ -28,20 +28,12 @@ set(SOURCE_FILES
         src/game_loaders.cpp
         src/platform.cpp
         src/platform/platform_windows.cpp
-        src/platform/platform_windows.hpp
         src/porytiles/porytiles_gui.cpp
-        src/porytiles/porytiles_gui.hpp
-        src/porytiles/porytiles_context.hpp
         src/porytiles/porytiles_command_generator.cpp
-        src/porytiles/porytiles_command_generator.hpp
         src/trainers/trainer_editor.cpp
-        src/trainers/trainer_editor.hpp
-        src/trainers/mons/mon_editor.hpp
         src/trainers/mons/mon_editor.cpp
-        src/trainers/mons/mon_data.hpp
         src/game_settings.cpp
         src/trainers/mons/mon_data.cpp
-        src/shortcuts/shortcuts.hpp
         src/shortcuts/shortcuts.cpp
         src/string_parsing_util.cpp
 )
@@ -52,9 +44,8 @@ target_compile_features(${PROJECT_NAME} PRIVATE cxx_std_20)
 
 target_include_directories(pokedev
         PRIVATE
-        src
-        lib/include
         include
+        lib/include
 )
 
 target_link_libraries(pokedev

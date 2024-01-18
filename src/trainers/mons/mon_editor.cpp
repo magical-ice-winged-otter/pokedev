@@ -1,6 +1,6 @@
 #include <imgui.h>
 #include <imgui_stdlib.h>
-#include "mon_editor.hpp"
+#include "trainers/mons/mon_editor.hpp"
 #include "game_loaders.hpp"
 #include "application.hpp"
 
