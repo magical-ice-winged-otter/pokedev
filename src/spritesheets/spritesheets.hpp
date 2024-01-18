@@ -7,6 +7,7 @@
 #include <opencv2/imgcodecs.hpp>
 #include <opencv2/highgui.hpp>
 
+#include "spritesheets/draw.hpp"
 
 extern const cv::Mat DEAD_IMAGE;
 
