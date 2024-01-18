@@ -16,7 +16,7 @@ class SpriteSheetData {
         //constructor
         SpriteSheetData(const std::filesystem::path& imageFile);
         //methods
-        SDL_Texture* getSDLTexture(SDL_Renderer* renderer) {
+        inline SDL_Texture* getSDLTexture(SDL_Renderer* renderer) {
             return ::getSDLTexture(renderer,  this->m_image);
         }
 
