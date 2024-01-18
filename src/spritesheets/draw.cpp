@@ -21,7 +21,6 @@ void DrawUtil::scanImage(Mat& mat, std::function<std::optional<uchar*>(const Dra
         nCols *= nRows;
         nRows = 1;
     }
-    printf("rows: %d, cols: %d, channels: %d", nRows, nCols, channels);
     uchar* p;
     for(int i = 0; i < nRows; ++i) {
         p = mat.ptr<uchar>(i);
@@ -43,3 +42,11 @@ void DrawUtil::scanImage(Mat& mat, std::function<std::optional<uchar*>(const Dra
     }
 }
 
+//box[0] = upper left corner,
+//box[1] = bottom right corner
+void DrawUtil::getSpriteBox(Mat& mat, int box[2][2] ) {
+    int upperLeftX = std::min(box[0][0], box[1][0]);
+    int upperLeftY = std::min(box[0][1], box[1][1]);
+    int bottomRightX = std::max(box[0][0], box[1][0]);
+    int bottomRightY = std::max(box[0][1], box[1][1]);
+}

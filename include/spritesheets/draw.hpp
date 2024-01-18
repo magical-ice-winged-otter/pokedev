@@ -23,4 +23,5 @@ namespace DrawUtil {
     //I decided that it's not useful to give a read only scan.
     void scanImage(Mat& mat, std::function<std::optional<uchar*>(const DrawUtil::GeneratorPixel&)> modify);
     Mat loadImage(const std::filesystem::path& imageFile);
+    void getSpriteBox(Mat& mat, int box[2][2]);
 }
