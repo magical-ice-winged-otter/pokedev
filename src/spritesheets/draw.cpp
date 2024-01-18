@@ -1,3 +1,4 @@
+#include "spritesheets/spritesheets.hpp"
 #include "spritesheets/draw.hpp"
 
 Mat DrawUtil::loadImage(const std::filesystem::path& imageFile) {
@@ -10,7 +11,7 @@ Mat DrawUtil::loadImage(const std::filesystem::path& imageFile) {
     return img;
 }
 
-void scanImage(Mat& mat, std::function<std::optional<uchar*>(DrawUtil::GeneratorPixel)> modify) {
+void DrawUtil::scanImage(Mat& mat, std::function<std::optional<uchar*>(const DrawUtil::GeneratorPixel&)> modify) {
     // accept only char type matrices
     CV_Assert(mat.depth() == CV_8U);
     int channels = mat.channels();
@@ -20,10 +21,11 @@ void scanImage(Mat& mat, std::function<std::optional<uchar*>(DrawUtil::Generator
         nCols *= nRows;
         nRows = 1;
     }
+    printf("rows: %d, cols: %d, channels: %d", nRows, nCols, channels);
     uchar* p;
     for(int i = 0; i < nRows; ++i) {
         p = mat.ptr<uchar>(i);
-        for (int j = 0; j < nCols; ++j) {
+        for (int j = 0; j < nCols * channels; j = j + channels) {
             uchar* col_ptr = &p[j];
 
             uchar copy[channels];
