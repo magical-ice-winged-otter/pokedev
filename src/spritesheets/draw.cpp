@@ -42,18 +42,27 @@ void DrawUtil::scanImage(Mat& mat, std::function<std::optional<uchar*>(const Dra
     }
 }
 
-//box[0] the offset (usually 0, 0)
-//box[1] the actual box definition
-void DrawUtil::scanSpriteBox(Mat& mat, int box[2][2], std::function<void(const Rect&)> boxConsumer) {
+BBox DrawUtil::fixBoundingBox(int box[2][2]) {
     int upperLeftX = std::min(box[0][0], box[1][0]);
     int upperLeftY = std::min(box[0][1], box[1][1]);
     int bottomRightX = std::max(box[0][0], box[1][0]);
     int bottomRightY = std::max(box[0][1], box[1][1]);
 
+    return {{{upperLeftX, upperLeftY}, {bottomRightX, bottomRightY}}};
+}
+
+//box[0] the offset (usually 0, 0)
+//box[1] the actual box definition
+void DrawUtil::scanSpriteBox(Mat& mat, int box[2][2], std::function<void(const Rect&)> boxConsumer) {
+    BBox fix = DrawUtil::fixBoundingBox(box);
+    int upperLeftX = fix[0][0];
+    int upperLeftY = fix[0][1];
+    int bottomRightX = fix[1][0];
+    int bottomRightY = fix[1][1];
+
     for (int i = upperLeftY; i < mat.rows; i = i + bottomRightY) {
         for (int j = upperLeftX; j < mat.cols; j = j + bottomRightX) {
-            printf("x: %d, y: %d\n", j, i);
-            Rect spriteBox(j, i, bottomRightX - 1, bottomRightY - 1);
+            Rect spriteBox(j, i, bottomRightX, bottomRightY);
             boxConsumer(spriteBox);
         }
     }

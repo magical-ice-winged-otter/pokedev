@@ -53,6 +53,7 @@ set(SOURCE_FILES
         src/string_parsing_util.cpp
         src/spritesheets/draw.cpp
         src/spritesheets/spritesheets.cpp
+        src/spritesheets/palette_png.cpp
 )
 
 include_directories( ${OpenCV_INCLUDE_DIRS} )
