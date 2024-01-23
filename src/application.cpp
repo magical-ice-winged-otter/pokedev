@@ -123,7 +123,7 @@ void Application::render() {
 
     for (int i = 0; i < ARR_LEN(s_tools); ++i) {
         if (s_tools[i]->isActive) {
-            s_tools[i]->renderWindow());
+            s_tools[i]->renderWindow();
         }
     }
 
