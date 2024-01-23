@@ -6,6 +6,7 @@
 #include <filesystem>
 
 #include "serializer.hpp"
+#include "pokedev_tool.hpp"
 
 struct Shortcut;
 struct ShortcutGroup;
@@ -30,17 +31,10 @@ struct ShortcutGroup {
     Shortcut* members[MAX_SHORTCUTS_PER_GROUP] {};
 };
 
-struct ShortcutGui {
-    int groupCount {};
-    ShortcutGroup groups[MAX_GROUPS] {};
-
-    int shortcutCount {};
-    Shortcut shortcuts[MAX_SHORTCUTS] {};
-
-    std::filesystem::path shortcutFilePath {};
-
-    void draw(bool& isOpen);
-    void init();
+class ShortcutsTool : public PokeDevTool {
+public:
+    ShortcutsTool();
+    void renderWindow() override;
 
     template<class Archive>
     void serialize(Archive& archive) {
@@ -48,6 +42,13 @@ struct ShortcutGui {
                 AUTO_NAME(shortcutFilePath)
         );
     }
+private:
+    int groupCount {};
+    ShortcutGroup groups[MAX_GROUPS] {};
+    int shortcutCount {};
+    Shortcut shortcuts[MAX_SHORTCUTS] {};
+    std::filesystem::path shortcutFilePath {};
+    void init();
 };
 
 /*

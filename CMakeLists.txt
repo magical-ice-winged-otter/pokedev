@@ -40,7 +40,7 @@ set(SOURCE_FILES
         src/trainers/mons/mon_editor.cpp
         src/game_settings.cpp
         src/trainers/mons/mon_data.cpp
-        src/shortcuts/shortcuts.cpp
+        src/tools/shortcuts_tool.cpp
         src/string_parsing_util.cpp
 )
 

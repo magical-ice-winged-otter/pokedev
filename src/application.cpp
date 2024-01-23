@@ -4,7 +4,7 @@
 #include "serializer.hpp"
 #include "trainers/mons/mon_editor.hpp"
 #include "game_loaders.hpp"
-#include "shortcuts/shortcuts.hpp"
+#include "tools/shortcuts_tool.hpp"
 #include "pokedev_tool.hpp"
 #include "tools/imgui_demo_tool.hpp"
 
@@ -12,30 +12,25 @@
 
 static struct WindowState {
     bool showSettings{};
-    bool showImGuiDemo{};
     bool showPrimaryCompiler{};
     bool showPrimaryDecompiler{};
     bool showSecondaryCompiler{};
     bool showSecondaryDecompiler{};
-    bool showShortcuts{true};
 
     template <class Archive>
     void serialize(Archive& archive) {
         archive(
             CUSTOM_NAME("showSettings", showSettings),
-            CUSTOM_NAME("showImGuiDemo", showImGuiDemo),
             CUSTOM_NAME("showPrimaryCompilerTool", showPrimaryCompiler),
             CUSTOM_NAME("showSecondaryCompilerTool", showSecondaryCompiler),
             CUSTOM_NAME("showPrimaryDecompilerTool", showPrimaryDecompiler),
-            CUSTOM_NAME("showSecondaryDecompilerTool", showSecondaryDecompiler),
-            CUSTOM_NAME("showShortcuts", showShortcuts)
+            CUSTOM_NAME("showSecondaryDecompilerTool", showSecondaryDecompiler)
         );
     }
 } window;
 
 static ConfigFile s_config{"pokedev_config.json"};
 static PorytilesGui s_porytilesGui{};
-static ShortcutGui s_shortcutGui {};
 
 GameLoaders Application::loaders {};
 GameSettings Application::settings {};
@@ -43,7 +38,7 @@ GameSettings Application::settings {};
 static void reloadConfig() {
     s_config.readData(
         CUSTOM_NAME("porytilesGui", s_porytilesGui),
-        CUSTOM_NAME("shortcutGui", s_shortcutGui),
+        // CUSTOM_NAME("shortcutGui", s_shortcutGui),
         CUSTOM_NAME("windowState", window),
         CUSTOM_NAME("gameSettings", Application::settings)
     );
@@ -52,7 +47,7 @@ static void reloadConfig() {
 static void saveConfig() {
     s_config.writeData(
         CUSTOM_NAME("porytilesGui", s_porytilesGui),
-        CUSTOM_NAME("shortcutGui", s_shortcutGui),
+        // CUSTOM_NAME("shortcutGui", s_shortcutGui),
         CUSTOM_NAME("windowState", window),
         CUSTOM_NAME("gameSettings", Application::settings)
     );
@@ -60,12 +55,12 @@ static void saveConfig() {
 
 static PokeDevTool* s_tools[] {
     new ImGuiDemoTool {},
+    new ShortcutsTool {},
 }; 
 
 void Application::init() {
     //    loaders = createLoaders(settings.projectPath); // todo: slow
     s_porytilesGui.init(Platform::getRenderer());
-    s_shortcutGui.init();
 }
 
 void Application::shutdown() {
@@ -113,7 +108,6 @@ void Application::render() {
             ImGui::MenuItem("Primary Decompiler", nullptr, &window.showPrimaryDecompiler);
             ImGui::MenuItem("Secondary Compiler", nullptr, &window.showSecondaryCompiler);
             ImGui::MenuItem("Secondary Decompiler", nullptr, &window.showSecondaryDecompiler);
-            ImGui::MenuItem("Shortcuts", nullptr, &window.showShortcuts);
             ImGui::EndMenu();
         }
         ImGui::EndMenuBar();
@@ -138,9 +132,6 @@ void Application::render() {
     }
     if (window.showSecondaryDecompiler) {
         s_porytilesGui.drawSecondaryDecompilerWindow(&window.showSecondaryDecompiler);
-    }
-    if (window.showShortcuts) {
-        s_shortcutGui.draw(window.showShortcuts);
     }
     if (window.showSettings && ImGui::Begin("Settings", &window.showSettings)) {
         settings.draw();

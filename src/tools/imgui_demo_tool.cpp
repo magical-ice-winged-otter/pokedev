@@ -6,5 +6,5 @@ ImGuiDemoTool::ImGuiDemoTool() {
 }
 
 void ImGuiDemoTool::renderWindow() {
-    ImGui::ShowDemoWindow(isActive);
+    ImGui::ShowDemoWindow(&isActive);
 }
