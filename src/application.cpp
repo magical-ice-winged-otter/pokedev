@@ -5,9 +5,12 @@
 #include "trainers/mons/mon_editor.hpp"
 #include "game_loaders.hpp"
 #include "shortcuts/shortcuts.hpp"
+#include "pokedev_tool.hpp"
+#include "tools/imgui_demo_tool.hpp"
 
-static struct WindowState
-{
+#define ARR_LEN(array) (sizeof(array) / sizeof(array[0]))
+
+static struct WindowState {
     bool showSettings{};
     bool showImGuiDemo{};
     bool showPrimaryCompiler{};
@@ -37,8 +40,7 @@ static ShortcutGui s_shortcutGui {};
 GameLoaders Application::loaders {};
 GameSettings Application::settings {};
 
-static void reloadConfig()
-{
+static void reloadConfig() {
     s_config.readData(
         CUSTOM_NAME("porytilesGui", s_porytilesGui),
         CUSTOM_NAME("shortcutGui", s_shortcutGui),
@@ -47,8 +49,7 @@ static void reloadConfig()
     );
 }
 
-static void saveConfig()
-{
+static void saveConfig() {
     s_config.writeData(
         CUSTOM_NAME("porytilesGui", s_porytilesGui),
         CUSTOM_NAME("shortcutGui", s_shortcutGui),
@@ -57,9 +58,12 @@ static void saveConfig()
     );
 }
 
+static PokeDevTool* s_tools[] {
+    new ImGuiDemoTool {},
+}; 
+
 void Application::init() {
-    reloadConfig();
-//    loaders = createLoaders(settings.projectPath); // todo: slow
+    //    loaders = createLoaders(settings.projectPath); // todo: slow
     s_porytilesGui.init(Platform::getRenderer());
     s_shortcutGui.init();
 }
@@ -102,7 +106,9 @@ void Application::render() {
             ImGui::EndMenu();
         }
         if (ImGui::BeginMenu("Tools")) {
-            ImGui::MenuItem("ImGui Demo", nullptr, &window.showImGuiDemo);
+            for (int i = 0; i < ARR_LEN(s_tools); ++i) {
+                ImGui::MenuItem(s_tools[i]->name, nullptr, &s_tools[i]->isActive);
+            }
             ImGui::MenuItem("Primary Compiler", nullptr, &window.showPrimaryCompiler);
             ImGui::MenuItem("Primary Decompiler", nullptr, &window.showPrimaryDecompiler);
             ImGui::MenuItem("Secondary Compiler", nullptr, &window.showSecondaryCompiler);
@@ -115,6 +121,12 @@ void Application::render() {
 
     ImGui::End();
 
+    for (int i = 0; i < ARR_LEN(s_tools); ++i) {
+        if (s_tools[i]->isActive) {
+            s_tools[i]->renderWindow());
+        }
+    }
+
     if (window.showPrimaryCompiler) {
         s_porytilesGui.drawPrimaryCompilerWindow(&window.showPrimaryCompiler);
     }
@@ -126,9 +138,6 @@ void Application::render() {
     }
     if (window.showSecondaryDecompiler) {
         s_porytilesGui.drawSecondaryDecompilerWindow(&window.showSecondaryDecompiler);
-    }
-    if (window.showImGuiDemo) {
-        ImGui::ShowDemoWindow(&window.showImGuiDemo);
     }
     if (window.showShortcuts) {
         s_shortcutGui.draw(window.showShortcuts);
