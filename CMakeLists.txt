@@ -26,6 +26,7 @@ endif()
 
 set(SOURCE_FILES
         src/tools/imgui_demo_tool.cpp
+        src/tools/porytiles_tool.cpp
         src/main.cpp
         src/application.cpp
         src/imgui_utils.cpp
