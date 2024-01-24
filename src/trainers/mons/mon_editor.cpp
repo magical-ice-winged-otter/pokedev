@@ -8,15 +8,15 @@ using namespace Application;
 
 void MonEditor::init()
 {
-    m_abilityCombo.init(&loaders.abilities.names, "Abilities");
-    m_itemCombo.init(&loaders.items.names, "Items");
-    m_move1Combo.init(&loaders.moves.names, "##Move 1");
-    m_move2Combo.init(&loaders.moves.names, "##Move 2");
-    m_move3Combo.init(&loaders.moves.names, "##Move 3");
-    m_move4Combo.init(&loaders.moves.names, "##Move 4");
-    m_natureCombo.init(&loaders.natures.names, "Nature");
-    m_ballCombo.init(&loaders.balls.names, "Ball");
-    m_speciesCombo.init(&loaders.species.names, "Species");
+    m_abilityCombo.init(&loaders.getAbilityLoader().names, "Abilities");
+    m_itemCombo.init(&loaders.getItemLoader().names, "Items");
+    m_move1Combo.init(&loaders.getMoveLoader().names, "##Move 1");
+    m_move2Combo.init(&loaders.getMoveLoader().names, "##Move 2");
+    m_move3Combo.init(&loaders.getMoveLoader().names, "##Move 3");
+    m_move4Combo.init(&loaders.getMoveLoader().names, "##Move 4");
+    m_natureCombo.init(&loaders.getNatureLoader().names, "Nature");
+    m_ballCombo.init(&loaders.getBallLoader().names, "Ball");
+    m_speciesCombo.init(&loaders.getSpeciesLoader().names, "Species");
     setDataToEdit(nullptr);
 }
 

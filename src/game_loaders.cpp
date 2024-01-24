@@ -3,17 +3,25 @@
 #include "game_loaders.hpp"
 #include "string_parsing_util.hpp"
 
-GameLoaders createLoaders(const std::filesystem::path &projectPath)
-{
-    GameLoaders loaders {};
-    loaders.abilities.init(projectPath / "include/constants/abilities.h");
-    loaders.items.init(projectPath / "include/constants/items.h");
-    loaders.moves.init(projectPath / "include/constants/moves.h");
-    loaders.natures.init(projectPath / "include/constants/pokemon.h");
-    loaders.balls.init(projectPath / "include/constants/items.h");
-    loaders.species.init(projectPath / "include/constants/species.h");
-    return loaders;
+void GameLoaders::init(std::filesystem::path projectPath) {
+    m_projectPath = projectPath;
 }
+
+#define IMPL_GET_LOADER(loader, name, ...) \
+    loader & GameLoaders::get##loader () { \
+        if (! m_##name##AreLoaded ) { \
+            m_##name .init(__VA_ARGS__); \
+            m_##name##AreLoaded = true; \
+        } \
+        return m_##name ; \
+    }\
+
+IMPL_GET_LOADER(AbilityLoader, abilities, m_projectPath / "include/constants/abilities.h")
+IMPL_GET_LOADER(ItemLoader, items, m_projectPath / "include/constants/items.h")
+IMPL_GET_LOADER(MoveLoader, moves, m_projectPath / "include/constants/moves.h")
+IMPL_GET_LOADER(NatureLoader, natures, m_projectPath / "include/constants/pokemon.h")
+IMPL_GET_LOADER(BallLoader, balls, m_projectPath / "include/constants/items.h")
+IMPL_GET_LOADER(SpeciesLoader, species, m_projectPath / "include/constants/species.h")
 
 void AbilityLoader::init(const std::filesystem::path& abilityFilePath) {
     names = parseDefines(abilityFilePath, ".*#define ABILITY_");

@@ -1,13 +1,18 @@
 #include <fstream>
 #include <string>
 #include <imgui.h>
-#include "shortcuts/shortcuts.hpp"
+#include "tools/shortcuts_tool.hpp"
 #include "string_parsing_util.hpp"
 #include "platform.hpp"
 #include "application.hpp"
 #include "imgui_utils.hpp"
 
-void ShortcutGui::init() {
+ShortcutsTool::ShortcutsTool() {
+    name = "Shortcuts";
+    init();
+}
+
+void ShortcutsTool::init() {
     std::ifstream shortcutFileStream {shortcutFilePath};
 
     if (!shortcutFileStream.is_open()) {
@@ -69,8 +74,8 @@ void ShortcutGui::init() {
     }
 }
 
-void ShortcutGui::draw(bool& isOpen) {
-    if (ImGui::Begin("Shortcuts", &isOpen)) {
+void ShortcutsTool::renderWindow() {
+    if (ImGui::Begin("Shortcuts", &isActive)) {
         ImGuiUtils::filePicker("Shortcut File", shortcutFilePath, {});
 
         if (ImGui::Button("Reload")) {

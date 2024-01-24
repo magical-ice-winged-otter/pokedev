@@ -21,7 +21,7 @@ void TrainerEditor::draw() {
     if (ImGui::BeginListBox("Party Members")) {
         for (int i = 0; i < m_data->partyMemberCount; i++) {
             ImGui::PushID(i);
-            const char* speciesName = Application::loaders.species.names[m_data->partyMembers[i].speciesIndex].c_str();
+            const char* speciesName = Application::loaders.getSpeciesLoader().names[m_data->partyMembers[i].speciesIndex].c_str();
             if (ImGui::Selectable(speciesName, m_editedPartyMemberIndex == i)) {
                 m_editedPartyMemberIndex = i;
                 m_monEditor.setDataToEdit(&m_data->partyMembers[i]);

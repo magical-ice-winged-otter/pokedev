@@ -25,6 +25,8 @@ if(WIN32)
 endif()
 
 set(SOURCE_FILES
+        src/tools/imgui_demo_tool.cpp
+        src/tools/porytiles_tool.cpp
         src/main.cpp
         src/application.cpp
         src/imgui_utils.cpp
@@ -39,7 +41,7 @@ set(SOURCE_FILES
         src/trainers/mons/mon_editor.cpp
         src/game_settings.cpp
         src/trainers/mons/mon_data.cpp
-        src/shortcuts/shortcuts.cpp
+        src/tools/shortcuts_tool.cpp
         src/string_parsing_util.cpp
 )
 

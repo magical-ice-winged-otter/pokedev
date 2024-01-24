@@ -40,15 +40,20 @@ public:
     std::vector<std::string> names {};
 };
 
-struct GameLoaders {
-    AbilityLoader abilities;
-    ItemLoader items;
-    MoveLoader moves;
-    NatureLoader natures;
-    BallLoader balls;
-    SpeciesLoader species;
-};
+#define DECLARE_GAME_LOADER(loader, name) private: loader m_##name; bool m_##name##AreLoaded; public: loader & get##loader ();
 
-GameLoaders createLoaders(const std::filesystem::path& projectPath);
+class GameLoaders {
+    DECLARE_GAME_LOADER(AbilityLoader, abilities)
+    DECLARE_GAME_LOADER(ItemLoader, items)
+    DECLARE_GAME_LOADER(MoveLoader, moves)
+    DECLARE_GAME_LOADER(NatureLoader, natures)
+    DECLARE_GAME_LOADER(BallLoader, balls)
+    DECLARE_GAME_LOADER(SpeciesLoader, species)
+
+private:
+    std::filesystem::path m_projectPath;
+public:
+    void init(std::filesystem::path projectPath);
+};
 
 #endif
