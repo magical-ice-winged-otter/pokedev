@@ -5,7 +5,7 @@
 std::string MonData::generateStruct() const {
     std::string result = "    {\n";
 
-    result += fmt::format("        .species = {},\n", Application::loaders.species.names[speciesIndex]);
+    result += fmt::format("        .species = {},\n", Application::loaders.getSpeciesLoader().names[speciesIndex]);
     result += fmt::format("        .lvl = {},\n", level);
 
     if (hasNickname) {
@@ -27,23 +27,23 @@ std::string MonData::generateStruct() const {
         result += fmt::format("        .ev = TRAINER_PARTY_IVS({}, {}, {}, {}, {}, {}),\n", ivs[0], ivs[1], ivs[2], ivs[3], ivs[4], ivs[5]);
     }
     if (hasAbility) {
-        result += fmt::format("        .ability = {},\n", Application::loaders.abilities.names[abilityIndex]);
+        result += fmt::format("        .ability = {},\n", Application::loaders.getAbilityLoader().names[abilityIndex]);
     }
     if (hasBall) {
-        result += fmt::format("        .ball = {},\n", Application::loaders.balls.names[ballIndex]);
+        result += fmt::format("        .ball = {},\n", Application::loaders.getBallLoader().names[ballIndex]);
     }
     if (hasItem) {
-        result += fmt::format("        .heldItem = {},\n", Application::loaders.items.names[itemIndex]);
+        result += fmt::format("        .heldItem = {},\n", Application::loaders.getItemLoader().names[itemIndex]);
     }
     if (hasNature) {
-        result += fmt::format("        .nature = TRAINER_PARTY_NATURE({}),\n", Application::loaders.natures.names[natureIndex]);
+        result += fmt::format("        .nature = TRAINER_PARTY_NATURE({}),\n", Application::loaders.getNatureLoader().names[natureIndex]);
     }
     if (hasMoves) {
         result += fmt::format("        .moves = {{\n            {},\n            {},\n            {},\n            {}\n        }},\n",
-                              Application::loaders.moves.names[movesIndex[0]],
-                              Application::loaders.moves.names[movesIndex[1]],
-                              Application::loaders.moves.names[movesIndex[2]],
-                              Application::loaders.moves.names[movesIndex[3]]
+                              Application::loaders.getMoveLoader().names[movesIndex[0]],
+                              Application::loaders.getMoveLoader().names[movesIndex[1]],
+                              Application::loaders.getMoveLoader().names[movesIndex[2]],
+                              Application::loaders.getMoveLoader().names[movesIndex[3]]
         );
     }
 

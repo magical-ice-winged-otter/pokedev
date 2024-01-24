@@ -11,35 +11,34 @@ static ConfigFile s_config{"pokedev_config.json"};
 
 GameLoaders Application::loaders {};
 GameSettings Application::settings {};
+static std::vector<PokeDevTool*> s_tools {};
 
 static void reloadConfig() {
     s_config.readData(
-        // CUSTOM_NAME("shortcutGui", s_shortcutGui),
         CUSTOM_NAME("gameSettings", Application::settings)
     );
 }
 
 static void saveConfig() {
     s_config.writeData(
-        // CUSTOM_NAME("shortcutGui", s_shortcutGui),
         CUSTOM_NAME("gameSettings", Application::settings)
     );
 }
 
-static size_t s_toolCount;
-static PokeDevTool** s_tools;
-
 void Application::init() {
-    s_tools = new PokeDevTool*[] {
-        new ImGuiDemoTool {},
-        new ShortcutsTool {},
-        new PorytilesTool {Platform::getRenderer()},
-    };
-    s_toolCount = 3;
-    //    loaders = createLoaders(settings.projectPath); // todo: slow
+    reloadConfig();
+    loaders.init(settings.projectPath);
+
+    s_tools.push_back(new ImGuiDemoTool{});
+    s_tools.push_back(new ShortcutsTool{});
+    s_tools.push_back(new PorytilesTool{Platform::getRenderer()});
 }
 
 void Application::shutdown() {
+    for (int i = 0; i < s_tools.size(); ++i) {
+        delete s_tools[i];
+    }
+
     saveConfig();
 }
 
@@ -78,7 +77,7 @@ void Application::render() {
 
         // show tools in menu bar
         if (ImGui::BeginMenu("Tools")) {
-            for (int i = 0; i < s_toolCount; ++i) {
+            for (int i = 0; i < s_tools.size(); ++i) {
                 ImGui::MenuItem(s_tools[i]->name, nullptr, &s_tools[i]->isActive);
             }
             ImGui::EndMenu();
@@ -89,10 +88,15 @@ void Application::render() {
 
     ImGui::End();
 
+    ImGui::Begin("settings");
+    settings.draw();
+    ImGui::End();
+
     // render all tools
-    for (int i = 0; i < s_toolCount; ++i) {
+    for (int i = 0; i < s_tools.size(); ++i) {
         if (s_tools[i]->isActive && ImGui::Begin(s_tools[i]->name, &s_tools[i]->isActive)) {
             s_tools[i]->renderWindow();
+            ImGui::End();
         }
     }
 }
