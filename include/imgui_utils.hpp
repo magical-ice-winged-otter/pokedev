@@ -30,8 +30,8 @@ namespace ImGuiUtils
         ImGuiTextFilter m_filter {};
     };
 
-    void folderPicker(const char* label, std::filesystem::path& path, const Platform::FilePickerOptions& options);
-    void filePicker(const char* label, std::filesystem::path& path, const Platform::FilePickerOptions& options);
+    bool folderPicker(const char* label, std::filesystem::path& path, const Platform::FilePickerOptions& options);
+    bool filePicker(const char* label, std::filesystem::path& path, const Platform::FilePickerOptions& options);
 
 } // namespace ImGuiUtils
 

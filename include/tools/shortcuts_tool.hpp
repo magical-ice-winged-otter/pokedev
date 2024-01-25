@@ -31,7 +31,7 @@ struct ShortcutGroup {
     Shortcut* members[MAX_SHORTCUTS_PER_GROUP] {};
 };
 
-class ShortcutsTool : public ImGuiWindow {
+class ShortcutsTool : public PokeDevWindow {
 public:
     ShortcutsTool();
     void renderWindow() override;

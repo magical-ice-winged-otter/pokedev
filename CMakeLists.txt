@@ -43,7 +43,7 @@ ExternalProject_Add(
 )
 
 set(SOURCE_FILES
-        src/tools/tileset_editor_tool.cpp
+        src/tools/tileset_tool.cpp
         src/tools/imgui_demo_tool.cpp
         src/tools/porytiles_tool.cpp
         src/main.cpp

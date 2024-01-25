@@ -74,8 +74,7 @@ namespace ImGuiUtils
 
         bool justClosed = m_wasOpen && !isOpen;
 
-        if (justClosed)
-        {
+        if (justClosed) {
             m_filter.Clear();
             m_hasFilter = false;
         }
@@ -84,64 +83,81 @@ namespace ImGuiUtils
         return justClosed;
     }
 
-    void FilteredCombo::updatePassedValueIndices()
-    {
+    void FilteredCombo::updatePassedValueIndices() {
         m_passedValueIndices.clear();
 
-        for (size_t i = 0; i < m_values->size(); i++)
-        {
-            if (m_filter.PassFilter((*m_values)[i].c_str()))
+        for (size_t i = 0; i < m_values->size(); i++){
+            if (m_filter.PassFilter((*m_values)[i].c_str())) {
                 m_passedValueIndices.push_back(i);
+            }
         }
     }
 
-    void folderPicker(const char* label, filesystem::path& path, const Platform::FilePickerOptions& options)
-    {
+    bool folderPicker(const char* label, filesystem::path& path, const Platform::FilePickerOptions& options) {
+        bool result {false};
+
         ImGui::Text("%s", label);
 
-        if (ImGui::Button(fmt::format("View##{}", label).c_str()))
+        if (ImGui::Button(fmt::format("View##{}", label).c_str())) {
             Platform::openPath(path);
+        }
 
         ImGui::SameLine();
 
-        if (ImGui::Button(fmt::format("Edit##{}", label).c_str()))
-            tryPickFolder(path, options);
+        if (ImGui::Button(fmt::format("Edit##{}", label).c_str())) {
+            result = tryPickFolder(path, options);
+        }
 
         ImGui::SameLine();
         string pathString{path.string()};
 
-        if (ImGui::InputTextWithHint(fmt::format("##{}", label).c_str(), "No folder selected", &pathString))
-            path = filesystem::path{pathString};
+        if (ImGui::InputTextWithHint(fmt::format("##{}", label).c_str(), "No folder selected", &pathString)) {
+            if (filesystem::exists(pathString) && filesystem::is_directory(pathString)) {
+                path = filesystem::path{pathString};
+                result = true;
+            }
+        }
 
         ImGui::Spacing();
         ImGui::Spacing();
+
+        return result;
     }
 
-    void filePicker(const char* label, filesystem::path& path, const Platform::FilePickerOptions& options)
-    {
+    bool filePicker(const char* label, filesystem::path& path, const Platform::FilePickerOptions& options) {
+        bool result {false};
+
         ImGui::Text("%s", label);
 
-        if (ImGui::Button(fmt::format("Open##{}", label).c_str()))
+        if (ImGui::Button(fmt::format("Open##{}", label).c_str())) {
             Platform::openFile(path);
+        }
 
         ImGui::SameLine();
 
-        if (ImGui::Button(fmt::format("View##{}", label).c_str()))
+        if (ImGui::Button(fmt::format("View##{}", label).c_str())) {
             Platform::openPath(path.parent_path());
+        }
 
         ImGui::SameLine();
 
-
-        if (ImGui::Button(fmt::format("Edit##{}", label).c_str()))
-            tryPickFile(path, options);
+        if (ImGui::Button(fmt::format("Edit##{}", label).c_str())) {
+            result = tryPickFile(path, options);
+        }
 
         ImGui::SameLine();
         string pathString{path.string()};
 
-        if (ImGui::InputTextWithHint(fmt::format("##{}", label).c_str(), "No file selected", &pathString))
-            path = filesystem::path{pathString};
+        if (ImGui::InputTextWithHint(fmt::format("##{}", label).c_str(), "No file selected", &pathString)) {
+            if (filesystem::exists(pathString) && filesystem::is_regular_file(pathString)) {
+                path = filesystem::path{pathString};
+                result = true;
+            }
+        }
 
         ImGui::Spacing();
         ImGui::Spacing();
+
+        return result;
     }
 } // namespace ImGuiUtils

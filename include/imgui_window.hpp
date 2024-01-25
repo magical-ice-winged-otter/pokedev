@@ -1,12 +1,13 @@
 #ifndef POKEDEV_IMGUI_WINDOW_HPP
 #define POKEDEV_IMGUI_WINDOW_HPP
 
-class ImGuiWindow
+class PokeDevWindow
 {
 public:
-    virtual ~ImGuiWindow() {};
+    virtual ~PokeDevWindow() {};
     virtual const char* getName() = 0;
     void render();
+    void renderAlwaysOpen();
     bool isActive;
 
 protected:

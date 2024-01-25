@@ -4,7 +4,7 @@
 #include "imgui_window.hpp"
 #include "porytiles/porytiles_gui.hpp"
 
-class PorytilesTool : public ImGuiWindow
+class PorytilesTool : public PokeDevWindow
 {
 public:
     PorytilesTool(SDL_Renderer* renderer);

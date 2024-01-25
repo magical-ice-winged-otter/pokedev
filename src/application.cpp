@@ -6,12 +6,13 @@
 #include "tools/shortcuts_tool.hpp"
 #include "tools/imgui_demo_tool.hpp"
 #include "tools/porytiles_tool.hpp"
+#include "tools/tileset_tool.hpp"
 
 static ConfigFile s_config{"pokedev_config.json"};
 
 GameLoaders Application::loaders {};
 GameSettings Application::settings {};
-static std::vector<ImGuiWindow*> s_tools {};
+static std::vector<PokeDevWindow*> s_tools {};
 
 static void reloadConfig() {
     s_config.readData(
@@ -32,6 +33,7 @@ void Application::init() {
     s_tools.push_back(new ImGuiDemoTool{});
     s_tools.push_back(new ShortcutsTool{});
     s_tools.push_back(new PorytilesTool{Platform::getRenderer()});
+    s_tools.push_back(new PokeDev::TilesetTool{});
 }
 
 void Application::shutdown() {

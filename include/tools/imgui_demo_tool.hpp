@@ -3,7 +3,7 @@
 
 #include "imgui_window.hpp"
 
-class ImGuiDemoTool : public ImGuiWindow
+class ImGuiDemoTool : public PokeDevWindow
 {
 public:
     void renderWindow() override;
