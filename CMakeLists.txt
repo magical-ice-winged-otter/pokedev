@@ -72,6 +72,7 @@ set(SOURCE_FILES
         src/spritesheets/draw.cpp
         src/spritesheets/spritesheets.cpp
         src/spritesheets/palette_png.cpp
+        src/event.cpp
 )
 
 include_directories( ${OpenCV_INCLUDE_DIRS} ${CMAKE_BINARY_DIR}/external/cppcoro/include )
