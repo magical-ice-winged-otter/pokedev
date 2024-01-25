@@ -6,7 +6,7 @@
 #include <filesystem>
 
 #include "serializer.hpp"
-#include "pokedev_tool.hpp"
+#include "imgui_window.hpp"
 
 struct Shortcut;
 struct ShortcutGroup;
@@ -31,10 +31,11 @@ struct ShortcutGroup {
     Shortcut* members[MAX_SHORTCUTS_PER_GROUP] {};
 };
 
-class ShortcutsTool : public PokeDevTool {
+class ShortcutsTool : public ImGuiWindow {
 public:
     ShortcutsTool();
     void renderWindow() override;
+    const char* getName() override;
 
     template<class Archive>
     void serialize(Archive& archive) {

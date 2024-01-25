@@ -2,8 +2,11 @@
 #include "imgui.h"
 
 PorytilesTool::PorytilesTool(SDL_Renderer* renderer) {
-    name = "Porytiles";
     gui.init(renderer);
+}
+
+const char* PorytilesTool::getName() {
+    return "Porytiles";
 }
 
 #define RENDER_SUB_WINDOW(name, isActive, renderFunc) \

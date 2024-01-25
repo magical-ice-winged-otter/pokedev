@@ -43,6 +43,7 @@ ExternalProject_Add(
 )
 
 set(SOURCE_FILES
+        src/tools/tileset_editor_tool.cpp
         src/tools/imgui_demo_tool.cpp
         src/tools/porytiles_tool.cpp
         src/main.cpp
@@ -52,6 +53,7 @@ set(SOURCE_FILES
         src/text_parser.cpp
         src/game_loaders.cpp
         src/platform.cpp
+        src/imgui_window.cpp
         src/platform/platform_windows.cpp
         src/porytiles/porytiles_gui.cpp
         src/porytiles/porytiles_command_generator.cpp

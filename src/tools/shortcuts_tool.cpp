@@ -8,8 +8,11 @@
 #include "imgui_utils.hpp"
 
 ShortcutsTool::ShortcutsTool() {
-    name = "Shortcuts";
     init();
+}
+
+const char* ShortcutsTool::getName() {
+    return "Shortcuts";
 }
 
 void ShortcutsTool::init() {

@@ -11,7 +11,7 @@ static ConfigFile s_config{"pokedev_config.json"};
 
 GameLoaders Application::loaders {};
 GameSettings Application::settings {};
-static std::vector<PokeDevTool*> s_tools {};
+static std::vector<ImGuiWindow*> s_tools {};
 
 static void reloadConfig() {
     s_config.readData(
@@ -78,7 +78,7 @@ void Application::render() {
         // show tools in menu bar
         if (ImGui::BeginMenu("Tools")) {
             for (int i = 0; i < s_tools.size(); ++i) {
-                ImGui::MenuItem(s_tools[i]->name, nullptr, &s_tools[i]->isActive);
+                ImGui::MenuItem(s_tools[i]->getName(), nullptr, &s_tools[i]->isActive);
             }
             ImGui::EndMenu();
         }
@@ -94,9 +94,6 @@ void Application::render() {
 
     // render all tools
     for (int i = 0; i < s_tools.size(); ++i) {
-        if (s_tools[i]->isActive && ImGui::Begin(s_tools[i]->name, &s_tools[i]->isActive)) {
-            s_tools[i]->renderWindow();
-            ImGui::End();
-        }
+        s_tools[i]->render();
     }
 }
