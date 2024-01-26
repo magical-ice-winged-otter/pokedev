@@ -1,6 +1,6 @@
 # todo: would love to simplify this file, but im honestly not good enough w/ cmake to do it well
 
-cmake_minimum_required(VERSION 3.20...3.28)
+cmake_minimum_required(VERSION 3.28)
 set(CMAKE_TOOLCHAIN_FILE $ENV{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake)
 set(CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_STANDARD 23)
@@ -32,6 +32,16 @@ target_include_directories(cereal INTERFACE lib/include)
 
 target_sources(cereal INTERFACE ${CEREAL_HEADERS})
 
+include(ExternalProject)
+
+ExternalProject_Add(
+    cppcoro
+    PREFIX ${CMAKE_BINARY_DIR}/external/cppcoro
+    GIT_REPOSITORY https://github.com/andreasbuhr/cppcoro.git
+    GIT_TAG main
+    CMAKE_ARGS -DCMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR>
+)
+
 set(SOURCE_FILES
         src/tools/imgui_demo_tool.cpp
         src/tools/porytiles_tool.cpp
@@ -56,9 +66,11 @@ set(SOURCE_FILES
         src/spritesheets/palette_png.cpp
 )
 
-include_directories( ${OpenCV_INCLUDE_DIRS} )
+include_directories( ${OpenCV_INCLUDE_DIRS} ${CMAKE_BINARY_DIR}/external/cppcoro/include )
 
 add_executable(pokedev ${SOURCE_FILES})
+
+add_dependencies(pokedev cppcoro)
 
 target_compile_features(${PROJECT_NAME} PRIVATE cxx_std_23)
 
@@ -76,4 +88,5 @@ target_link_libraries(pokedev
         fmt::fmt
         ${OpenCV_LIBS}
         cereal
+        ${CMAKE_BINARY_DIR}/external/cppcoro/lib/libcppcoro.a
 )

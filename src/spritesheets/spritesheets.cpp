@@ -43,9 +43,9 @@ constexpr ptrdiff_t index(std::vector<T> vector, T obj) {
 
 Mat reOrderSheet(Mat& src, int box[2][2], std::vector<int> order) {
     std::vector<Rect> list;
-    DrawUtil::scanSpriteBox(src, box, [&list](const Rect& rect) -> void {
+    for (auto rect : DrawUtil::scanSpriteBox(src, box))  {
         list.push_back(rect);
-    });
+    };
     while (order.size() < list.size()) {
         order.push_back(-1);
     } //this implies that order[a] is ignored if a > list.size
@@ -68,12 +68,13 @@ Mat reOrderSheet(Mat& src, int box[2][2], std::vector<int> order) {
     int height =  bbox[1][1] - bbox[0][1];
     dest.create(height, width, src.type());
     int i = ignoreCount;
-    DrawUtil::scanSpriteBox(dest, box, [&src, &dest, &i, &list](const Rect& rect) -> void {
+    for (Rect rect : DrawUtil::scanSpriteBox(dest, box)) {
         Mat region {dest(rect)};
         Mat overwrite {src(list[i])};
         overwrite.copyTo(region);
         i++;  
-    });
+    }
+    std::cout << "done" << std::endl;
     //todo: need to fix the palette, but opencv doesn't provide that.
     return dest;
 }
@@ -90,19 +91,20 @@ Mat SpriteSheetData::resizeSheet(int box[2][2], int resizeBox[2][2], Interpolati
     dest.create(rowBoxes * newBoxHeight, colBoxes * newBoxWidth, src.type());
     
     std::vector<Mat> destBox;
-    DrawUtil::scanSpriteBox(src, box, [&src, &dest, &newBoxWidth, &newBoxHeight, &flag, &destBox](const Rect& rect) -> void {
+    
+    for (auto& rect : DrawUtil::scanSpriteBox(src, box))  {
         Mat region {src(rect)};
         Mat resized;
         resize(region, resized, Size(newBoxWidth, newBoxHeight), 0, 0, flag);
         destBox.push_back(resized);
-    });
+    }
 
     int i = 0;
-    DrawUtil::scanSpriteBox(dest, resizeBox, [&dest, &destBox, &i](const Rect& rect) -> void {
+    for (auto rect : DrawUtil::scanSpriteBox(dest, resizeBox))  {
         Mat region {dest(rect)};
         destBox[i].copyTo(region);
         i++;
-    });
+    }
 
     return dest;
 }

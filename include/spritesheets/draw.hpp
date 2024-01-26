@@ -3,7 +3,10 @@
 #include <filesystem>
 #include <optional>
 #include <functional>
+#include <coroutine>
+#include <cppcoro/generator.hpp>
 
+#include <fmt/core.h>
 #include <opencv2/opencv.hpp>
 
 
@@ -30,5 +33,5 @@ namespace DrawUtil {
     }
     
     BBox fixBoundingBox(int box[2][2]);
-    void scanSpriteBox(Mat& mat, int box[2][2], std::function<void(const Rect&)> boxConsumer);
+    cppcoro::generator<Rect> scanSpriteBox(Mat& mat, int box[2][2]);
 }

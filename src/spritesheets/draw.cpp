@@ -1,6 +1,7 @@
 #include "spritesheets/spritesheets.hpp"
 #include "spritesheets/draw.hpp"
 
+
 Mat DrawUtil::loadImage(const std::filesystem::path& imageFile) {
     std::string input = imageFile.string();
     Mat img = imread(input, IMREAD_COLOR);
@@ -53,7 +54,7 @@ BBox DrawUtil::fixBoundingBox(int box[2][2]) {
 
 //box[0] the offset (usually 0, 0)
 //box[1] the actual box definition
-void DrawUtil::scanSpriteBox(Mat& mat, int box[2][2], std::function<void(const Rect&)> boxConsumer) {
+cppcoro::generator<Rect> DrawUtil::scanSpriteBox(Mat& mat, int box[2][2]) {
     BBox fix = DrawUtil::fixBoundingBox(box);
     int upperLeftX = fix[0][0];
     int upperLeftY = fix[0][1];
@@ -63,7 +64,8 @@ void DrawUtil::scanSpriteBox(Mat& mat, int box[2][2], std::function<void(const R
     for (int i = upperLeftY; i < mat.rows; i = i + bottomRightY) {
         for (int j = upperLeftX; j < mat.cols; j = j + bottomRightX) {
             Rect spriteBox(j, i, bottomRightX, bottomRightY);
-            boxConsumer(spriteBox);
+            std::cout << fmt::format("{} {}\n", spriteBox.tl().x, spriteBox.tl().y) << std::endl;
+            co_yield spriteBox;
         }
     }
 }
