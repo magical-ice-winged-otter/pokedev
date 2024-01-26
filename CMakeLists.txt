@@ -24,6 +24,14 @@ if(WIN32)
     set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /SUBSYSTEM:WINDOWS /ENTRY:mainCRTStartup")
 endif()
 
+file(GLOB CEREAL_HEADERS lib/include/cereal/**/*.hpp)
+
+add_library(cereal INTERFACE)
+
+target_include_directories(cereal INTERFACE lib/include)
+
+target_sources(cereal INTERFACE ${CEREAL_HEADERS})
+
 set(SOURCE_FILES
         src/tools/imgui_demo_tool.cpp
         src/tools/porytiles_tool.cpp
@@ -54,7 +62,6 @@ target_compile_features(${PROJECT_NAME} PRIVATE cxx_std_23)
 target_include_directories(pokedev
         PRIVATE
         include
-        lib/include
 )
 
 target_link_libraries(pokedev
@@ -65,4 +72,5 @@ target_link_libraries(pokedev
         imgui::imgui
         fmt::fmt
         ${OpenCV_LIBS}
+        cereal
 )
