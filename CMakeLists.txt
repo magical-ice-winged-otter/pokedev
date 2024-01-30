@@ -1,6 +1,6 @@
 # todo: would love to simplify this file, but im honestly not good enough w/ cmake to do it well
 
-cmake_minimum_required(VERSION 3.28)
+cmake_minimum_required(VERSION 3.20...3.28)
 set(CMAKE_TOOLCHAIN_FILE $ENV{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake)
 set(CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_STANDARD 23)
