@@ -32,6 +32,16 @@ target_include_directories(cereal INTERFACE lib/include)
 
 target_sources(cereal INTERFACE ${CEREAL_HEADERS})
 
+include(ExternalProject)
+
+ExternalProject_Add(
+    cppcoro
+    PREFIX ${CMAKE_BINARY_DIR}/external/cppcoro
+    GIT_REPOSITORY https://github.com/andreasbuhr/cppcoro.git
+    GIT_TAG main
+    CMAKE_ARGS -DCMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR>
+)
+
 set(SOURCE_FILES
         src/tools/imgui_demo_tool.cpp
         src/tools/porytiles_tool.cpp
@@ -51,11 +61,16 @@ set(SOURCE_FILES
         src/trainers/mons/mon_data.cpp
         src/tools/shortcuts_tool.cpp
         src/string_parsing_util.cpp
+        src/spritesheets/draw.cpp
+        src/spritesheets/spritesheets.cpp
+        src/spritesheets/palette_png.cpp
 )
 
-include_directories( ${OpenCV_INCLUDE_DIRS} )
+include_directories( ${OpenCV_INCLUDE_DIRS} ${CMAKE_BINARY_DIR}/external/cppcoro/include )
 
 add_executable(pokedev ${SOURCE_FILES})
+
+add_dependencies(pokedev cppcoro)
 
 target_compile_features(${PROJECT_NAME} PRIVATE cxx_std_23)
 
@@ -73,4 +88,5 @@ target_link_libraries(pokedev
         fmt::fmt
         ${OpenCV_LIBS}
         cereal
+        ${CMAKE_BINARY_DIR}/external/cppcoro/lib/libcppcoro.a
 )

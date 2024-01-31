@@ -1,11 +1,13 @@
 #include "platform.hpp"
 #include "application.hpp"
 
-int main(int, char*[])
-{
+#include <fmt/core.h>
+#include <filesystem>
+
+int main(int argc, char* argv[]) {
     Platform::init();
     Application::init();
-
+        
     while (!Platform::wantsToQuit())
     {
         Platform::startFrame();
@@ -14,6 +16,6 @@ int main(int, char*[])
     }
 
     Application::shutdown();
-    Platform::shutdown();
+    Platform::shutdown();   
     return 0;
 }
