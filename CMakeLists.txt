@@ -43,9 +43,6 @@ ExternalProject_Add(
 )
 
 set(SOURCE_FILES
-        src/tools/tileset_tool.cpp
-        src/tools/imgui_demo_tool.cpp
-        src/tools/porytiles_tool.cpp
         src/main.cpp
         src/application.cpp
         src/imgui_utils.cpp
@@ -54,15 +51,24 @@ set(SOURCE_FILES
         src/game_loaders.cpp
         src/platform.cpp
         src/imgui_window.cpp
+        src/game_settings.cpp
+        src/string_parsing_util.cpp
         src/platform/platform_windows.cpp
         src/porytiles/porytiles_gui.cpp
         src/porytiles/porytiles_command_generator.cpp
+        src/trainers/mons/mon_data.cpp
         src/trainers/trainer_editor.cpp
         src/trainers/mons/mon_editor.cpp
-        src/game_settings.cpp
-        src/trainers/mons/mon_data.cpp
         src/tools/shortcuts_tool.cpp
-        src/string_parsing_util.cpp
+        src/tools/tileset_tool.cpp
+        src/tools/imgui_demo_tool.cpp
+        src/tools/porytiles_tool.cpp
+        src/tileset/tileset.cpp
+        src/tileset/tileset_editor.cpp
+        src/tileset/tileset_browser.cpp
+        src/tileset/source_tile.cpp
+        src/tileset/source_tile_editor.cpp
+        src/tileset/source_tile_browser.cpp
         src/spritesheets/draw.cpp
         src/spritesheets/spritesheets.cpp
         src/spritesheets/palette_png.cpp
