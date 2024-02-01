@@ -7,6 +7,9 @@
             "name": "sdl2"
         },
         {
+            "name": "cppcoro"
+        },
+        {
             "name": "sdl2-image"
         },
         {

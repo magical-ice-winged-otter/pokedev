@@ -1,0 +1,32 @@
+set(SOURCE_FILES
+        main.cpp
+        application.cpp
+        imgui_utils.cpp
+        serializer.cpp
+        text_parser.cpp
+        game_loaders.cpp
+        platform.cpp
+        imgui_window.cpp
+        game_settings.cpp
+        string_parsing_util.cpp
+        event.cpp
+        platform/platform_windows.cpp
+        porytiles/porytiles_gui.cpp
+        porytiles/porytiles_command_generator.cpp
+        trainers/mons/mon_data.cpp
+        trainers/trainer_editor.cpp
+        trainers/mons/mon_editor.cpp
+        tools/shortcuts_tool.cpp
+        tools/tileset_tool.cpp
+        tools/imgui_demo_tool.cpp
+        tools/porytiles_tool.cpp
+        tileset/tileset.cpp
+        tileset/tileset_editor.cpp
+        tileset/tileset_browser.cpp
+        tileset/source_tile.cpp
+        tileset/source_tile_editor.cpp
+        tileset/source_tile_browser.cpp
+        spritesheets/draw.cpp
+        spritesheets/spritesheets.cpp
+        spritesheets/palette_png.cpp
+)

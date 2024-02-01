@@ -28,7 +28,7 @@ void DrawUtil::scanImage(Mat& mat, std::function<std::optional<uchar*>(const Dra
         for (int j = 0; j < nCols * channels; j = j + channels) {
             uchar* col_ptr = &p[j];
 
-            uchar copy[channels];
+            uchar* copy = new uchar[channels];
             for (int c = 0; c < channels; ++c) {
                 copy[c] = col_ptr[c];
             }
