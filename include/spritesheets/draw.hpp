@@ -5,6 +5,7 @@
 #include <functional>
 #include <coroutine>
 #include <cppcoro/generator.hpp>
+#include <vector>
 
 #include <fmt/core.h>
 #include <opencv2/opencv.hpp>
@@ -22,11 +23,16 @@ namespace DrawUtil {
     struct GeneratorPixel {
         uchar* pointer;
         int channels;
+        int row;
+        int col;
     };
 
     //this function will always modify the image
     //I decided that it's not useful to give a read only scan.
-    void scanImage(Mat& mat, std::function<std::optional<uchar*>(const DrawUtil::GeneratorPixel&)> modify);
+    cppcoro::generator<DrawUtil::GeneratorPixel> scanImage(Mat& mat);
+    //Counts the colors in a mat
+    //might be in BGR
+    std::vector<std::vector<Scalar> > colors(Mat& mat);
     Mat loadImage(const std::filesystem::path& imageFile);
     inline void writeImage(const std::filesystem::path& imageFile, Mat& mat) {
         imwrite(imageFile.string(), mat);

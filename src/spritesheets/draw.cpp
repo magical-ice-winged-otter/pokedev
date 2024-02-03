@@ -12,7 +12,7 @@ Mat DrawUtil::loadImage(const std::filesystem::path& imageFile) {
     return img;
 }
 
-void DrawUtil::scanImage(Mat& mat, std::function<std::optional<uchar*>(const DrawUtil::GeneratorPixel&)> modify) {
+cppcoro::generator<DrawUtil::GeneratorPixel> DrawUtil::scanImage(Mat& mat) {
     // accept only char type matrices
     CV_Assert(mat.depth() == CV_8U);
     int channels = mat.channels();
@@ -28,19 +28,24 @@ void DrawUtil::scanImage(Mat& mat, std::function<std::optional<uchar*>(const Dra
         for (int j = 0; j < nCols * channels; j = j + channels) {
             uchar* col_ptr = &p[j];
 
-            uchar copy[channels];
-            for (int c = 0; c < channels; ++c) {
-                copy[c] = col_ptr[c];
-            }
-
-            DrawUtil::GeneratorPixel pixel = { col_ptr, channels};
-            std::optional<uchar*> modified = modify(pixel);
-            if (!modified.has_value()) continue;
-            for (int c = 0; c < channels; ++c) {
-                col_ptr[c] = modified.value()[c];
-            }
+            DrawUtil::GeneratorPixel pixel = { col_ptr, channels, i, j };
+            co_yield pixel;
+            //todo: check if pixel is mutated
         }
     }
+}
+
+std::vector<std::vector<Scalar> > DrawUtil::colors(Mat& mat) {
+    std::vector<std::vector<Scalar> > ret;
+    for (DrawUtil::GeneratorPixel &pixel : DrawUtil::scanImage(mat)) {
+        if (pixel.row == ret.size()) {
+            ret.push_back({});
+        }
+        Scalar copy(pixel.pointer[0], pixel.pointer[1], pixel.pointer[2]);
+        ret[pixel.row].push_back(copy);
+    }
+
+    return ret;
 }
 
 BBox DrawUtil::fixBoundingBox(int box[2][2]) {
